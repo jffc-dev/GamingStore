@@ -27,22 +27,36 @@
 Requirements:
 
 ```jsx
-## Mandatory Features
+# Homework
 
+### Build your tiny API store.
+You can choose the target of your business, be creative!.
+**Examples:** snack store, pet store, drug store.
+
+## Technical Requirements
+* PostgreSql
+	** Kysely / Drizzle
+	** Prisma
+* NestJS
+* Typescript
+* Prettier
+* Eslint
+
+## Mandatory Features
 1. Authentication endpoints (sign up, sign in, sign out, forgot, reset password)
 2. List products with pagination
 3. Search products by category
 4. Add 2 kinds of users (Manager, Client)
 5. As a Manager I can:
     * Create products
-    * Update products and product variations
-    * Delete products and product variations
-    * Disable products and product variations
+    * Update products
+    * Delete products
+    * Disable products
     * Show clients orders
     * Upload images per product.
 6. As a Client I can:
     * See products 
-    * See the product variations
+    * See the product details
     * Buy products
     * Add products to cart
     * Like products
@@ -50,10 +64,28 @@ Requirements:
 7. The product information(included the images) should be visible for logged and not logged users
 8. Stripe Integration for payment (including webhooks management) 
 
-## Extra points
+## Mandatory Implementations
+Schema validation for environment variables
+Usage of global exception filter
+Usage of guards, pipes (validation)
+Usage of custom decorators
+Configure helmet, cors, rate limit (this last one for reset password feature)
 
+## Extra points
+* Implement resolve field in graphQL queries (if apply)
 * When the stock of a product reaches 3, notify the last user that liked it and not purchased the product yet with an email. 
+  Use a background job and make sure to include the products image in the email.
 * Send an email when the user changes the password
+* Deploy on Heroku
+
+## Notes: 
+
+Requirements to use Rest: 
+* Authentication endpoints (sign up, sign in, sign out, forgot, reset password)
+* Stripe Integration for payment (including webhooks management)
+
+Requirements to use Graph: 
+* The ones not included in the block above
 
 ```
 
@@ -78,6 +110,8 @@ This section tracks the progress of the project by listing completed and pending
 - [x] Initialize project with `NestJS`.  
 - [ ] Deploy initial version to production. 
 
+---
+
 ### `feature/environment`
 - [x] Configure environment variables using `.env` files.  
 - [x] Integrate Prisma for database ORM.  
@@ -85,11 +119,128 @@ This section tracks the progress of the project by listing completed and pending
 - [x] Create documentation for setting up local environments.  
 - [x] Add validation for environment variables.  
 
+---
+
 ### `feature/database-design`
 - [ ] Define initial database schema using Prisma.    
 - [ ] Implement migrations to sync schema with the database.    
 - [ ] Document schema relationships and data flow for developers.  
 - [ ] Test database queries using Prisma Client.   
+
+---
+
+### `feature/register-user`
+- [ ] **Implement business logic for user creation**
+  - [ ] Add a service function to:
+    - Validate input data (`name`, `email`, `password`).
+    - Hash the password using `bcrypt`.
+    - Save the user to the database.
+  - [ ] Handle common errors:
+    - Duplicate email.
+    - Invalid input.
+
+- [ ] **Implement the `POST /auth/register` endpoint**
+  - [ ] Add the route for user creation.
+  - [ ] Create a controller to:
+    - Validate incoming requests using a schema (e.g., Joi or Zod).
+    - Call the service to create the user.
+    - Return appropriate responses (e.g., `201 Created`, `400 Bad Request`, `409 Conflict`).
+  - [ ] Ensure the password is not exposed in the response.
+
+- [ ] **Validate input data**
+  - [ ] Define validation rules for:
+    - `name`: Required, non-empty string.
+    - `email`: Required, valid email format, unique.
+    - `password`: Required, at least 8 characters.
+  - [ ] Add middleware to enforce validation.
+
+---
+
+### `feature/login-user`
+- [ ] **Implement the `POST /login` endpoint**
+  - [ ] Create the route for user login.
+  - [ ] Create a controller to:
+    - Validate incoming requests with a schema (e.g., email and password are required).
+    - Call the authentication service.
+    - Return appropriate responses (`200 OK` on success, `401 Unauthorized` for invalid credentials).
+
+- [ ] **Add authentication service**
+  - [ ] Create a function to handle authentication:
+    - Validate the user's email and password.
+    - Retrieve the user from the database by email.
+    - Compare the provided password with the stored hashed password using `bcrypt`.
+    - Generate a JSON Web Token (JWT) for successful authentication.
+  - [ ] Handle errors:
+    - User not found.
+    - Password does not match.
+
+- [ ] **Define login input validation**
+  - [ ] Add validation rules for:
+    - `email`: Required, valid email format.
+    - `password`: Required, non-empty string.
+
+---
+
+### `feature/sign-out`
+- [ ] **Implement the `POST /logout` endpoint**
+  - [ ] Create the route for user logout.
+  - [ ] Add a controller to:
+    - Invalidate the user's session (if using session-based authentication).
+    - Return a `200 OK` response.
+  - [ ] If using JWT:
+    - Implement token invalidation by:
+      - Storing blacklisted tokens in a database or in-memory cache.
+      - Returning a success response after invalidation.
+
+- [ ] **Handle token invalidation**
+  - [ ] Add logic to:
+    - Store invalidated tokens with an expiration matching the token's lifespan.
+    - Check incoming requests against the blacklist to prevent unauthorized access.
+
+---
+
+### `feature/forgot-password`
+- [ ] **Implement the `POST /forgot-password` endpoint**
+  - [ ] Create the route for initiating the password reset process.
+  - [ ] Add a controller to:
+    - Validate the provided email.
+    - Look up the user by email in the database.
+    - Generate a secure reset token (e.g., UUID or a random string).
+    - Store the reset token and its expiration (e.g., `reset_password_token` and `reset_password_expires_at`) in the database.
+    - Send an email with the reset token and instructions for resetting the password.
+
+- [ ] **Set up secure token generation**
+  - [ ] Use a library like `crypto` or `uuid` to generate unique, secure tokens.
+  - [ ] Configure the expiration time for reset tokens (e.g., 15 minutes or 1 hour).
+
+- [ ] **Send the reset email**
+  - [ ] Integrate an email service (e.g., SendGrid, Nodemailer) to send the reset link.
+  - [ ] Include the token and instructions in the email, such as:
+    ```
+    Click the link below to reset your password:
+    https://app.com/reset-password?token=<RESET_TOKEN>
+    ```
+
+---
+
+### `feature/reset-password`
+- [ ] **Implement the `POST /reset-password` endpoint**
+  - [ ] Create the route for resetting the password.
+  - [ ] Add a controller to:
+    - Validate the reset token and check its expiration.
+    - Look up the user by the token in the database.
+    - Validate the new password (e.g., minimum length, complexity).
+    - Hash the new password using `bcrypt`.
+    - Update the user's password in the database.
+    - Clear the reset token and expiration fields from the database.
+
+- [ ] **Add validation for input data**
+  - [ ] Ensure the `reset_token` is valid and not expired.
+  - [ ] Validate the new password against security requirements (e.g., at least 8 characters).
+
+- [ ] **Secure the password reset process**
+  - [ ] Use a strong hashing algorithm like `bcrypt` to hash the new password.
+  - [ ] Immediately invalidate the reset token after use to prevent reuse.
 
 ---
 
