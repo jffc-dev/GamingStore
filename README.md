@@ -79,11 +79,11 @@ This section tracks the progress of the project by listing completed and pending
 - [ ] Deploy initial version to production. 
 
 ### `feature/environment`
-- [ ] Configure environment variables using `.env` files.  
-- [ ] Integrate Prisma for database ORM.  
-- [ ] Set up Docker for development and production environments.  
-- [ ] Create documentation for setting up local environments.  
-- [ ] Add validation for environment variables.  
+- [x] Configure environment variables using `.env` files.  
+- [x] Integrate Prisma for database ORM.  
+- [x] Set up Docker for development and production environments.  
+- [x] Create documentation for setting up local environments.  
+- [x] Add validation for environment variables.  
 
 ### `feature/database-design`
 - [ ] Define initial database schema using Prisma.    
