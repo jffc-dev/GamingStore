@@ -156,25 +156,25 @@ This section tracks the progress of the project by listing completed and pending
 ---
 
 ### `feature/login-user`
-- [ ] **Implement the `POST /auth/login` endpoint**
-  - [ ] Create the route for user login.
-  - [ ] Create a controller to:
+- [x] **Implement the `POST /auth/login` endpoint**
+  - [x] Create the route for user login.
+  - [x] Create a controller to:
     - Validate incoming requests with a schema (e.g., email and password are required).
     - Call the authentication service.
     - Return appropriate responses (`200 OK` on success, `401 Unauthorized` for invalid credentials).
 
-- [ ] **Add authentication service**
-  - [ ] Create a function to handle authentication:
+- [x] **Add authentication service**
+  - [x] Create a function to handle authentication:
     - Validate the user's email and password.
     - Retrieve the user from the database by email.
     - Compare the provided password with the stored hashed password using `bcrypt`.
     - Generate a JSON Web Token (JWT) for successful authentication.
-  - [ ] Handle errors:
+  - [x] Handle errors:
     - User not found.
     - Password does not match.
 
-- [ ] **Define login input validation**
-  - [ ] Add validation rules for:
+- [x] **Define login input validation**
+  - [x] Add validation rules for:
     - `email`: Required, valid email format.
     - `password`: Required, non-empty string.
 
