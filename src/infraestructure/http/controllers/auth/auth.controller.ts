@@ -65,4 +65,15 @@ export class AuthController {
       throw new BadRequestException(error.message);
     }
   }
+
+  @Post('logout')
+  async logoutUser(@Res() res: Response) {
+    try {
+      res.clearCookie('auth_token');
+
+      return res.status(HttpStatus.OK).json({ message: 'Logout successful' });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
 }

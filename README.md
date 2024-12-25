@@ -181,20 +181,14 @@ This section tracks the progress of the project by listing completed and pending
 ---
 
 ### `feature/sign-out`
-- [ ] **Implement the `POST /logout` endpoint**
-  - [ ] Create the route for user logout.
-  - [ ] Add a controller to:
-    - Invalidate the user's session (if using session-based authentication).
+- [x] **Implement the `POST /auth/logout` endpoint**
+  - [x] Create the route for user logout.
+  - [x] Add a controller to:
     - Return a `200 OK` response.
-  - [ ] If using JWT:
+  - [x] If using JWT:
     - Implement token invalidation by:
       - Storing blacklisted tokens in a database or in-memory cache.
       - Returning a success response after invalidation.
-
-- [ ] **Handle token invalidation**
-  - [ ] Add logic to:
-    - Store invalidated tokens with an expiration matching the token's lifespan.
-    - Check incoming requests against the blacklist to prevent unauthorized access.
 
 ---
 
