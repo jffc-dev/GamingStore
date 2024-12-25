@@ -4,10 +4,14 @@ import { UserRepository } from '../contracts/user.repository';
 import { v4 as uuid } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from 'src/infraestructure/http/dto/register-user.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class RegisterUserUseCase {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async execute({
     name,
@@ -27,8 +31,12 @@ export class RegisterUserUseCase {
       phoneNumber,
     });
 
-    const response = await this.userRepository.create(user);
+    const userResponse = await this.userRepository.create(user);
+    const { email: userEmail, id: userId } = userResponse;
 
-    return response;
+    const payload = { id: userId, email: userEmail };
+    const accessToken = this.jwtService.sign(payload);
+
+    return { token: accessToken };
   }
 }

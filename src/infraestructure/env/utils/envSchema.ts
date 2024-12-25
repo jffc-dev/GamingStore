@@ -5,6 +5,7 @@ export const envSchema = z.object({
   PG_URL: z.string().url(),
   PG_PASSWORD: z.string(),
   PG_DBNAME: z.string(),
+  JWT_SECRET: z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>;

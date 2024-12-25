@@ -12,5 +12,6 @@ import { envSchema } from './utils/envSchema';
     }),
   ],
   providers: [EnvService],
+  exports: [EnvService],
 })
 export class EnvModule {}
