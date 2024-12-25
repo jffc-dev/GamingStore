@@ -3,6 +3,8 @@ CREATE TABLE customer_user (
   user_id UUID NOT NULL,
   role user_roles_enum NOT NULL,
   email TEXT UNIQUE NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
   phone_number TEXT,
   password TEXT,
   address TEXT,
