@@ -6,11 +6,10 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterUserUseCase } from 'src/application/use-cases/register-user';
 import { LoginUserUseCase } from 'src/application/use-cases/login-user';
-import { LoginUserDto } from './dto/login-user.dto';
-
+import { RegisterUserDto } from '../../dto/register-user.dto';
+import { LoginUserDto } from '../../dto/login-user.dto';
 @UsePipes(
   new ValidationPipe({
     whitelist: true,
