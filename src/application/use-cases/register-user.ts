@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from 'src/domain/user';
-import { UserRepository } from '../contracts/user.repository';
+import { UserRepository } from '../contracts/persistence/user.repository';
 import { v4 as uuid } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from 'src/infraestructure/http/dto/register-user.dto';
