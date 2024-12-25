@@ -1,23 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PrismaModule } from './infraestructure/persistence/prisma/prisma.module';
-import { EnvModule } from './infraestructure/env/env.module';
+import { HttpModule } from './infraestructure/http/http.module';
+import { PersistenceModule } from './infraestructure/persistence/persistence.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
+    PersistenceModule.register({
+      global: true,
     }),
-    PrismaModule,
-    EnvModule,
+    HttpModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
-  constructor(private configService: ConfigService) {
-    console.log(this.configService.get('PORT'));
-  }
+  constructor() {}
 }
