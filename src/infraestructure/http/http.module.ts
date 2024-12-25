@@ -4,10 +4,11 @@ import { RegisterUserUseCase } from 'src/application/use-cases/register-user';
 import { JwtModule } from '@nestjs/jwt';
 import { EnvModule } from '../env/env.module';
 import { EnvService } from '../env/env.service';
+import { LoginUserUseCase } from 'src/application/use-cases/login-user';
 
 @Module({
   controllers: [AuthController],
-  providers: [RegisterUserUseCase],
+  providers: [RegisterUserUseCase, LoginUserUseCase],
   imports: [
     JwtModule.registerAsync({
       imports: [EnvModule],

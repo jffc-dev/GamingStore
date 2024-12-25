@@ -156,7 +156,7 @@ This section tracks the progress of the project by listing completed and pending
 ---
 
 ### `feature/login-user`
-- [ ] **Implement the `POST /login` endpoint**
+- [ ] **Implement the `POST /auth/login` endpoint**
   - [ ] Create the route for user login.
   - [ ] Create a controller to:
     - Validate incoming requests with a schema (e.g., email and password are required).
