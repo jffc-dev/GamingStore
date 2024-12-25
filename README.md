@@ -122,37 +122,36 @@ This section tracks the progress of the project by listing completed and pending
 ---
 
 ### `feature/database-design`
-- [ ] Define initial database schema using Prisma.    
-- [ ] Implement migrations to sync schema with the database.    
-- [ ] Document schema relationships and data flow for developers.  
-- [ ] Test database queries using Prisma Client.   
+- [X] Define initial database schema using Prisma.    
+- [X] Implement migrations to sync schema with the database.    
+- [X] Document schema relationships and data flow for developers.  
+- [X] Test database queries using Prisma Client.   
 
 ---
 
 ### `feature/register-user`
-- [ ] **Implement business logic for user creation**
-  - [ ] Add a service function to:
+- [X] **Implement business logic for user creation**
+  - [X] Add a service function to:
     - Validate input data (`name`, `email`, `password`).
     - Hash the password using `bcrypt`.
     - Save the user to the database.
-  - [ ] Handle common errors:
+  - [X] Handle common errors:
     - Duplicate email.
     - Invalid input.
 
-- [ ] **Implement the `POST /auth/register` endpoint**
-  - [ ] Add the route for user creation.
-  - [ ] Create a controller to:
+- [X] **Implement the `POST /auth/register` endpoint**
+  - [X] Add the route for user creation.
+  - [X] Create a controller to:
     - Validate incoming requests using a schema (e.g., Joi or Zod).
     - Call the service to create the user.
     - Return appropriate responses (e.g., `201 Created`, `400 Bad Request`, `409 Conflict`).
-  - [ ] Ensure the password is not exposed in the response.
+  - [X] Ensure the password is not exposed in the response.
 
-- [ ] **Validate input data**
-  - [ ] Define validation rules for:
+- [X] **Validate input data**
+  - [X] Define validation rules for:
     - `name`: Required, non-empty string.
     - `email`: Required, valid email format, unique.
     - `password`: Required, at least 8 characters.
-  - [ ] Add middleware to enforce validation.
 
 ---
 
