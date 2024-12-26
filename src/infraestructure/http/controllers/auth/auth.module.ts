@@ -7,9 +7,17 @@ import { EnvModule } from 'src/infraestructure/env/env.module';
 import { EnvService } from 'src/infraestructure/env/env.service';
 import { ForgotPasswordUseCase } from 'src/application/use-cases/forgot-password';
 import { NotificationsModule } from 'src/infraestructure/notifications/notifications.module';
+import { ResetPasswordUseCase } from 'src/application/use-cases/reset-password';
+import { BcryptModule } from 'src/infraestructure/services/bcrypt/bcrypt.module';
+import { UuidModule } from 'src/infraestructure/services/uuid/uuid.module';
 
 @Module({
-  providers: [RegisterUserUseCase, LoginUserUseCase, ForgotPasswordUseCase],
+  providers: [
+    RegisterUserUseCase,
+    LoginUserUseCase,
+    ForgotPasswordUseCase,
+    ResetPasswordUseCase,
+  ],
   controllers: [AuthController],
   imports: [
     EnvModule,
@@ -26,6 +34,8 @@ import { NotificationsModule } from 'src/infraestructure/notifications/notificat
       },
     }),
     NotificationsModule,
+    BcryptModule,
+    UuidModule,
   ],
 })
 export class AuthModule {}

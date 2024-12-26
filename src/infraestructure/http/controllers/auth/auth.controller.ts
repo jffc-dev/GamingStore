@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   HttpStatus,
+  Patch,
   Post,
   Res,
   UsePipes,
@@ -15,6 +16,8 @@ import { LoginUserDto } from '../../dto/login-user.dto';
 import { Response } from 'express';
 import { ForgotPasswordDto } from '../../dto/forgot-password.dto';
 import { ForgotPasswordUseCase } from 'src/application/use-cases/forgot-password';
+import { ResetPasswordDto } from '../../dto/reset-password.dto';
+import { ResetPasswordUseCase } from 'src/application/use-cases/reset-password';
 @UsePipes(
   new ValidationPipe({
     whitelist: true,
@@ -31,6 +34,7 @@ export class AuthController {
     private readonly registerUserUseCase: RegisterUserUseCase,
     private readonly loginUserUseCase: LoginUserUseCase,
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
   ) {}
 
   @Post('register')
@@ -84,6 +88,16 @@ export class AuthController {
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     try {
       const data = await this.forgotPasswordUseCase.execute(forgotPasswordDto);
+      return data;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @Patch('reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    try {
+      const data = await this.resetPasswordUseCase.execute(resetPasswordDto);
       return data;
     } catch (error) {
       throw new BadRequestException(error.message);

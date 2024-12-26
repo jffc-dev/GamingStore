@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../contracts/persistence/user.repository';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from 'src/infraestructure/http/dto/login-user.dto';
+import { BcryptService } from 'src/infraestructure/services/bcrypt/bcrypt.service';
 
 @Injectable()
 export class LoginUserUseCase {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
+    private readonly bcryptService: BcryptService,
   ) {}
 
   async execute({ password, email }: LoginUserDto): Promise<any> {
@@ -20,7 +21,7 @@ export class LoginUserUseCase {
       password: userPassword,
     } = userResponse;
 
-    if (!bcrypt.compareSync(password, userPassword)) {
+    if (!(await this.bcryptService.compare(password, userPassword))) {
       throw new Error('Invalid credentials');
     }
 
