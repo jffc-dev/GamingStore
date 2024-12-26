@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { User } from 'src/domain/user';
-import { UserRepository } from '../contracts/persistence/user.repository';
-import { RegisterUserDto } from 'src/infraestructure/http/dto/register-user.dto';
+import { UserRepository } from '../../contracts/persistence/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from 'src/infraestructure/services/bcrypt/bcrypt.service';
 import { UuidService } from 'src/infraestructure/services/uuid/uuid.service';
+import { RegisterUserDto } from 'src/infraestructure/http/dto/user/register-user.dto';
 
 @Injectable()
 export class RegisterUserUseCase {

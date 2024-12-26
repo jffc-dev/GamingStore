@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../contracts/persistence/user.repository';
-import { ForgotPasswordDto } from 'src/infraestructure/http/dto/forgot-password.dto';
+import { UserRepository } from '../../contracts/persistence/user.repository';
 import { User } from 'src/domain/user';
 import { EnvService } from 'src/infraestructure/env/env.service';
 import { NotificationsService } from 'src/infraestructure/notifications/notifications.service';
 import { UuidService } from 'src/infraestructure/services/uuid/uuid.service';
+import { ForgotPasswordDto } from 'src/infraestructure/http/dto/user/forgot-password.dto';
 
 @Injectable()
 export class ForgotPasswordUseCase {

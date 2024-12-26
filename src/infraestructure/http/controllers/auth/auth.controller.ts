@@ -9,15 +9,15 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { RegisterUserUseCase } from 'src/application/use-cases/register-user';
-import { LoginUserUseCase } from 'src/application/use-cases/login-user';
-import { RegisterUserDto } from '../../dto/register-user.dto';
-import { LoginUserDto } from '../../dto/login-user.dto';
+import { RegisterUserUseCase } from 'src/application/use-cases/user/register-user';
+import { LoginUserUseCase } from 'src/application/use-cases/user/login-user';
 import { Response } from 'express';
-import { ForgotPasswordDto } from '../../dto/forgot-password.dto';
-import { ForgotPasswordUseCase } from 'src/application/use-cases/forgot-password';
-import { ResetPasswordDto } from '../../dto/reset-password.dto';
-import { ResetPasswordUseCase } from 'src/application/use-cases/reset-password';
+import { ForgotPasswordUseCase } from 'src/application/use-cases/user/forgot-password';
+import { ResetPasswordUseCase } from 'src/application/use-cases/user/reset-password';
+import { RegisterUserDto } from '../../dto/user/register-user.dto';
+import { LoginUserDto } from '../../dto/user/login-user.dto';
+import { ForgotPasswordDto } from '../../dto/user/forgot-password.dto';
+import { ResetPasswordDto } from '../../dto/user/reset-password.dto';
 @UsePipes(
   new ValidationPipe({
     whitelist: true,

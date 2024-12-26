@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../contracts/persistence/user.repository';
+import { UserRepository } from '../../contracts/persistence/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from 'src/infraestructure/http/dto/login-user.dto';
 import { BcryptService } from 'src/infraestructure/services/bcrypt/bcrypt.service';

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../contracts/persistence/user.repository';
-import { ResetPasswordDto } from 'src/infraestructure/http/dto/reset-password.dto';
+import { UserRepository } from '../../contracts/persistence/user.repository';
 import { User } from 'src/domain/user';
 import { NotificationsService } from 'src/infraestructure/notifications/notifications.service';
 import { BcryptService } from 'src/infraestructure/services/bcrypt/bcrypt.service';
+import { ResetPasswordDto } from 'src/infraestructure/http/dto/user/reset-password.dto';
 
 @Injectable()
 export class ResetPasswordUseCase {
