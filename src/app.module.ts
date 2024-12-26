@@ -4,6 +4,7 @@ import { PersistenceModule } from './infraestructure/persistence/persistence.mod
 import { NotificationsModule } from './infraestructure/notifications/notifications.module';
 import { UuidModule } from './infraestructure/services/uuid/uuid.module';
 import { BcryptModule } from './infraestructure/services/bcrypt/bcrypt.module';
+import { GraphqlModule } from './infraestructure/graphql/graphql.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { BcryptModule } from './infraestructure/services/bcrypt/bcrypt.module';
     NotificationsModule,
     UuidModule,
     BcryptModule,
+    GraphqlModule,
   ],
 })
 export class AppModule {
