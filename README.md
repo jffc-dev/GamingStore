@@ -193,22 +193,22 @@ This section tracks the progress of the project by listing completed and pending
 ---
 
 ### `feature/forgot-password`
-- [ ] **Implement the `POST /auth/forgot-password` endpoint**
-  - [ ] Create the route for initiating the password reset process.
-  - [ ] Add a controller to:
+- [x] **Implement the `POST /auth/forgot-password` endpoint**
+  - [x] Create the route for initiating the password reset process.
+  - [x] Add a controller to:
     - Validate the provided email.
     - Look up the user by email in the database.
     - Generate a secure reset token (e.g., UUID or a random string).
     - Store the reset token and its expiration (e.g., `reset_password_token` and `reset_password_expires_at`) in the database.
     - Send an email with the reset token and instructions for resetting the password.
 
-- [ ] **Set up secure token generation**
-  - [ ] Use a library like `crypto` or `uuid` to generate unique, secure tokens.
-  - [ ] Configure the expiration time for reset tokens (e.g., 15 minutes or 1 hour).
+- [x] **Set up secure token generation**
+  - [x] Use a library like `crypto` or `uuid` to generate unique, secure tokens.
+  - [x] Configure the expiration time for reset tokens (e.g., 15 minutes or 1 hour).
 
 - [ ] **Send the reset email**
   - [ ] Integrate an email service (e.g., SendGrid, Nodemailer) to send the reset link.
-  - [ ] Include the token and instructions in the email, such as:
+  - [x] Include the token and instructions in the email, such as:
     ```
     Click the link below to reset your password:
     https://app.com/reset-password?token=<RESET_TOKEN>
@@ -217,9 +217,9 @@ This section tracks the progress of the project by listing completed and pending
 ---
 
 ### `feature/reset-password`
-- [ ] **Implement the `POST /reset-password` endpoint**
-  - [ ] Create the route for resetting the password.
-  - [ ] Add a controller to:
+- [x] **Implement the `POST /reset-password` endpoint**
+  - [x] Create the route for resetting the password.
+  - [x] Add a controller to:
     - Validate the reset token and check its expiration.
     - Look up the user by the token in the database.
     - Validate the new password (e.g., minimum length, complexity).
@@ -227,13 +227,13 @@ This section tracks the progress of the project by listing completed and pending
     - Update the user's password in the database.
     - Clear the reset token and expiration fields from the database.
 
-- [ ] **Add validation for input data**
-  - [ ] Ensure the `reset_token` is valid and not expired.
-  - [ ] Validate the new password against security requirements (e.g., at least 8 characters).
+- [x] **Add validation for input data**
+  - [x] Ensure the `reset_token` is valid and not expired.
+  - [x] Validate the new password against security requirements (e.g., at least 8 characters).
 
-- [ ] **Secure the password reset process**
-  - [ ] Use a strong hashing algorithm like `bcrypt` to hash the new password.
-  - [ ] Immediately invalidate the reset token after use to prevent reuse.
+- [x] **Secure the password reset process**
+  - [x] Use a strong hashing algorithm like `bcrypt` to hash the new password.
+  - [x] Immediately invalidate the reset token after use to prevent reuse.
 
 ---
 
