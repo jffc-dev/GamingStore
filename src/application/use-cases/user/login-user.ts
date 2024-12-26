@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../../contracts/persistence/user.repository';
 import { JwtService } from '@nestjs/jwt';
-import { LoginUserDto } from 'src/infraestructure/http/dto/login-user.dto';
 import { BcryptService } from 'src/infraestructure/services/bcrypt/bcrypt.service';
+import { LoginUserDto } from 'src/infraestructure/http/dto/user/login-user.dto';
 
 @Injectable()
 export class LoginUserUseCase {
