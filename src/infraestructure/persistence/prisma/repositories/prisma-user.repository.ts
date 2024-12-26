@@ -18,10 +18,7 @@ export class PrismaUserRepository implements UserRepository {
 
       return PrismaUserMapper.toDomain(createdUser);
     } catch (error) {
-      const { code, meta } = error;
-      if (code === 'P2002') {
-        throw new Error(`${meta.target[0]} had been already registered`);
-      }
+      this.handleDBError(error);
     }
   }
 
@@ -35,10 +32,38 @@ export class PrismaUserRepository implements UserRepository {
 
       return PrismaUserMapper.toDomain(createdUser);
     } catch (error) {
-      const { code } = error;
-      if (code === 'P2025') {
-        throw new Error(`User not found`);
-      }
+      this.handleDBError(error);
     }
+  }
+
+  async updateUserById(id: string, user: User): Promise<User> {
+    try {
+      const data = PrismaUserMapper.toPrisma(user);
+
+      const updatedUser = await this.prisma.user.update({
+        where: {
+          userId: id,
+        },
+        data: {
+          ...data,
+        },
+      });
+
+      return PrismaUserMapper.toDomain(updatedUser);
+    } catch (error) {
+      this.handleDBError(error);
+    }
+  }
+
+  handleDBError(error: any): void {
+    const { code, meta } = error;
+
+    if (code === 'P2025') {
+      throw new Error(`User not found`);
+    } else if (code === 'P2002') {
+      throw new Error(`${meta.target[0]} had been already registered`);
+    }
+
+    throw new Error(`Internal server error`);
   }
 }

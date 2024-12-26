@@ -9,6 +9,8 @@ export interface UserProps {
   role?: string;
   address?: string;
   phoneNumber?: string;
+  resetPasswordToken?: string;
+  resetPasswordExpiresAt?: Date;
 }
 
 export class User extends Entity<UserProps> {
@@ -42,6 +44,14 @@ export class User extends Entity<UserProps> {
 
   get phoneNumber(): string {
     return this.props.phoneNumber;
+  }
+
+  get resetPasswordToken(): string {
+    return this.props.resetPasswordToken;
+  }
+
+  get resetPasswordExpiresAt(): Date {
+    return this.props.resetPasswordExpiresAt;
   }
 
   get role(): string {

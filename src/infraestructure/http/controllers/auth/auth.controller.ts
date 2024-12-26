@@ -13,6 +13,8 @@ import { LoginUserUseCase } from 'src/application/use-cases/login-user';
 import { RegisterUserDto } from '../../dto/register-user.dto';
 import { LoginUserDto } from '../../dto/login-user.dto';
 import { Response } from 'express';
+import { ForgotPasswordDto } from '../../dto/forgot-password.dto';
+import { ForgotPasswordUseCase } from 'src/application/use-cases/forgot-password';
 @UsePipes(
   new ValidationPipe({
     whitelist: true,
@@ -26,8 +28,9 @@ import { Response } from 'express';
 @Controller('api/auth')
 export class AuthController {
   constructor(
-    private registerUserUseCase: RegisterUserUseCase,
-    private loginUserUseCase: LoginUserUseCase,
+    private readonly registerUserUseCase: RegisterUserUseCase,
+    private readonly loginUserUseCase: LoginUserUseCase,
+    private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
   ) {}
 
   @Post('register')
@@ -72,6 +75,16 @@ export class AuthController {
       res.clearCookie('auth_token');
 
       return res.status(HttpStatus.OK).json({ message: 'Logout successful' });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    try {
+      const data = await this.forgotPasswordUseCase.execute(forgotPasswordDto);
+      return data;
     } catch (error) {
       throw new BadRequestException(error.message);
     }

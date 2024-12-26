@@ -13,6 +13,8 @@ export class PrismaUserMapper {
       lastName: entity.lastName,
       email: entity.email,
       password: entity.password,
+      resetPasswordToken: entity.resetPasswordToken,
+      resetPasswordExpiresAt: entity.resetPasswordExpiresAt,
     });
     return model;
   }
@@ -27,6 +29,8 @@ export class PrismaUserMapper {
       lastName: user.lastName,
       address: user.address,
       phoneNumber: user.phoneNumber,
+      resetPasswordToken: user.resetPasswordToken,
+      resetPasswordExpiresAt: user.resetPasswordExpiresAt,
     };
   }
 }

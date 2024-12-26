@@ -193,7 +193,7 @@ This section tracks the progress of the project by listing completed and pending
 ---
 
 ### `feature/forgot-password`
-- [ ] **Implement the `POST /forgot-password` endpoint**
+- [ ] **Implement the `POST /auth/forgot-password` endpoint**
   - [ ] Create the route for initiating the password reset process.
   - [ ] Add a controller to:
     - Validate the provided email.
