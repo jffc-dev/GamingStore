@@ -24,13 +24,27 @@ export class PrismaUserRepository implements UserRepository {
 
   async findUserByEmail(email: string): Promise<User> {
     try {
-      const createdUser = await this.prisma.user.findUniqueOrThrow({
+      const foundUser = await this.prisma.user.findUniqueOrThrow({
         where: {
           email,
         },
       });
 
-      return PrismaUserMapper.toDomain(createdUser);
+      return PrismaUserMapper.toDomain(foundUser);
+    } catch (error) {
+      this.handleDBError(error);
+    }
+  }
+
+  async findUserByResetToken(resetToken: string): Promise<User> {
+    try {
+      const foundUser = await this.prisma.user.findUniqueOrThrow({
+        where: {
+          resetPasswordToken: resetToken,
+        },
+      });
+
+      return PrismaUserMapper.toDomain(foundUser);
     } catch (error) {
       this.handleDBError(error);
     }
