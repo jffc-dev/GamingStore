@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ProductRepository } from 'src/application/contracts/persistence/product.repository';
-import { GetProductDto } from 'src/infraestructure/graphql/dto/product/get-product.dto';
+import { Product } from 'src/domain/product';
+import { GetProductDto } from 'src/infraestructure/graphql/dto/product/inputs/get-product.dto';
 
 @Injectable()
 export class GetProductUseCase {
   constructor(private readonly productRepository: ProductRepository) {}
 
-  async execute({ productId }: GetProductDto): Promise<any> {
+  async execute({ productId }: GetProductDto): Promise<Product> {
     const productResponse =
       await this.productRepository.getProductById(productId);
 

@@ -1,9 +1,10 @@
-import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, ObjectType } from '@nestjs/graphql';
+import { Product as DomainProduct } from 'src/domain/product';
 
 @ObjectType()
 export class Product {
-  @Field(() => Int)
-  id: number;
+  @Field(() => String)
+  id: string;
 
   @Field(() => String)
   name: string;
@@ -15,11 +16,23 @@ export class Product {
   price: number;
 
   @Field(() => Boolean, { defaultValue: true })
-  isAvailable: boolean = true;
+  isActive: boolean = true;
 
   @Field(() => Date)
   createdAt: Date;
 
   @Field(() => Date)
   updatedAt: Date;
+
+  static fromDomainToEntity(domainObject: DomainProduct): Product {
+    return {
+      id: domainObject.productId,
+      name: domainObject.name,
+      price: domainObject.price,
+      description: domainObject.description,
+      isActive: domainObject.isActive,
+      createdAt: domainObject.createdAt,
+      updatedAt: domainObject.updatedAt,
+    };
+  }
 }
