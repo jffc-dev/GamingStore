@@ -33,7 +33,7 @@ export class NotificationsService {
         console.log(subject);
         console.log(body);
         resolve(1);
-      }, 10000);
+      }, 2000);
     });
 
     await promise;
