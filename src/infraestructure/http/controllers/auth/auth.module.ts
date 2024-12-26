@@ -5,16 +5,18 @@ import { LoginUserUseCase } from 'src/application/use-cases/login-user';
 import { JwtModule } from '@nestjs/jwt';
 import { EnvModule } from 'src/infraestructure/env/env.module';
 import { EnvService } from 'src/infraestructure/env/env.service';
+import { ForgotPasswordUseCase } from 'src/application/use-cases/forgot-password';
+import { NotificationsModule } from 'src/infraestructure/notifications/notifications.module';
 
 @Module({
-  providers: [RegisterUserUseCase, LoginUserUseCase],
+  providers: [RegisterUserUseCase, LoginUserUseCase, ForgotPasswordUseCase],
   controllers: [AuthController],
   imports: [
+    EnvModule,
     JwtModule.registerAsync({
       imports: [EnvModule],
       inject: [EnvService],
       useFactory: (envService: EnvService) => {
-        console.log(envService.get('JWT_SECRET'));
         return {
           secret: envService.get('JWT_SECRET'),
           signOptions: {
@@ -23,6 +25,7 @@ import { EnvService } from 'src/infraestructure/env/env.service';
         };
       },
     }),
+    NotificationsModule,
   ],
 })
 export class AuthModule {}
