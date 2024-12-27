@@ -1,3 +1,3 @@
-import { GetProductDto } from './inputs/get-product.dto';
+import { GetProductDto } from './get-product.dto';
 
 export class DeleteProductDto extends GetProductDto {}
