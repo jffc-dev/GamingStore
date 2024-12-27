@@ -8,7 +8,6 @@ import {
 @Catch()
 export class UnifiedExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
-    console.log('javier', exception);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
 

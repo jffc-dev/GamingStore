@@ -34,7 +34,7 @@ export class ForgotPasswordUseCase {
       id,
       updateData,
     );
-    console.log(updatedUser.resetPasswordToken);
+
     const notificationResponse = await this.notificationsService.sendEmailTest(
       updatedUser.email,
       'subject',
