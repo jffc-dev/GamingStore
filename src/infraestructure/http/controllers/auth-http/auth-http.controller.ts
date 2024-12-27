@@ -64,7 +64,6 @@ export class AuthController {
   @Post('logout')
   async logoutUser(@Res() res: Response) {
     try {
-      console.log('data');
       res.clearCookie('auth_token');
 
       return res.status(HttpStatus.OK).json({ message: 'Logout successful' });
