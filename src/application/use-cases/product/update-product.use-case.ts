@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ProductRepository } from 'src/application/contracts/persistence/product.repository';
 import { UuidService } from 'src/infraestructure/services/uuid/uuid.service';
 import { Product } from 'src/domain/product';
-import { UpdateProductDto } from 'src/infraestructure/graphql/dto/product/update-product.dto';
+import { UpdateProductInput } from 'src/infraestructure/graphql/dto/product/inputs/update-product.input';
 
 @Injectable()
 export class UpdateProductUseCase {
@@ -13,7 +13,7 @@ export class UpdateProductUseCase {
 
   async execute(
     productId: string,
-    updateProductDto: UpdateProductDto,
+    updateProductDto: UpdateProductInput,
   ): Promise<any> {
     //TODO: improve update dto
     const product = new Product({
