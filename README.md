@@ -268,6 +268,29 @@ This section tracks the progress of the project by listing completed and pending
 
 ---
 
+
+## `feature/add-to-cart`
+- [ ] **Implement the `addToCart` mutation**
+  - [ ] Define the GraphQL schema:
+    - Add a `mutation addToCart(userId: ID!, productId: ID!, quantity: Int!): CartDetail`.
+  - [ ] Create a resolver for:
+    - Validating the input (product ID and quantity).
+    - Returning the updated cart detail.
+    - Returning appropriate error responses for invalid input or product not found.
+  - [ ] Add service logic to:
+    - Check if the product exists.
+    - Verify stock availability.
+    - Add or update the product quantity in the cart.
+  - [ ] Update the `CartDetail` model:
+    - Create or update entries for `userId`, `productId`, and `quantity`.
+- [ ] **Add validations and edge cases**
+  - [ ] Ensure product stock is sufficient for the requested quantity.
+  - [ ] Handle cases where the user or product does not exist.
+  - [ ] Prevent negative or zero quantities from being added.
+
+**Note**: Tasks marked as `[x]` are completed. Use `[ ]` for pending tasks and update this list as you progress.  
+
+---
 **Note**: Tasks marked as `[x]` are completed. Use `[ ]` for pending tasks and update this list as you progress.  
 
 
