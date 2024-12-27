@@ -6,6 +6,7 @@ import { ProductResolver } from './product.resolver';
 import { GetProductUseCase } from 'src/application/use-cases/product/get-product.use-case';
 import { UpdateProductUseCase } from 'src/application/use-cases/product/update-product.use-case';
 import { DeleteProductUseCase } from 'src/application/use-cases/product/delete-product.use-case';
+import { AvailableProductUseCase } from 'src/application/use-cases/product/avilable-product.use-case';
 
 @Module({
   providers: [
@@ -14,6 +15,7 @@ import { DeleteProductUseCase } from 'src/application/use-cases/product/delete-p
     UpdateProductUseCase,
     GetProductUseCase,
     DeleteProductUseCase,
+    AvailableProductUseCase,
 
     ProductResolver,
   ],

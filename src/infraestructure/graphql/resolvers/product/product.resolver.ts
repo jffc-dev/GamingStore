@@ -10,6 +10,7 @@ import { UpdateProductUseCase } from 'src/application/use-cases/product/update-p
 import { HttpCode, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { DeleteProductUseCase } from 'src/application/use-cases/product/delete-product.use-case';
 import { JwtAuthGuard } from 'src/infraestructure/common/guards/jwt-auth.guard';
+import { AvailableProductUseCase } from '../../../../application/use-cases/product/avilable-product.use-case';
 
 @UsePipes(
   new ValidationPipe({
@@ -25,6 +26,7 @@ export class ProductResolver {
     private readonly createProductUseCase: CreateProductUseCase,
     private readonly updateProductUseCase: UpdateProductUseCase,
     private readonly deleteProductUseCase: DeleteProductUseCase,
+    private readonly availableProductUseCase: AvailableProductUseCase,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -36,8 +38,9 @@ export class ProductResolver {
 
   @Query(() => Product, { name: 'product' })
   async findProduct(@Args() args: GetProductDto): Promise<Product> {
+    const { productId } = args;
     const product = await this.getProductUseCase.execute({
-      id: args.id,
+      productId,
     });
     return Product.fromDomainToEntity(product);
   }
@@ -55,7 +58,10 @@ export class ProductResolver {
     @Args() args: GetProductDto,
     @Args('data') data: UpdateProductInput,
   ): Promise<Product> {
-    const product = await this.updateProductUseCase.execute(args.id, data);
+    const product = await this.updateProductUseCase.execute(
+      args.productId,
+      data,
+    );
     return Product.fromDomainToEntity(product);
   }
 
@@ -64,5 +70,25 @@ export class ProductResolver {
   async deleteProduct(@Args() args: GetProductDto): Promise<boolean> {
     const status = await this.deleteProductUseCase.execute(args);
     return status;
+  }
+
+  @Mutation(() => Product)
+  async enableProduct(@Args() args: GetProductDto): Promise<Product> {
+    const { productId } = args;
+    const product = await this.availableProductUseCase.execute({
+      productId,
+      isActive: true,
+    });
+    return Product.fromDomainToEntity(product);
+  }
+
+  @Mutation(() => Product)
+  async disableProduct(@Args() args: GetProductDto): Promise<Product> {
+    const { productId } = args;
+    const product = await this.availableProductUseCase.execute({
+      productId,
+      isActive: false,
+    });
+    return Product.fromDomainToEntity(product);
   }
 }

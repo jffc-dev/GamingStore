@@ -33,15 +33,17 @@ type LikeProduct {
 
 type Query {
   products: [Product!]!
-  product(id: String!): Product!
+  product(productId: String!): Product!
   cartItems: [CartDetail!]!
   likedProducts: [LikeProduct!]!
 }
 
 type Mutation {
   createProduct(data: CreateProductInput!): Product!
-  updateProduct(id: String!, data: UpdateProductInput!): Product!
-  deleteProduct(id: String!): Boolean!
+  updateProduct(productId: String!, data: UpdateProductInput!): Product!
+  deleteProduct(productId: String!): Boolean!
+  enableProduct(productId: String!): Product!
+  disableProduct(productId: String!): Product!
   addItemToCart(data: CreateCartDetailInput!): CartDetail!
   likeProduct(data: LikeProductInput!): LikeProduct!
 }

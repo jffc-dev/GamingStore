@@ -288,9 +288,25 @@ This section tracks the progress of the project by listing completed and pending
   - [x] Handle cases where the user or product does not exist.
   - [ ] Prevent negative or zero quantities from being added.
 
-**Note**: Tasks marked as `[x]` are completed. Use `[ ]` for pending tasks and update this list as you progress.  
+---
+
+### `feature/product-images`  
+- [ ] Ensure product information (including images) is accessible to both logged and not logged users.  
+- [ ] Update the `ProductResolver` to include logic for public and authenticated queries.  
+- [ ] Validate that images are properly served and permissions do not restrict visibility.  
+- [ ] Test product queries for both authenticated and unauthenticated users.
 
 ---
+
+### `feature/disable-products`  
+- [ ] Add a feature to allow managers to disable products.  
+- [ ] Update the product entity to include an `isActive` flag for toggling visibility.  
+- [ ] Implement a mutation in the `ProductResolver` to handle product disabling.  
+- [ ] Ensure disabled products are excluded from public queries.  
+- [ ] Test the disable functionality and its impact on product visibility for users.
+
+---
+
 **Note**: Tasks marked as `[x]` are completed. Use `[ ]` for pending tasks and update this list as you progress.  
 
 
