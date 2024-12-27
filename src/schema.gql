@@ -32,7 +32,7 @@ type LikeProduct {
 }
 
 type Query {
-  products: [Product!]!
+  products(isActive: Boolean): [Product!]!
   product(productId: String!): Product!
   cartItems: [CartDetail!]!
   likedProducts: [LikeProduct!]!

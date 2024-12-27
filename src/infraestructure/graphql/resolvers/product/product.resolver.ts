@@ -11,11 +11,11 @@ import { HttpCode, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { DeleteProductUseCase } from 'src/application/use-cases/product/delete-product.use-case';
 import { JwtAuthGuard } from 'src/infraestructure/common/guards/jwt-auth.guard';
 import { AvailableProductUseCase } from '../../../../application/use-cases/product/avilable-product.use-case';
+import { ListProductsFilterDto } from '../../dto/product/list-products.dto';
 
 @UsePipes(
   new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
+    transform: true,
   }),
 )
 @Resolver(() => Product)
@@ -29,10 +29,9 @@ export class ProductResolver {
     private readonly availableProductUseCase: AvailableProductUseCase,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
   @Query(() => [Product], { name: 'products' })
-  async findAll(): Promise<Product[]> {
-    const products = await this.listProductsUseCase.execute({});
+  async findAll(@Args() filters: ListProductsFilterDto): Promise<Product[]> {
+    const products = await this.listProductsUseCase.execute({ filters });
     return products.map(Product.fromDomainToEntity);
   }
 
@@ -45,6 +44,7 @@ export class ProductResolver {
     return Product.fromDomainToEntity(product);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Product)
   async createProduct(
     @Args('data') data: CreateProductInput,
@@ -53,6 +53,7 @@ export class ProductResolver {
     return Product.fromDomainToEntity(product);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Product)
   async updateProduct(
     @Args() args: GetProductDto,
@@ -65,6 +66,7 @@ export class ProductResolver {
     return Product.fromDomainToEntity(product);
   }
 
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Mutation(() => Boolean)
   async deleteProduct(@Args() args: GetProductDto): Promise<boolean> {
@@ -72,6 +74,7 @@ export class ProductResolver {
     return status;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Product)
   async enableProduct(@Args() args: GetProductDto): Promise<Product> {
     const { productId } = args;
@@ -82,6 +85,7 @@ export class ProductResolver {
     return Product.fromDomainToEntity(product);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Product)
   async disableProduct(@Args() args: GetProductDto): Promise<Product> {
     const { productId } = args;
