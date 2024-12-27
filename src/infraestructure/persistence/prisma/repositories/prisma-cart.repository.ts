@@ -12,8 +12,15 @@ export class PrismaCartDetailRepository implements CartDetailRepository {
     const prismaData = PrismaCartDetailMapper.toPrisma(data);
 
     try {
-      const createdCartDetail = await this.prisma.cartDetail.create({
-        data: prismaData,
+      const createdCartDetail = await this.prisma.cartDetail.upsert({
+        where: {
+          userId_productId: {
+            productId: prismaData.productId,
+            userId: prismaData.userId,
+          },
+        },
+        create: prismaData,
+        update: prismaData,
       });
 
       return PrismaCartDetailMapper.toDomain(createdCartDetail);
