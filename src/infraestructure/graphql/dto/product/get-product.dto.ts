@@ -6,5 +6,5 @@ export class GetProductDto {
   @IsString()
   @IsUUID()
   @Field(() => String)
-  id: string;
+  productId: string;
 }

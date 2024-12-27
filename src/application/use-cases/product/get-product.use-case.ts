@@ -7,8 +7,9 @@ import { GetProductDto } from 'src/infraestructure/graphql/dto/product/get-produ
 export class GetProductUseCase {
   constructor(private readonly productRepository: ProductRepository) {}
 
-  async execute({ id }: GetProductDto): Promise<Product> {
-    const productResponse = await this.productRepository.getProductById(id);
+  async execute({ productId }: GetProductDto): Promise<Product> {
+    const productResponse =
+      await this.productRepository.getProductById(productId);
 
     return productResponse;
   }
