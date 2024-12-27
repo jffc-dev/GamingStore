@@ -25,6 +25,12 @@ type CartDetail {
   updatedAt: DateTime
 }
 
+type LikeProduct {
+  userId: String!
+  productId: String!
+  createdAt: DateTime
+}
+
 type Query {
   products: [Product!]!
   product(id: String!): Product!
@@ -36,6 +42,7 @@ type Mutation {
   updateProduct(id: String!, data: UpdateProductInput!): Product!
   deleteProduct(id: String!): Product!
   addItemToCart(data: CreateCartDetailInput!): CartDetail!
+  likeProduct(data: LikeProductInput!): LikeProduct!
 }
 
 input CreateProductInput {
@@ -55,7 +62,10 @@ input UpdateProductInput {
 }
 
 input CreateCartDetailInput {
-  userId: String!
   productId: String!
   quantity: Int!
+}
+
+input LikeProductInput {
+  productId: String!
 }
