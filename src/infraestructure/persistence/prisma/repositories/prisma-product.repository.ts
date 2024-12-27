@@ -3,10 +3,26 @@ import { PrismaService } from '../prisma.service';
 import { ProductRepository } from 'src/application/contracts/persistence/product.repository';
 import { Product } from 'src/domain/product';
 import { PrismaProductMapper } from '../mappers/prisma-product.mapper';
+import { IFilterProducts } from 'src/application/use-cases/product/list-products.use-case';
 
 @Injectable()
 export class PrismaProductRepository implements ProductRepository {
   constructor(private prisma: PrismaService) {}
+
+  async filterProducts(filters: IFilterProducts): Promise<Product[]> {
+    try {
+      const products = await this.prisma.product.findMany({
+        where: {
+          isDeleted: false,
+          ...filters,
+        },
+      });
+
+      return products.map(PrismaProductMapper.toDomain);
+    } catch (error) {
+      this.handleDBError(error);
+    }
+  }
 
   async create(product: Product): Promise<Product> {
     const data = PrismaProductMapper.toPrisma(product);
@@ -69,7 +85,7 @@ export class PrismaProductRepository implements ProductRepository {
     }
   }
 
-  async getProductById(productId: string): Promise<Product> {
+  async getProductById(productId: string): Promise<Product | null> {
     try {
       const product = await this.prisma.product.findUnique({
         where: {
@@ -80,6 +96,7 @@ export class PrismaProductRepository implements ProductRepository {
       return PrismaProductMapper.toDomain(product);
     } catch (error) {
       this.handleDBError(error);
+      return null;
     }
   }
 
@@ -91,7 +108,5 @@ export class PrismaProductRepository implements ProductRepository {
     } else if (code === 'P2002') {
       throw new Error(`${meta.target[0]} had been already registered`);
     }
-
-    throw new Error(`Internal server error`);
   }
 }

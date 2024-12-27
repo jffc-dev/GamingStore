@@ -1,14 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { ProductRepository } from 'src/application/contracts/persistence/product.repository';
 import { Product } from 'src/domain/product';
-import { ListProductsDto } from 'src/infraestructure/graphql/dto/product/list-products.dto';
+
+export interface IFilterProducts {
+  isActive?: boolean;
+}
+interface IListProductsUseCaseProps {
+  filters: IFilterProducts;
+}
 
 @Injectable()
 export class ListProductsUseCase {
   constructor(private readonly productRepository: ProductRepository) {}
 
-  async execute({}: ListProductsDto): Promise<Product[]> {
-    const productResponse = await this.productRepository.listProducts();
+  async execute({ filters }: IListProductsUseCaseProps): Promise<Product[]> {
+    const productResponse =
+      await this.productRepository.filterProducts(filters);
 
     return productResponse;
   }
