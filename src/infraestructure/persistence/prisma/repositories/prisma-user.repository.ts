@@ -69,6 +69,20 @@ export class PrismaUserRepository implements UserRepository {
     }
   }
 
+  async findOneBy(id: string): Promise<User> {
+    try {
+      const foundUser = await this.prisma.user.findUniqueOrThrow({
+        where: {
+          userId: id,
+        },
+      });
+
+      return PrismaUserMapper.toDomain(foundUser);
+    } catch (error) {
+      this.handleDBError(error);
+    }
+  }
+
   handleDBError(error: any): void {
     const { code, meta } = error;
 

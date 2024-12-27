@@ -19,5 +19,27 @@ scalar DateTime
 
 type Query {
   products: [Product!]!
-  product(id: String!): [Product!]!
+  product(id: String!): Product!
+}
+
+type Mutation {
+  createProduct(data: CreateProductInput!): Product!
+  updateProduct(id: String!, data: UpdateProductInput!): Product!
+  deleteProduct(id: String!): Product!
+}
+
+input CreateProductInput {
+  name: String!
+  description: String
+  stock: Float
+  isActive: Boolean
+  price: Float!
+}
+
+input UpdateProductInput {
+  name: String
+  description: String
+  stock: Float
+  isActive: Boolean
+  price: Float
 }
