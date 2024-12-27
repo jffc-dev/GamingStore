@@ -5,10 +5,6 @@ import { IsInt, IsUUID, Min } from 'class-validator';
 export class CreateCartDetailInput {
   @IsUUID()
   @Field(() => String)
-  userId: string;
-
-  @IsUUID()
-  @Field(() => String)
   productId: string;
 
   @IsInt()

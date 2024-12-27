@@ -25,14 +25,17 @@ export class CartDetailResolver {
     return cartDetails.map(CartDetail.fromDomainToEntity);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => CartDetail, { name: 'addItemToCart' })
   async addItemToCart(
     @Args('data') data: CreateCartDetailInput,
+    @Context() context: any,
   ): Promise<CartDetail> {
-    const { productId, userId, quantity } = data;
+    const currentUser: User = context.req.user;
+    const { productId, quantity } = data;
     const cartDetail = await this.addProductToCartUseCase.execute({
       productId,
-      userId,
+      userId: currentUser.id,
       quantity,
     });
     return CartDetail.fromDomainToEntity(cartDetail);

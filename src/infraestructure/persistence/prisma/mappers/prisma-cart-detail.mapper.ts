@@ -2,7 +2,6 @@ import { Prisma, CartDetail as PrismaCartDetail } from '@prisma/client';
 import { CartDetail } from 'src/domain/cart-detail';
 
 export class PrismaCartDetailMapper {
-  // Mapea de Prisma a dominio
   static toDomain(entity: PrismaCartDetail): CartDetail {
     return new CartDetail({
       userId: entity.userId,
@@ -13,7 +12,6 @@ export class PrismaCartDetailMapper {
     });
   }
 
-  // Mapea de dominio a Prisma
   static toPrisma(
     cartDetail: CartDetail,
   ): Prisma.CartDetailUncheckedCreateInput {
