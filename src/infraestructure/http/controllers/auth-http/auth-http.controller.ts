@@ -18,6 +18,8 @@ import { RegisterUserDto } from '../../dto/user/register-user.dto';
 import { LoginUserDto } from '../../dto/user/login-user.dto';
 import { ForgotPasswordDto } from '../../dto/user/forgot-password.dto';
 import { ResetPasswordDto } from '../../dto/user/reset-password.dto';
+import { Auth } from 'src/infraestructure/common/decorators/auth.decorator';
+
 @UsePipes(
   new ValidationPipe({
     whitelist: true,
@@ -38,44 +40,31 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  async registerUser(
-    @Body() registerUserDto: RegisterUserDto,
-    @Res() res: Response,
-  ) {
+  async registerUser(@Body() registerUserDto: RegisterUserDto) {
     try {
       const { token } = await this.registerUserUseCase.execute(registerUserDto);
 
-      res.cookie('auth_token', token, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 3600000,
-      });
-
-      return res.status(HttpStatus.OK).json({ message: 'Login successful' });
+      return { token };
     } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
 
   @Post('login')
-  async loginUser(@Body() loginUserDto: LoginUserDto, @Res() res: Response) {
+  async loginUser(@Body() loginUserDto: LoginUserDto) {
     try {
       const { token } = await this.loginUserUseCase.execute(loginUserDto);
-      res.cookie('auth_token', token, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 3600000,
-      });
-
-      return res.status(HttpStatus.OK).json({ message: 'Login successful' });
+      return { token };
     } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
 
+  @Auth()
   @Post('logout')
   async logoutUser(@Res() res: Response) {
     try {
+      console.log('data');
       res.clearCookie('auth_token');
 
       return res.status(HttpStatus.OK).json({ message: 'Logout successful' });
