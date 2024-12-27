@@ -239,42 +239,32 @@ This section tracks the progress of the project by listing completed and pending
 
 ### `feature/product-crud`
 
-- [ ] **Get All Products**
-  - [ ] Define a `products` query in the GraphQL schema.
-  - [ ] Implement a resolver to fetch and return all products.
-  - [ ] Add a service method to retrieve the product list from the database.
+- [x] **Get All Products**
+  - [x] Define a `products` query in the GraphQL schema.
+  - [x] Implement a resolver to fetch and return all products.
+  - [x] Add a service method to retrieve the product list from the database.
 
-- [ ] **Get Product by ID**
-  - [ ] Define a `product(id: ID!)` query in the GraphQL schema.
-  - [ ] Implement a resolver to fetch and return a product by its ID.
-  - [ ] Add a service method to find the product in the database.
+- [x] **Get Product by ID**
+  - [x] Define a `product(id: ID!)` query in the GraphQL schema.
+  - [x] Implement a resolver to fetch and return a product by its ID.
+  - [x] Add a service method to find the product in the database.
 
-- [ ] **Create Product**
-  - [ ] Define a `createProduct(input: CreateProductInput!)` mutation in the schema.
-    - `CreateProductInput` fields:
-      - `name: String!`
-      - `description: String`
-      - `price: Float!`
-      - `stock: Int`
-  - [ ] Implement a resolver to handle the mutation.
-  - [ ] Add a service method to insert the product into the database.
-  - [ ] Validate inputs (e.g., name, price > 0, stock ≥ 0).
+- [x] **Create Product**
+  - [x] Define a `createProduct(input: CreateProductInput!)` mutation in the schema.
+  - [x] Implement a resolver to handle the mutation.
+  - [x] Add a service method to insert the product into the database.
+  - [x] Validate inputs (e.g., name, price > 0, stock ≥ 0).
 
-- [ ] **Update Product**
-  - [ ] Define an `updateProduct(id: ID!, input: UpdateProductInput!)` mutation in the schema.
-    - `UpdateProductInput` fields (all optional):
-      - `name: String`
-      - `description: String`
-      - `price: Float`
-      - `stock: Int`
-  - [ ] Implement a resolver to handle the mutation.
-  - [ ] Add a service method to update the product in the database.
-  - [ ] Validate inputs (e.g., price > 0, stock ≥ 0).
+- [x] **Update Product**
+  - [x] Define an `updateProduct(id: ID!, input: UpdateProductInput!)` mutation in the schema.
+  - [x] Implement a resolver to handle the mutation.
+  - [x] Add a service method to update the product in the database.
+  - [x] Validate inputs (e.g., price > 0, stock ≥ 0).
 
-- [ ] **Delete Product**
-  - [ ] Define a `deleteProduct(id: ID!)` mutation in the schema.
-  - [ ] Implement a resolver to handle the mutation.
-  - [ ] Add a service method to delete the product from the database.
+- [x] **Delete Product**
+  - [x] Define a `deleteProduct(id: ID!)` mutation in the schema.
+  - [x] Implement a resolver to handle the mutation.
+  - [x] Add a service method to delete the product from the database.
 
 ---
 
