@@ -10,7 +10,7 @@ export class PrismaLikeProductRepository implements LikeProductRepository {
 
   async likeProduct(likeProduct: LikeProduct): Promise<LikeProduct> {
     try {
-      const createdCartDetail = await this.prisma.productLike.upsert({
+      const upsertedLike = await this.prisma.productLike.upsert({
         where: {
           productId_userId: {
             productId: likeProduct.productId,
@@ -24,7 +24,21 @@ export class PrismaLikeProductRepository implements LikeProductRepository {
         update: {},
       });
 
-      return PrismaLikeProductMapper.toDomain(createdCartDetail);
+      return PrismaLikeProductMapper.toDomain(upsertedLike);
+    } catch (error) {
+      this.handleDBError(error);
+    }
+  }
+
+  async getLikedProducts(userId: string): Promise<LikeProduct[]> {
+    try {
+      const likedProducts = await this.prisma.productLike.findMany({
+        where: {
+          userId,
+        },
+      });
+
+      return likedProducts.map(PrismaLikeProductMapper.toDomain);
     } catch (error) {
       this.handleDBError(error);
     }
