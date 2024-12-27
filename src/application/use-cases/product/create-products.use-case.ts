@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from 'src/infraestructure/graphql/dto/product/create-product.dto';
 import { ProductRepository } from 'src/application/contracts/persistence/product.repository';
 import { UuidService } from 'src/infraestructure/services/uuid/uuid.service';
 import { Product } from 'src/domain/product';
+import { CreateProductInput } from 'src/infraestructure/graphql/dto/product/inputs/create-product.input';
 
 @Injectable()
 export class CreateProductUseCase {
@@ -17,7 +17,7 @@ export class CreateProductUseCase {
     stock,
     isActive,
     price,
-  }: CreateProductDto): Promise<any> {
+  }: CreateProductInput): Promise<any> {
     const product = new Product({
       productId: this.uuidService.generateUuid(),
       name,
