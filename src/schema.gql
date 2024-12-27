@@ -17,15 +17,25 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type CartDetail {
+  userId: String!
+  productId: String!
+  quantity: Int
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
 type Query {
   products: [Product!]!
   product(id: String!): Product!
+  cartItems: [CartDetail!]!
 }
 
 type Mutation {
   createProduct(data: CreateProductInput!): Product!
   updateProduct(id: String!, data: UpdateProductInput!): Product!
   deleteProduct(id: String!): Product!
+  addItemToCart(data: CreateCartDetailInput!): CartDetail!
 }
 
 input CreateProductInput {
@@ -42,4 +52,10 @@ input UpdateProductInput {
   stock: Float
   isActive: Boolean
   price: Float
+}
+
+input CreateCartDetailInput {
+  userId: String!
+  productId: String!
+  quantity: Int!
 }
