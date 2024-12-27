@@ -41,7 +41,7 @@ type Query {
 type Mutation {
   createProduct(data: CreateProductInput!): Product!
   updateProduct(id: String!, data: UpdateProductInput!): Product!
-  deleteProduct(id: String!): Product!
+  deleteProduct(id: String!): Boolean!
   addItemToCart(data: CreateCartDetailInput!): CartDetail!
   likeProduct(data: LikeProductInput!): LikeProduct!
 }

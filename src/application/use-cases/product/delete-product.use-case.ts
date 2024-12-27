@@ -6,8 +6,9 @@ import { DeleteProductDto } from 'src/infraestructure/graphql/dto/product/delete
 export class DeleteProductUseCase {
   constructor(private readonly productRepository: ProductRepository) {}
 
-  async execute({ id }: DeleteProductDto): Promise<any> {
-    const deleteResponse = await this.productRepository.deleteProductById(id);
+  async execute({ id }: DeleteProductDto): Promise<boolean> {
+    const deleteResponse =
+      await this.productRepository.softDeleteProductById(id);
 
     return deleteResponse;
   }

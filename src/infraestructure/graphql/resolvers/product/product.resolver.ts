@@ -60,9 +60,9 @@ export class ProductResolver {
   }
 
   @HttpCode(204)
-  @Mutation(() => Product)
-  async deleteProduct(@Args() args: GetProductDto): Promise<Product> {
-    const product = await this.deleteProductUseCase.execute(args);
-    return Product.fromDomainToEntity(product);
+  @Mutation(() => Boolean)
+  async deleteProduct(@Args() args: GetProductDto): Promise<boolean> {
+    const status = await this.deleteProductUseCase.execute(args);
+    return status;
   }
 }

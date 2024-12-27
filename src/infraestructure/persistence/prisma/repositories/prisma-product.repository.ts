@@ -24,7 +24,11 @@ export class PrismaProductRepository implements ProductRepository {
 
   async listProducts(): Promise<Product[]> {
     try {
-      const products = await this.prisma.product.findMany();
+      const products = await this.prisma.product.findMany({
+        where: {
+          isDeleted: false,
+        },
+      });
 
       return products.map(PrismaProductMapper.toDomain);
     } catch (error) {
@@ -32,11 +36,14 @@ export class PrismaProductRepository implements ProductRepository {
     }
   }
 
-  async deleteProductById(productId: string): Promise<boolean> {
+  async softDeleteProductById(productId: string): Promise<boolean> {
     try {
-      await this.prisma.product.delete({
+      await this.prisma.product.update({
         where: {
           productId,
+        },
+        data: {
+          isDeleted: true,
         },
       });
 
