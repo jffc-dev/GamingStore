@@ -7,6 +7,8 @@ import { ProductRepository } from 'src/application/contracts/persistence/product
 import { PrismaProductRepository } from './repositories/prisma-product.repository';
 import { CartDetailRepository } from 'src/application/contracts/persistence/cart.repository';
 import { PrismaCartDetailRepository } from './repositories/prisma-cart.repository';
+import { LikeProductRepository } from 'src/application/contracts/persistence/like.repository';
+import { PrismaLikeProductRepository } from './repositories/prisma-like.repository';
 
 @Module({
   imports: [EnvModule],
@@ -24,12 +26,17 @@ import { PrismaCartDetailRepository } from './repositories/prisma-cart.repositor
       provide: CartDetailRepository,
       useClass: PrismaCartDetailRepository,
     },
+    {
+      provide: LikeProductRepository,
+      useClass: PrismaLikeProductRepository,
+    },
   ],
   exports: [
     PrismaService,
     UserRepository,
     ProductRepository,
     CartDetailRepository,
+    LikeProductRepository,
   ],
 })
 export class PrismaModule {}
