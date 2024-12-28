@@ -8,161 +8,161 @@ datasource db {
 }
 
 model CartDetail {
-  userId                  String                    @db.Uuid @map("user_id")
-  productId               String                    @db.Uuid @map("product_id")
-  quantity                Int?                
-  createdAt               DateTime?                 @default(now()) @map("created_at")
-  updatedAt               DateTime?                 @updatedAt @map("updated_at")
-  product                 Product                   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
-  user                    User                      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  userId    String    @map("user_id") @db.Uuid
+  productId String    @map("product_id") @db.Uuid
+  quantity  Int?
+  createdAt DateTime? @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  product   Product   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
+  user      User      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([userId, productId])
   @@map("cart_detail")
 }
 
 model Category {
-  categoryId              String                    @id @db.Uuid @map("category_id")
-  name                    String?                   @db.VarChar(100)
-  description             String?       
-  isDeleted               Boolean?                  @default(false) @map("is_deleted")
-  createdAt               DateTime?                 @default(now()) @map("created_at")
-  updatedAt               DateTime?                 @updatedAt @map("updated_at")
-  deletedAt               DateTime?                 @map("deleted_at")
-  productCategories       ProductCategory[] 
+  categoryId        String            @id @map("category_id") @db.Uuid
+  name              String?           @db.VarChar(100)
+  description       String?
+  isDeleted         Boolean?          @default(false) @map("is_deleted")
+  createdAt         DateTime?         @default(now()) @map("created_at")
+  updatedAt         DateTime?         @updatedAt @map("updated_at")
+  deletedAt         DateTime?         @map("deleted_at")
+  productCategories ProductCategory[]
 
   @@map("category")
 }
 
 model User {
-  userId                  String                    @id @db.Uuid @map("user_id")
-  role                    user_roles_enum           @default(CLIENT)
-  email                   String                    @unique
-  name                    String                    @db.VarChar(100)
-  lastName                String                    @db.VarChar(100) @map("last_name")
-  phoneNumber             String?                   @map("phone_number")
-  password                String?         
-  address                 String?         
-  resetPasswordToken      String?                   @map("reset_password_token") @unique
-  isDeleted               Boolean?                  @default(false) @map("is_deleted")
-  resetPasswordExpiresAt  DateTime?                 @db.Timestamp(6) @map("reset_password_expires_at")
-  createdAt               DateTime?                 @default(now()) @map("created_at")
-  updatedAt               DateTime?                 @updatedAt @map("updated_at")
-  deletedAt               DateTime?                 @map("deleted_at")
-  cart                    CartDetail[]
-  notifications           Notification[]  
-  orders                  Order[]         
-  productLikes            ProductLike[]   
+  userId                 String          @id @map("user_id") @db.Uuid
+  role                   user_roles_enum @default(CLIENT)
+  email                  String          @unique
+  name                   String          @db.VarChar(100)
+  lastName               String          @map("last_name") @db.VarChar(100)
+  phoneNumber            String?         @map("phone_number")
+  password               String?
+  address                String?
+  resetPasswordToken     String?         @unique @map("reset_password_token")
+  isDeleted              Boolean?        @default(false) @map("is_deleted")
+  resetPasswordExpiresAt DateTime?       @map("reset_password_expires_at") @db.Timestamp(6)
+  createdAt              DateTime?       @default(now()) @map("created_at")
+  updatedAt              DateTime?       @updatedAt @map("updated_at")
+  deletedAt              DateTime?       @map("deleted_at")
+  cart                   CartDetail[]
+  notifications          Notification[]
+  orders                 Order[]
+  productLikes           ProductLike[]
 
   @@map("customer_user")
 }
 
 model Notification {
-  notificationId          String                    @id @db.Uuid @map("notification_id")
-  userId                  String                    @db.Uuid @map("user_id")
-  title                   String                    @db.VarChar(200)
-  description             String? 
-  priority                priority_enum             @default(NORMAL)
-  status                  status_enum?              @default(UNREAD)
-  type                    notification_type_enum?   @default(EMAIL)
-  createdAt               DateTime?                 @default(now()) @db.Timestamp(6) @map("created_at")
-  sendAt                  DateTime?                 @db.Timestamp(6) @map("send_at")
-  readAt                  DateTime?                 @db.Timestamp(6) @map("read_at")
-  user                    User                      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  notificationId String                  @id @map("notification_id") @db.Uuid
+  userId         String                  @map("user_id") @db.Uuid
+  title          String                  @db.VarChar(200)
+  description    String?
+  priority       priority_enum           @default(NORMAL)
+  status         status_enum?            @default(UNREAD)
+  type           notification_type_enum? @default(EMAIL)
+  createdAt      DateTime?               @default(now()) @map("created_at") @db.Timestamp(6)
+  sendAt         DateTime?               @map("send_at") @db.Timestamp(6)
+  readAt         DateTime?               @map("read_at") @db.Timestamp(6)
+  user           User                    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("notification")
 }
 
 model Order {
-  orderId                 String                    @id @db.Uuid @map("order_id")
-  status                  order_status_enum       
-  userId                  String                    @db.Uuid @map("user_id")
-  total                   Decimal?                  @db.Decimal
-  isDeleted               Boolean?                  @default(false) @map("is_deleted")
-  createdAt               DateTime?                 @default(now()) @map("created_at")
-  updatedAt               DateTime?                 @updatedAt @map("updated_at")
-  deletedAt               DateTime?                 @map("deleted_at")
-  user                    User                      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  orderDetails            OrderDetail[]     
-  payments                Payment[]         
+  orderId      String            @id @map("order_id") @db.Uuid
+  status       order_status_enum
+  userId       String            @map("user_id") @db.Uuid
+  total        Decimal?          @db.Decimal
+  isDeleted    Boolean?          @default(false) @map("is_deleted")
+  createdAt    DateTime?         @default(now()) @map("created_at")
+  updatedAt    DateTime?         @updatedAt @map("updated_at")
+  deletedAt    DateTime?         @map("deleted_at")
+  user         User              @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  orderDetails OrderDetail[]
+  payments     Payment[]
 
   @@map("order")
 }
 
 model OrderDetail {
-  orderDetailId           Int                       @map("order_detail_id")
-  orderId                 String                    @db.Uuid @map("order_id")
-  productId               String                    @db.Uuid @map("product_id")
-  quantity                Int?                  
-  unitPrice               Decimal?                  @db.Decimal(12, 2) @map("unit_price")
-  subtotal                Decimal?                  @db.Decimal
-  order                   Order                     @relation(fields: [orderId], references: [orderId], onDelete: NoAction, onUpdate: NoAction)
-  product                 Product                   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
+  orderDetailId Int      @map("order_detail_id")
+  orderId       String   @map("order_id") @db.Uuid
+  productId     String   @map("product_id") @db.Uuid
+  quantity      Int?
+  unitPrice     Decimal? @map("unit_price") @db.Decimal(12, 2)
+  subtotal      Decimal? @db.Decimal
+  order         Order    @relation(fields: [orderId], references: [orderId], onDelete: NoAction, onUpdate: NoAction)
+  product       Product  @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@map("order_detail")
   @@id([orderId, orderDetailId])
+  @@map("order_detail")
 }
 
 model Payment {
-  paymentId               String                    @id @db.Uuid @map("payment_id")
-  orderId                 String                    @db.Uuid @map("order_id")
-  stripePaymentId         String                    @unique @db.VarChar(255) @map("stripe_payment_id")
-  amount                  Decimal                   @db.Decimal(10, 2)
-  currency                String      
-  status                  payment_status_enum       @default(PENDING)
-  paymentAt               DateTime?                 @db.Timestamptz(3) @map("payment_at")
-  createdAt               DateTime?                 @default(now()) @map("created_at")
-  updatedAt               DateTime?                 @updatedAt @map("updated_at")
-  order                   Order                     @relation(fields: [orderId], references: [orderId], onDelete: NoAction, onUpdate: NoAction)
+  paymentId       String              @id @map("payment_id") @db.Uuid
+  orderId         String              @map("order_id") @db.Uuid
+  stripePaymentId String              @unique @map("stripe_payment_id") @db.VarChar(255)
+  amount          Decimal             @db.Decimal(10, 2)
+  currency        String
+  status          payment_status_enum @default(PENDING)
+  paymentAt       DateTime?           @map("payment_at") @db.Timestamptz(3)
+  createdAt       DateTime?           @default(now()) @map("created_at")
+  updatedAt       DateTime?           @updatedAt @map("updated_at")
+  order           Order               @relation(fields: [orderId], references: [orderId], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("payment")
 }
 
 model Product {
-  productId               String                    @id @db.Uuid @map("product_id")
-  name                    String                    @db.VarChar(100)
-  description             String?       
-  stock                   Decimal?                  @db.Decimal
-  isActive                Boolean?                  @default(true) @map("is_active")
-  price                   Decimal                   @db.Decimal(10, 2)
-  isDeleted               Boolean?                  @default(false) @map("is_deleted")
-  createdAt               DateTime?                 @default(now()) @map("created_at")
-  updatedAt               DateTime?                 @updatedAt @map("updated_at")
-  deletedAt               DateTime?                 @map("deleted_at")
-  cartDetails             CartDetail[]       
-  orderDetails            OrderDetail[]      
-  productCategories       ProductCategory[] 
-  productImages           ProductImage[]     
-  productLikes            ProductLike[]      
+  productId         String            @id @map("product_id") @db.Uuid
+  name              String            @db.VarChar(100)
+  description       String?
+  stock             Decimal?          @db.Decimal
+  isActive          Boolean?          @default(true) @map("is_active")
+  price             Decimal           @db.Decimal(10, 2)
+  isDeleted         Boolean?          @default(false) @map("is_deleted")
+  createdAt         DateTime?         @default(now()) @map("created_at")
+  updatedAt         DateTime?         @updatedAt @map("updated_at")
+  deletedAt         DateTime?         @map("deleted_at")
+  cartDetails       CartDetail[]
+  orderDetails      OrderDetail[]
+  productCategories ProductCategory[]
+  productImages     ProductImage[]
+  productLikes      ProductLike[]
 
   @@map("product")
 }
 
 model ProductCategory {
-  productId               String                    @db.Uuid @map("product_id")
-  categoryId              String                    @db.Uuid @map("category_id")
-  category                Category                  @relation(fields: [categoryId], references: [categoryId], onDelete: NoAction, onUpdate: NoAction)
-  product                 Product                   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
+  productId  String   @map("product_id") @db.Uuid
+  categoryId String   @map("category_id") @db.Uuid
+  category   Category @relation(fields: [categoryId], references: [categoryId], onDelete: NoAction, onUpdate: NoAction)
+  product    Product  @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([productId, categoryId])
   @@map("product_category")
 }
 
 model ProductImage {
-  productImageId          String                    @id @db.Uuid @map("product_image_id")
-  productId               String                    @db.Uuid @map("product_id")
-  url                     String                  
-  product                 Product                   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
-  createdAt               DateTime?                 @default(now()) @map("created_at")
+  productImageId String    @id @map("product_image_id") @db.Uuid
+  productId      String    @map("product_id") @db.Uuid
+  url            String
+  createdAt      DateTime? @default(now()) @map("created_at")
+  product        Product   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("product_image")
 }
 
 model ProductLike {
-  productId               String                    @db.Uuid @map("product_id")
-  userId                  String                    @db.Uuid @map("user_id")
-  createdAt               DateTime?                 @default(now()) @map("created_at")
-  product                 Product                   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
-  user                    User                      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  productId String    @map("product_id") @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  createdAt DateTime? @default(now()) @map("created_at")
+  product   Product   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
+  user      User      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([productId, userId])
   @@map("product_like")
