@@ -22,6 +22,10 @@ export class CreateOrderFromCartUseCase {
     const cartDetailsResponse =
       await this.cartDetailRepository.getCartDetailsByUser(userId);
 
+    if (!cartDetailsResponse.length) {
+      throw new BadRequestException('Empty cart');
+    }
+
     const productIds = cartDetailsResponse.map(
       (cartDetail) => cartDetail.productId,
     );
@@ -41,7 +45,6 @@ export class CreateOrderFromCartUseCase {
         validStock = false;
       }
 
-      product.stock = product.stock - cartDetail.quantity;
       total += cartDetail.quantity * product.price;
     }
 
@@ -50,14 +53,20 @@ export class CreateOrderFromCartUseCase {
     }
 
     // create order
+    const orderId = this.uuidService.generateUuid();
     const order = new Order({
-      id: this.uuidService.generateUuid(),
+      id: orderId,
       status: 'PENDING',
       userId: userId,
       total: total,
     });
 
-    const orderResponse = await this.orderRepository.createOrder(order);
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(1);
+      }, 10000);
+    });
+
     let id = 1;
     for (const cartDetail of cartDetailsResponse) {
       const product = productsResponse.find(
@@ -66,19 +75,22 @@ export class CreateOrderFromCartUseCase {
 
       const orderDetail = new OrderDetail({
         id: id,
-        orderId: order.id,
+        orderId: orderId,
         productId: cartDetail.productId,
         quantity: cartDetail.quantity,
         unitPrice: product.price,
       });
 
-      const orderDetailResponse =
-        await this.orderRepository.createOrderDetail(orderDetail);
-
-      orderResponse.orderDetails.push(orderDetailResponse);
+      order.orderDetails.push(orderDetail);
+      product.stock = product.stock - cartDetail.quantity;
 
       id++;
     }
+
+    const orderResponse = await this.orderRepository.createFullOrder(
+      order,
+      userId,
+    );
 
     return orderResponse;
   }

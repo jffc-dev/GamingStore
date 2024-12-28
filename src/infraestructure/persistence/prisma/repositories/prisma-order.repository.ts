@@ -7,6 +7,7 @@ import {
   PrismaOrderDetailMapper,
   PrismaOrderMapper,
 } from '../mappers/prisma-order.mapper';
+import { Product } from 'src/domain/product';
 
 @Injectable()
 export class PrismaOrderRepository implements OrderRepository {
@@ -25,17 +26,51 @@ export class PrismaOrderRepository implements OrderRepository {
     return PrismaOrderMapper.toDomain(createdOrder);
   }
 
-  async createFullOrder(order: Order): Promise<Order> {
-    const createdOrder = await this.prisma.order.create({
-      data: {
-        userId: order.userId,
-        orderId: order.id,
-        status: order.status,
-        total: order.total,
-      },
+  async createFullOrder(order: Order, userId: string): Promise<Order> {
+    const result = await this.prisma.$transaction(async (tx) => {
+      const createdOrder = await tx.order.create({
+        data: {
+          userId: order.userId,
+          orderId: order.id,
+          status: order.status,
+          total: order.total,
+          orderDetails: {
+            create: order.orderDetails.map((detail) => ({
+              orderDetailId: detail.id,
+              productId: detail.productId,
+              quantity: detail.quantity,
+              unitPrice: detail.unitPrice,
+              subtotal: detail.subtotal,
+            })),
+          },
+        },
+      });
+
+      const stockPromises = [];
+      order.orderDetails.map((orderDetail) => {
+        const stockPromise = tx.product.update({
+          where: {
+            productId: orderDetail.productId,
+          },
+          data: {
+            stock: { decrement: orderDetail.quantity },
+          },
+        });
+        stockPromises.push(stockPromise);
+      });
+
+      const stockResults = await Promise.all(stockPromises);
+
+      const deleteCart = await tx.cartDetail.deleteMany({
+        where: {
+          userId,
+        },
+      });
+
+      return { createdOrder, stockResults, deleteCart };
     });
 
-    return PrismaOrderMapper.toDomain(createdOrder);
+    return PrismaOrderMapper.toDomain(result.createdOrder);
   }
 
   async createOrderDetail(orderDetail: OrderDetail): Promise<OrderDetail> {
