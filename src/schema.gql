@@ -39,6 +39,28 @@ type LikeProduct {
   createdAt: DateTime
 }
 
+type OrderDetail {
+  id: Int!
+  orderId: String!
+  productId: String!
+  quantity: Int
+  unitPrice: Float
+  subtotal: Float
+  product: Product!
+}
+
+type Order {
+  orderId: String!
+  status: String!
+  userId: String!
+  total: Float
+  isDeleted: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
+  orderDetails: [OrderDetail!]!
+}
+
 type Query {
   products(isActive: Boolean): [Product!]!
   product(productId: String!): Product!
@@ -54,6 +76,7 @@ type Mutation {
   disableProduct(productId: String!): Product!
   addItemToCart(data: CreateCartDetailInput!): CartDetail!
   likeProduct(data: LikeProductInput!): LikeProduct!
+  createOrder: Order!
 }
 
 input CreateProductInput {

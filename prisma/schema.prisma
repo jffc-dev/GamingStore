@@ -89,7 +89,7 @@ model Order {
 }
 
 model OrderDetail {
-  orderDetailId           Int                       @id @map("order_detail_id")
+  orderDetailId           Int                       @map("order_detail_id")
   orderId                 String                    @db.Uuid @map("order_id")
   productId               String                    @db.Uuid @map("product_id")
   quantity                Int?                  
@@ -99,6 +99,7 @@ model OrderDetail {
   product                 Product                   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("order_detail")
+  @@id([orderId, orderDetailId])
 }
 
 model Payment {
