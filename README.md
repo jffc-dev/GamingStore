@@ -269,7 +269,7 @@ This section tracks the progress of the project by listing completed and pending
 ---
 
 
-## `feature/add-to-cart`
+### `feature/add-to-cart`
 - [x] **Implement the `addToCart` mutation**
   - [x] Define the GraphQL schema:
     - Add a `mutation addToCart(userId: ID!, productId: ID!, quantity: Int!): CartDetail`.
@@ -291,19 +291,48 @@ This section tracks the progress of the project by listing completed and pending
 ---
 
 ### `feature/product-images`  
-- [ ] Ensure product information (including images) is accessible to both logged and not logged users.  
-- [ ] Update the `ProductResolver` to include logic for public and authenticated queries.  
-- [ ] Validate that images are properly served and permissions do not restrict visibility.  
-- [ ] Test product queries for both authenticated and unauthenticated users.
+- [X] Ensure product information (including images) is accessible to both logged and not logged users.  
+- [X] Update the `ProductResolver` to include logic for public and authenticated queries.  
+- [X] Validate that images are properly served and permissions do not restrict visibility.  
+- [X] Test product queries for both authenticated and unauthenticated users.
 
 ---
 
 ### `feature/disable-products`  
-- [ ] Add a feature to allow managers to disable products.  
-- [ ] Update the product entity to include an `isActive` flag for toggling visibility.  
-- [ ] Implement a mutation in the `ProductResolver` to handle product disabling.  
-- [ ] Ensure disabled products are excluded from public queries.  
-- [ ] Test the disable functionality and its impact on product visibility for users.
+- [X] Add a feature to allow managers to disable products.  
+- [X] Update the product entity to include an `isActive` flag for toggling visibility.  
+- [X] Implement a mutation in the `ProductResolver` to handle product disabling.  
+- [X] Ensure disabled products are excluded from public queries.  
+- [X] Test the disable functionality and its impact on product visibility for users.
+
+---
+
+### `feature/manage-orders`  
+
+#### **Order Creation**  
+- [ ] Add a feature to allow users to create orders from their shopping cart.  
+- [ ] Update the `Order` entity to include necessary fields (e.g., `orderId`, `userId`, `items`, `totalPrice`, `status`, `createdAt`).  
+- [ ] Implement a mutation in the `OrderResolver` to handle order creation.  
+- [ ] Create an `OrderItem` entity to represent individual items in an order, linked to products.  
+- [ ] Validate that the shopping cart items and their quantities are available before creating the order.  
+- [ ] Deduct stock quantities for purchased products upon successful order creation.  
+- [ ] Notify users of order confirmation and provide an order summary.  
+- [ ] Ensure proper error handling for cases like insufficient stock or invalid cart.  
+- [ ] Write unit tests for the order creation functionality.  
+
+#### **Retrieve Orders**  
+- [ ] Implement a query in the `OrderResolver` to allow users to retrieve their orders.  
+  - Fields: `orderId`, `items`, `totalPrice`, `status`, `createdAt`.  
+- [ ] Allow filtering options for retrieving orders (e.g., by `status` or `date range`).  
+- [ ] Ensure orders are only accessible to the respective user.  
+- [ ] Write tests to validate order retrieval and authorization.
+
+#### **Admin/Manager Order Queries**  
+- [ ] Implement a query in the `OrderResolver` to allow admins or managers to retrieve orders by user.  
+  - Fields: `orderId`, `userId`, `items`, `totalPrice`, `status`, `createdAt`.  
+- [ ] Add support for pagination and sorting options for better manageability.  
+- [ ] Ensure proper role-based access control for this feature.  
+- [ ] Write tests to validate the retrieval of orders by user and access restrictions.
 
 ---
 
