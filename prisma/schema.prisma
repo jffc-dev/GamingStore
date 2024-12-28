@@ -151,6 +151,7 @@ model ProductImage {
   productId               String                    @db.Uuid @map("product_id")
   url                     String                  
   product                 Product                   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
+  createdAt               DateTime?                 @default(now()) @map("created_at")
 
   @@map("product_image")
 }
