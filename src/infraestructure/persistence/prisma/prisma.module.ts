@@ -11,6 +11,8 @@ import { LikeProductRepository } from 'src/application/contracts/persistence/lik
 import { PrismaLikeProductRepository } from './repositories/prisma-like.repository';
 import { PrismaProductImageRepository } from './repositories/prisma-product-image.repository';
 import { ProductImageRepository } from 'src/application/contracts/persistence/product-image.repository';
+import { OrderRepository } from 'src/application/contracts/persistence/order.repository';
+import { PrismaOrderRepository } from './repositories/prisma-order.repository';
 
 @Module({
   imports: [EnvModule],
@@ -36,6 +38,10 @@ import { ProductImageRepository } from 'src/application/contracts/persistence/pr
       provide: ProductImageRepository,
       useClass: PrismaProductImageRepository,
     },
+    {
+      provide: OrderRepository,
+      useClass: PrismaOrderRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -44,6 +50,7 @@ import { ProductImageRepository } from 'src/application/contracts/persistence/pr
     CartDetailRepository,
     LikeProductRepository,
     ProductImageRepository,
+    OrderRepository,
   ],
 })
 export class PrismaModule {}

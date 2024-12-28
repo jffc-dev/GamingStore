@@ -39,6 +39,4 @@ export class LikeResolver {
     });
     return likedProducts.map(LikeProduct.fromDomainToEntity);
   }
-
-  GetLikedProductsUseCase;
 }
