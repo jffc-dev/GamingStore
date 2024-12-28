@@ -66,6 +66,8 @@ type Query {
   product(productId: String!): Product!
   cartItems: [CartDetail!]!
   likedProducts: [LikeProduct!]!
+  myOrders: [Order!]!
+  orders(userId: String): [Order!]!
 }
 
 type Mutation {
