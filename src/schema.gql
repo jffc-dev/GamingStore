@@ -28,7 +28,7 @@ type Product {
 type CartDetail {
   userId: String!
   productId: String!
-  quantity: Int
+  quantity: Int!
   createdAt: DateTime
   updatedAt: DateTime
 }
@@ -54,10 +54,8 @@ type Order {
   status: String!
   userId: String!
   total: Float
-  isDeleted: Boolean!
   createdAt: DateTime!
   updatedAt: DateTime
-  deletedAt: DateTime
   orderDetails: [OrderDetail!]!
 }
 

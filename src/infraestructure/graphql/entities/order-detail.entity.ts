@@ -13,7 +13,7 @@ export class OrderDetail {
   productId: string;
 
   @Field(() => Int, { nullable: true })
-  quantity?: number;
+  quantity: number;
 
   @Field(() => Float, { nullable: true })
   unitPrice?: number;

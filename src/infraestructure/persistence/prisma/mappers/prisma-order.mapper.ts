@@ -15,10 +15,8 @@ export class PrismaOrderMapper {
       status: entity.status,
       userId: entity.userId,
       total: entity.total ? Number(entity.total) : undefined,
-      isDeleted: entity.isDeleted,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
-      deletedAt: entity.deletedAt,
       orderDetails: entity.orderDetails
         ? entity.orderDetails.map((detail) =>
             PrismaOrderDetailMapper.toDomain(detail),
@@ -33,10 +31,7 @@ export class PrismaOrderMapper {
       status: order.status,
       userId: order.userId,
       total: order.total,
-      isDeleted: order.isDeleted,
       createdAt: order.createdAt,
-      updatedAt: order.updatedAt,
-      deletedAt: order.deletedAt,
       orderDetails: order.orderDetails
         ? {
             create: order.orderDetails.map((detail) =>

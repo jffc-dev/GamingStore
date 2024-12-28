@@ -10,7 +10,7 @@ datasource db {
 model CartDetail {
   userId    String    @map("user_id") @db.Uuid
   productId String    @map("product_id") @db.Uuid
-  quantity  Int?
+  quantity  Int
   createdAt DateTime? @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
   product   Product   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
@@ -77,10 +77,9 @@ model Order {
   status       order_status_enum
   userId       String            @map("user_id") @db.Uuid
   total        Decimal?          @db.Decimal
-  isDeleted    Boolean?          @default(false) @map("is_deleted")
   createdAt    DateTime?         @default(now()) @map("created_at")
   updatedAt    DateTime?         @updatedAt @map("updated_at")
-  deletedAt    DateTime?         @map("deleted_at")
+
   user         User              @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   orderDetails OrderDetail[]
   payments     Payment[]
@@ -92,7 +91,7 @@ model OrderDetail {
   orderDetailId Int      @map("order_detail_id")
   orderId       String   @map("order_id") @db.Uuid
   productId     String   @map("product_id") @db.Uuid
-  quantity      Int?
+  quantity      Int
   unitPrice     Decimal? @map("unit_price") @db.Decimal(12, 2)
   subtotal      Decimal? @db.Decimal
   order         Order    @relation(fields: [orderId], references: [orderId], onDelete: NoAction, onUpdate: NoAction)

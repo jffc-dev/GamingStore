@@ -111,9 +111,7 @@ export class ProductResolver {
 
   @ResolveField(() => [ProductImage], { nullable: true })
   async images(@Parent() product: Product): Promise<ProductImage[]> {
-    console.log(111, product.id);
     const images = await this.imagesByProductLoader.load(product.id);
-    console.log(222, images);
     return images;
   }
 }

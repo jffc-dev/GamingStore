@@ -9,8 +9,8 @@ export class CartDetail {
   @Field(() => String)
   productId: string;
 
-  @Field(() => Int, { nullable: true })
-  quantity?: number;
+  @Field(() => Int)
+  quantity: number;
 
   @Field(() => Date, { nullable: true })
   createdAt?: Date;

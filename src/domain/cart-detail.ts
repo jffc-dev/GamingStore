@@ -3,7 +3,7 @@ import { Entity } from 'src/core/entity';
 export interface CartDetailProps {
   userId: string;
   productId: string;
-  quantity?: number;
+  quantity: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -21,7 +21,7 @@ export class CartDetail extends Entity<CartDetailProps> {
     return this.props.productId;
   }
 
-  get quantity(): number | undefined {
+  get quantity(): number {
     return this.props.quantity;
   }
 

@@ -16,17 +16,11 @@ export class Order {
   @Field(() => Float, { nullable: true })
   total?: number;
 
-  @Field(() => Boolean, { defaultValue: false })
-  isDeleted: boolean;
-
   @Field(() => Date)
   createdAt: Date;
 
   @Field(() => Date, { nullable: true })
   updatedAt?: Date;
-
-  @Field(() => Date, { nullable: true })
-  deletedAt?: Date;
 
   @Field(() => [OrderDetail])
   orderDetails: OrderDetail[];
@@ -37,10 +31,8 @@ export class Order {
       status: domainObject.status,
       userId: domainObject.userId,
       total: domainObject.total,
-      isDeleted: domainObject.isDeleted,
       createdAt: domainObject.createdAt,
       updatedAt: domainObject.updatedAt,
-      deletedAt: domainObject.deletedAt,
       orderDetails: [],
     };
   }

@@ -10,5 +10,5 @@ export class CreateCartDetailInput {
   @IsInt()
   @Min(1)
   @Field(() => Int)
-  quantity?: number;
+  quantity: number;
 }
