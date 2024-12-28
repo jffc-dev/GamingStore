@@ -7,7 +7,6 @@ import {
   PrismaOrderDetailMapper,
   PrismaOrderMapper,
 } from '../mappers/prisma-order.mapper';
-import { Product } from 'src/domain/product';
 
 @Injectable()
 export class PrismaOrderRepository implements OrderRepository {
@@ -24,6 +23,27 @@ export class PrismaOrderRepository implements OrderRepository {
     });
 
     return PrismaOrderMapper.toDomain(createdOrder);
+  }
+
+  async getOrdersByUser(userId: string): Promise<Order[]> {
+    const orders = await this.prisma.order.findMany({
+      where: {
+        userId,
+      },
+    });
+
+    return orders.map(PrismaOrderMapper.toDomain);
+  }
+
+  async getOrders(userId?: string): Promise<Order[]> {
+    const filter = {
+      userId,
+    };
+    const orders = await this.prisma.order.findMany({
+      where: filter,
+    });
+
+    return orders.map(PrismaOrderMapper.toDomain);
   }
 
   async createFullOrder(order: Order, userId: string): Promise<Order> {
