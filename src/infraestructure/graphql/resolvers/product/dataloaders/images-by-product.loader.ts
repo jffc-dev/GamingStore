@@ -33,8 +33,7 @@ export class ImagesByProductLoader extends DataLoader<string, ProductImage[]> {
         id: image.id,
         url: image.url,
         createdAt: image.createdAt,
-        productId: '',
-        dato: '',
+        productId: image.productId,
       });
     });
 
