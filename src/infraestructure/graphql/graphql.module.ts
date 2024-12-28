@@ -6,6 +6,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { CartDetailModule } from './resolvers/cart-detail/cart-detail.module';
 import { LikeModule } from './resolvers/like/like.module';
+import { OrderModule } from './resolvers/order/order.module';
 
 @Module({
   imports: [
@@ -19,6 +20,8 @@ import { LikeModule } from './resolvers/like/like.module';
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
+
+    OrderModule,
   ],
   providers: [],
 })
