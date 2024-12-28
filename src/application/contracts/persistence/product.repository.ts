@@ -8,6 +8,7 @@ export abstract class ProductRepository {
   abstract updateProduct(productId: string, data: Product): Promise<Product>;
   abstract getProductById(productId: string): Promise<Product | null>;
   abstract filterProducts(filters: IFilterProducts): Promise<Product[]>;
+  abstract getProductsByIds(productIds: string[]): Promise<Product[]>;
 
   abstract handleDBError(error: any): void;
 }

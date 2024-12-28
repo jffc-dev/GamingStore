@@ -100,6 +100,21 @@ export class PrismaProductRepository implements ProductRepository {
     }
   }
 
+  async getProductsByIds(productIds: string[]): Promise<Product[]> {
+    try {
+      const products = await this.prisma.product.findMany({
+        where: {
+          productId: { in: productIds },
+        },
+      });
+
+      return products.map(PrismaProductMapper.toDomain);
+    } catch (error) {
+      this.handleDBError(error);
+      return null;
+    }
+  }
+
   handleDBError(error: any): void {
     const { code, meta } = error;
 
