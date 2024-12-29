@@ -5,7 +5,7 @@ import { Order as DomainOrder } from 'src/domain/order';
 @ObjectType()
 export class Order {
   @Field(() => String)
-  orderId: string;
+  id: string;
 
   @Field(() => String)
   status: string;
@@ -27,7 +27,7 @@ export class Order {
 
   static fromDomainToEntity(domainObject: DomainOrder): Order {
     return {
-      orderId: domainObject.id,
+      id: domainObject.id,
       status: domainObject.status,
       userId: domainObject.userId,
       total: domainObject.total,

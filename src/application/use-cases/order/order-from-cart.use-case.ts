@@ -79,6 +79,7 @@ export class CreateOrderFromCartUseCase {
         productId: cartDetail.productId,
         quantity: cartDetail.quantity,
         unitPrice: product.price,
+        subtotal: product.price * cartDetail.quantity,
       });
 
       order.orderDetails.push(orderDetail);

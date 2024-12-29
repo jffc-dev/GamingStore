@@ -63,7 +63,7 @@ export class OrderResolver {
 
   @ResolveField(() => [OrderDetail])
   async orderDetails(@Parent() order: Order): Promise<OrderDetail[]> {
-    const details = await this.orderDetailsLoader.load(order.orderId);
+    const details = await this.orderDetailsLoader.load(order.id);
     return details;
   }
 }
