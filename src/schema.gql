@@ -37,6 +37,23 @@ type Product {
   category: Category
 }
 
+type ProductEdge {
+  cursor: String!
+  node: Product!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type PaginatedProducts {
+  edges: [ProductEdge!]!
+  pageInfo: PageInfo!
+}
+
 type CartDetail {
   userId: String!
   productId: String!
@@ -71,7 +88,7 @@ type Order {
 }
 
 type Query {
-  products(isActive: Boolean): [Product!]!
+  products(isActive: Boolean, first: Int!, after: String): PaginatedProducts!
   product(productId: String!): Product!
   cartItems: [CartDetail!]!
   likedProducts: [LikeProduct!]!

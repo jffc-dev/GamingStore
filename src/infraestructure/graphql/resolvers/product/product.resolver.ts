@@ -17,7 +17,10 @@ import { UpdateProductUseCase } from 'src/application/use-cases/product/update-p
 import { HttpCode, UsePipes, ValidationPipe } from '@nestjs/common';
 import { DeleteProductUseCase } from 'src/application/use-cases/product/delete-product.use-case';
 import { AvailableProductUseCase } from '../../../../application/use-cases/product/avilable-product.use-case';
-import { ListProductsFilterDto } from '../../dto/product/list-products.dto';
+import {
+  ListProductsArgs,
+  PaginatedProducts,
+} from '../../dto/product/list-products.dto';
 import { ProductImage } from '../../entities/product-image.entity';
 import { ImagesByProductLoader } from './dataloaders/images-by-product.loader';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator';
@@ -44,10 +47,11 @@ export class ProductResolver {
     private readonly categoryLoader: CategoryLoader,
   ) {}
 
-  @Query(() => [Product], { name: 'products' })
-  async findAll(@Args() filters: ListProductsFilterDto): Promise<Product[]> {
-    const products = await this.listProductsUseCase.execute({ filters });
-    return products.map(Product.fromDomainToEntity);
+  @Query(() => PaginatedProducts, { name: 'products' })
+  async findAll(@Args() dto: ListProductsArgs): Promise<PaginatedProducts> {
+    const products = await this.listProductsUseCase.execute(dto);
+    console.log(products);
+    return products;
   }
 
   @Query(() => Product, { name: 'product' })

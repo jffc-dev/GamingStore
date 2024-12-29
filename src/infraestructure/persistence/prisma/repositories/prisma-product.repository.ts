@@ -3,18 +3,25 @@ import { PrismaService } from '../prisma.service';
 import { ProductRepository } from 'src/application/contracts/persistence/product.repository';
 import { Product } from 'src/domain/product';
 import { PrismaProductMapper } from '../mappers/prisma-product.mapper';
-import { IFilterProducts } from 'src/application/use-cases/product/list-products.use-case';
+import { IListProductsUseCaseProps } from 'src/application/use-cases/product/list-products.use-case';
 
 @Injectable()
 export class PrismaProductRepository implements ProductRepository {
   constructor(private prisma: PrismaService) {}
 
-  async filterProducts(filters: IFilterProducts): Promise<Product[]> {
+  async filterProducts(dto: IListProductsUseCaseProps): Promise<Product[]> {
     try {
+      const { first, after, isActive } = dto;
+      const take = first;
+      const cursor = after ? { productId: after } : undefined;
+
       const products = await this.prisma.product.findMany({
+        take: take + 1,
+        skip: cursor ? 1 : 0,
+        cursor,
         where: {
           isDeleted: false,
-          ...filters,
+          isActive,
         },
       });
 
