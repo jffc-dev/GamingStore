@@ -14,14 +14,14 @@ import { CreateProductInput } from '../../dto/product/inputs/create-product.inpu
 import { UpdateProductInput } from '../../dto/product/inputs/update-product.input';
 import { GetProductDto } from '../../dto/product/get-product.dto';
 import { UpdateProductUseCase } from 'src/application/use-cases/product/update-product.use-case';
-import { HttpCode, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { HttpCode, UsePipes, ValidationPipe } from '@nestjs/common';
 import { DeleteProductUseCase } from 'src/application/use-cases/product/delete-product.use-case';
-import { JwtAuthGuard } from 'src/infraestructure/common/guards/jwt-auth.guard';
 import { AvailableProductUseCase } from '../../../../application/use-cases/product/avilable-product.use-case';
 import { ListProductsFilterDto } from '../../dto/product/list-products.dto';
 import { ProductImage } from '../../entities/product-image.entity';
-import { GetImagesByProductUseCase } from 'src/application/use-cases/product-image/images-by-product.use-case';
 import { ImagesByProductLoader } from './dataloaders/images-by-product.loader';
+import { Auth } from 'src/infraestructure/common/decorators/auth.decorator';
+import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 
 @UsePipes(
   new ValidationPipe({
@@ -37,7 +37,6 @@ export class ProductResolver {
     private readonly updateProductUseCase: UpdateProductUseCase,
     private readonly deleteProductUseCase: DeleteProductUseCase,
     private readonly availableProductUseCase: AvailableProductUseCase,
-    private readonly getImagesByProductUseCase: GetImagesByProductUseCase,
 
     private readonly imagesByProductLoader: ImagesByProductLoader,
   ) {}
@@ -57,7 +56,7 @@ export class ProductResolver {
     return Product.fromDomainToEntity(product);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Auth(ValidRoles.manager)
   @Mutation(() => Product)
   async createProduct(
     @Args('data') data: CreateProductInput,
@@ -66,7 +65,7 @@ export class ProductResolver {
     return Product.fromDomainToEntity(product);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Auth(ValidRoles.manager)
   @Mutation(() => Product)
   async updateProduct(
     @Args() args: GetProductDto,
@@ -79,7 +78,7 @@ export class ProductResolver {
     return Product.fromDomainToEntity(product);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Auth(ValidRoles.manager)
   @HttpCode(204)
   @Mutation(() => Boolean)
   async deleteProduct(@Args() args: GetProductDto): Promise<boolean> {
@@ -87,7 +86,7 @@ export class ProductResolver {
     return status;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Auth(ValidRoles.manager)
   @Mutation(() => Product)
   async enableProduct(@Args() args: GetProductDto): Promise<Product> {
     const { productId } = args;
@@ -98,7 +97,7 @@ export class ProductResolver {
     return Product.fromDomainToEntity(product);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Auth(ValidRoles.manager)
   @Mutation(() => Product)
   async disableProduct(@Args() args: GetProductDto): Promise<Product> {
     const { productId } = args;

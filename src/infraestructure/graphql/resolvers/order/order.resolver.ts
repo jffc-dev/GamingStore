@@ -16,6 +16,8 @@ import { GetUserOrdersUseCase } from 'src/application/use-cases/order/get-user-o
 import { ListOrdersFilterDto } from '../../dto/order/list-orders.dto';
 import { OrderDetail } from '../../entities/order-detail.entity';
 import { OrderDetailsLoader } from '../product/dataloaders/order-details.loader';
+import { Auth } from 'src/infraestructure/common/decorators/auth.decorator';
+import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 
 @UsePipes(
   new ValidationPipe({
@@ -31,7 +33,7 @@ export class OrderResolver {
     private readonly orderDetailsLoader: OrderDetailsLoader,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  @Auth(ValidRoles.client)
   @Mutation(() => Order, { name: 'createOrder' })
   async createOrder(@Context() context: any): Promise<Order> {
     const currentUser: User = context.req.user;
@@ -42,6 +44,7 @@ export class OrderResolver {
     return Order.fromDomainToEntity(orderResponse);
   }
 
+  @Auth(ValidRoles.client)
   @UseGuards(JwtAuthGuard)
   @Query(() => [Order], { name: 'myOrders' })
   async getUserOrders(@Context() context: any): Promise<Order[]> {
@@ -52,7 +55,7 @@ export class OrderResolver {
     return userOrders.map(Order.fromDomainToEntity);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Auth(ValidRoles.manager)
   @Query(() => [Order], { name: 'orders' })
   async getOrders(@Args() filters: ListOrdersFilterDto): Promise<Order[]> {
     const userOrders = await this.getUserOrdersUseCase.execute({

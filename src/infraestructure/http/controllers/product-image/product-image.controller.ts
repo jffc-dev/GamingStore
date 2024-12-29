@@ -11,6 +11,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { CreateProductImageUseCase } from 'src/application/use-cases/product-image/create-product-image.use-case';
 import { GetProductImageUseCase } from 'src/application/use-cases/product-image/get-product-image.use-case';
+import { Auth } from 'src/infraestructure/common/decorators/auth.decorator';
+import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 
 @Controller('api/products/:productId/images')
 export class ProductImageController {
@@ -19,6 +21,7 @@ export class ProductImageController {
     private readonly createProductImageUseCase: CreateProductImageUseCase,
   ) {}
 
+  @Auth(ValidRoles.manager)
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {

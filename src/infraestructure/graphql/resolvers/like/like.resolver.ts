@@ -3,9 +3,9 @@ import { LikeProduct } from '../../entities/like-product.entity';
 import { LikeProductInput } from '../../dto/like/input/like-product.input';
 import { LikeProductUseCase } from 'src/application/use-cases/like/like-product.use-case';
 import { User } from 'src/domain/user';
-import { JwtAuthGuard } from 'src/infraestructure/common/guards/jwt-auth.guard';
-import { UseGuards } from '@nestjs/common';
 import { GetLikedProductsUseCase } from '../../../../application/use-cases/like/get-likes.use-case';
+import { Auth } from 'src/infraestructure/common/decorators/auth.decorator';
+import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 
 @Resolver(() => LikeProduct)
 export class LikeResolver {
@@ -14,7 +14,7 @@ export class LikeResolver {
     private readonly getLikedProductsUseCase: GetLikedProductsUseCase,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  @Auth(ValidRoles.client)
   @Mutation(() => LikeProduct, { name: 'likeProduct' })
   async likeProduct(
     @Args('data') data: LikeProductInput,
@@ -30,7 +30,7 @@ export class LikeResolver {
     return LikeProduct.fromDomainToEntity(productLike);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Auth(ValidRoles.client)
   @Query(() => [LikeProduct], { name: 'likedProducts' })
   async getLikedProducts(@Context() context: any): Promise<LikeProduct[]> {
     const currentUser: User = context.req.user;
