@@ -46,7 +46,6 @@ type OrderDetail {
   quantity: Int
   unitPrice: Float
   subtotal: Float
-  product: Product!
 }
 
 type Order {

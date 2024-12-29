@@ -1,4 +1,12 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { Order } from '../../entities/order.entity';
 import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/infraestructure/common/guards/jwt-auth.guard';
@@ -6,6 +14,8 @@ import { User } from 'src/domain/user';
 import { CreateOrderFromCartUseCase } from 'src/application/use-cases/order/order-from-cart.use-case';
 import { GetUserOrdersUseCase } from 'src/application/use-cases/order/get-user-orders.use-case';
 import { ListOrdersFilterDto } from '../../dto/order/list-orders.dto';
+import { OrderDetail } from '../../entities/order-detail.entity';
+import { OrderDetailsLoader } from '../product/dataloaders/order-details.loader';
 
 @UsePipes(
   new ValidationPipe({
@@ -17,6 +27,8 @@ export class OrderResolver {
   constructor(
     private readonly createOrderFromCartUseCase: CreateOrderFromCartUseCase,
     private readonly getUserOrdersUseCase: GetUserOrdersUseCase,
+
+    private readonly orderDetailsLoader: OrderDetailsLoader,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -47,5 +59,11 @@ export class OrderResolver {
       userId: filters.userId,
     });
     return userOrders.map(Order.fromDomainToEntity);
+  }
+
+  @ResolveField(() => [OrderDetail])
+  async orderDetails(@Parent() order: Order): Promise<OrderDetail[]> {
+    const details = await this.orderDetailsLoader.load(order.orderId);
+    return details;
   }
 }

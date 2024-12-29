@@ -1,5 +1,5 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
-import { Product } from './product.entity';
+import { OrderDetail as DomainOrderDetail } from 'src/domain/order-detail';
 
 @ObjectType()
 export class OrderDetail {
@@ -21,6 +21,14 @@ export class OrderDetail {
   @Field(() => Float, { nullable: true })
   subtotal?: number;
 
-  @Field(() => Product)
-  product: Product;
+  static fromDomainToEntity(domainObject: DomainOrderDetail): OrderDetail {
+    return {
+      id: domainObject.id,
+      orderId: domainObject.orderId,
+      productId: domainObject.productId,
+      quantity: domainObject.quantity,
+      unitPrice: domainObject.unitPrice,
+      subtotal: domainObject.subtotal,
+    };
+  }
 }

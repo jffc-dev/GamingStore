@@ -7,6 +7,7 @@ export abstract class OrderRepository {
   abstract createFullOrder(data: Order, userId: string): Promise<Order>;
   abstract getOrdersByUser(userId: string): Promise<Order[]>;
   abstract getOrders(userId: string): Promise<Order[]>;
+  abstract getDetailsByOrderIds(orderIds: string[]): Promise<OrderDetail[]>;
 
   abstract handleDBError(error: any): void;
 }

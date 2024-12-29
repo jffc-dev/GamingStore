@@ -46,6 +46,16 @@ export class PrismaOrderRepository implements OrderRepository {
     return orders.map(PrismaOrderMapper.toDomain);
   }
 
+  async getDetailsByOrderIds(orderIds: string[]): Promise<OrderDetail[]> {
+    const orderDetails = await this.prisma.orderDetail.findMany({
+      where: {
+        orderId: { in: orderIds },
+      },
+    });
+
+    return orderDetails.map(PrismaOrderDetailMapper.toDomain);
+  }
+
   async createFullOrder(order: Order, userId: string): Promise<Order> {
     const result = await this.prisma.$transaction(async (tx) => {
       const createdOrder = await tx.order.create({
