@@ -54,13 +54,7 @@ async function main() {
       price: 499.99,
       stock: 50,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category1.categoryId,
-          },
-        ],
-      },
+      categoryId: category1.categoryId,
     },
   });
 
@@ -72,13 +66,7 @@ async function main() {
       price: 499.99,
       stock: 30,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category1.categoryId,
-          },
-        ],
-      },
+      categoryId: category1.categoryId,
     },
   });
 
@@ -91,13 +79,7 @@ async function main() {
       price: 349.99,
       stock: 70,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category1.categoryId,
-          },
-        ],
-      },
+      categoryId: category1.categoryId,
     },
   });
 
@@ -109,13 +91,7 @@ async function main() {
       price: 1199.99,
       stock: 25,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category2.categoryId,
-          },
-        ],
-      },
+      categoryId: category2.categoryId,
     },
   });
 
@@ -127,13 +103,7 @@ async function main() {
       price: 89.99,
       stock: 100,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category2.categoryId,
-          },
-        ],
-      },
+      categoryId: category2.categoryId,
     },
   });
 
@@ -145,13 +115,7 @@ async function main() {
       price: 59.99,
       stock: 150,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category2.categoryId,
-          },
-        ],
-      },
+      categoryId: category2.categoryId,
     },
   });
 
@@ -163,13 +127,7 @@ async function main() {
       price: 69.99,
       stock: 200,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category3.categoryId,
-          },
-        ],
-      },
+      categoryId: category3.categoryId,
     },
   });
 
@@ -181,13 +139,7 @@ async function main() {
       price: 59.99,
       stock: 120,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category3.categoryId,
-          },
-        ],
-      },
+      categoryId: category3.categoryId,
     },
   });
 
@@ -199,13 +151,7 @@ async function main() {
       price: 39.99,
       stock: 180,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category3.categoryId,
-          },
-        ],
-      },
+      categoryId: category3.categoryId,
     },
   });
 
@@ -218,13 +164,7 @@ async function main() {
       price: 249.99,
       stock: 60,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category4.categoryId,
-          },
-        ],
-      },
+      categoryId: category4.categoryId,
     },
   });
 
@@ -236,13 +176,7 @@ async function main() {
       price: 199.99,
       stock: 40,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category4.categoryId,
-          },
-        ],
-      },
+      categoryId: category4.categoryId,
     },
   });
 
@@ -254,13 +188,7 @@ async function main() {
       price: 49.99,
       stock: 80,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category5.categoryId,
-          },
-        ],
-      },
+      categoryId: category5.categoryId,
     },
   });
 
@@ -272,13 +200,7 @@ async function main() {
       price: 19.99,
       stock: 150,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category5.categoryId,
-          },
-        ],
-      },
+      categoryId: category5.categoryId,
     },
   });
 
@@ -290,13 +212,7 @@ async function main() {
       price: 129.99,
       stock: 15,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category5.categoryId,
-          },
-        ],
-      },
+      categoryId: category5.categoryId,
     },
   });
 
@@ -308,13 +224,7 @@ async function main() {
       price: 19.99,
       stock: 200,
       isActive: true,
-      productCategories: {
-        create: [
-          {
-            categoryId: category2.categoryId,
-          },
-        ],
-      },
+      categoryId: category2.categoryId,
     },
   });
 
@@ -325,7 +235,7 @@ async function main() {
       name: 'John',
       lastName: 'Doe',
       phoneNumber: '123456789',
-      password: bcrypt.hashSync('Secure123', 10),
+      password: bcrypt.hashSync('Javier123', 10),
       role: 'CLIENT',
     },
   });

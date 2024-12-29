@@ -28,7 +28,7 @@ model Category {
   createdAt         DateTime?         @default(now()) @map("created_at")
   updatedAt         DateTime?         @updatedAt @map("updated_at")
   deletedAt         DateTime?         @map("deleted_at")
-  productCategories ProductCategory[]
+  products          Product[]
 
   @@map("category")
 }
@@ -127,23 +127,14 @@ model Product {
   createdAt         DateTime?         @default(now()) @map("created_at")
   updatedAt         DateTime?         @updatedAt @map("updated_at")
   deletedAt         DateTime?         @map("deleted_at")
+  categoryId        String            @map("category_id") @db.Uuid
   cartDetails       CartDetail[]
   orderDetails      OrderDetail[]
-  productCategories ProductCategory[]
   productImages     ProductImage[]
   productLikes      ProductLike[]
+  category          Category          @relation(fields: [categoryId], references: [categoryId], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("product")
-}
-
-model ProductCategory {
-  productId  String   @map("product_id") @db.Uuid
-  categoryId String   @map("category_id") @db.Uuid
-  category   Category @relation(fields: [categoryId], references: [categoryId], onDelete: NoAction, onUpdate: NoAction)
-  product    Product  @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
-
-  @@id([productId, categoryId])
-  @@map("product_category")
 }
 
 model ProductImage {
