@@ -8,6 +8,20 @@ import { PrismaCategoryMapper } from '../mappers/prisma-category.mapper';
 export class PrismaCategoryRepository implements CategoryRepository {
   constructor(private prisma: PrismaService) {}
 
+  async getCategoriesByIds(categoriesId: string[]): Promise<Category[]> {
+    try {
+      const productImages = await this.prisma.category.findMany({
+        where: {
+          categoryId: { in: categoriesId },
+        },
+      });
+
+      return productImages.map(PrismaCategoryMapper.toDomain);
+    } catch (error) {
+      this.handleDBError(error);
+    }
+  }
+
   async getCategories(): Promise<Category[]> {
     try {
       const categories = await this.prisma.category.findMany({

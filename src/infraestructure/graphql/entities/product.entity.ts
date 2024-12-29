@@ -1,11 +1,15 @@
 import { Field, Float, ObjectType } from '@nestjs/graphql';
 import { Product as DomainProduct } from 'src/domain/product';
 import { ProductImage } from './product-image.entity';
+import { Category } from './category.entity';
 
 @ObjectType()
 export class Product {
   @Field(() => String)
   id: string;
+
+  @Field(() => String)
+  categoryId: string;
 
   @Field(() => String)
   name: string;
@@ -28,9 +32,13 @@ export class Product {
   @Field(() => [ProductImage], { nullable: true })
   images?: ProductImage[];
 
+  @Field(() => Category, { nullable: true })
+  category?: Category;
+
   static fromDomainToEntity(domainObject: DomainProduct): Product {
     return {
       id: domainObject.productId,
+      categoryId: domainObject.categoryId,
       name: domainObject.name,
       price: domainObject.price,
       description: domainObject.description,

@@ -9,6 +9,8 @@ import { DeleteProductUseCase } from 'src/application/use-cases/product/delete-p
 import { AvailableProductUseCase } from 'src/application/use-cases/product/avilable-product.use-case';
 import { GetImagesByProductUseCase } from 'src/application/use-cases/product-image/images-by-product.use-case';
 import { ImagesByProductLoader } from './dataloaders/images-by-product.loader';
+import { CategoryLoader } from './dataloaders/category.loader';
+import { GetCategoryByProductUseCase } from 'src/application/use-cases/category/category-by-product.use-case';
 
 @Module({
   providers: [
@@ -19,10 +21,12 @@ import { ImagesByProductLoader } from './dataloaders/images-by-product.loader';
     DeleteProductUseCase,
     AvailableProductUseCase,
     GetImagesByProductUseCase,
+    GetCategoryByProductUseCase,
 
     ProductResolver,
 
     ImagesByProductLoader,
+    CategoryLoader,
   ],
   imports: [UuidModule],
 })

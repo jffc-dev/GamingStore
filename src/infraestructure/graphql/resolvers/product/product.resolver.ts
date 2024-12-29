@@ -22,6 +22,8 @@ import { ProductImage } from '../../entities/product-image.entity';
 import { ImagesByProductLoader } from './dataloaders/images-by-product.loader';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
+import { Category } from '../../entities/category.entity';
+import { CategoryLoader } from './dataloaders/category.loader';
 
 @UsePipes(
   new ValidationPipe({
@@ -39,6 +41,7 @@ export class ProductResolver {
     private readonly availableProductUseCase: AvailableProductUseCase,
 
     private readonly imagesByProductLoader: ImagesByProductLoader,
+    private readonly categoryLoader: CategoryLoader,
   ) {}
 
   @Query(() => [Product], { name: 'products' })
@@ -112,5 +115,11 @@ export class ProductResolver {
   async images(@Parent() product: Product): Promise<ProductImage[]> {
     const images = await this.imagesByProductLoader.load(product.id);
     return images;
+  }
+
+  @ResolveField(() => Category)
+  async category(@Parent() product: Product): Promise<Category> {
+    const category = await this.categoryLoader.load(product.categoryId);
+    return Category.fromDomainToEntity(category);
   }
 }
