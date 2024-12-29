@@ -7,6 +7,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { CartDetailModule } from './resolvers/cart-detail/cart-detail.module';
 import { LikeModule } from './resolvers/like/like.module';
 import { OrderModule } from './resolvers/order/order.module';
+import { CategoryModule } from './resolvers/category/category.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { OrderModule } from './resolvers/order/order.module';
     }),
 
     OrderModule,
+    CategoryModule,
   ],
   providers: [],
 })
