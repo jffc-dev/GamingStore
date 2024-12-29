@@ -13,6 +13,7 @@ export class CreateProductUseCase {
 
   async execute({
     name,
+    categoryId,
     description,
     stock,
     isActive,
@@ -20,6 +21,7 @@ export class CreateProductUseCase {
   }: CreateProductInput): Promise<any> {
     const product = new Product({
       productId: this.uuidService.generateUuid(),
+      categoryId,
       name,
       description,
       stock,
