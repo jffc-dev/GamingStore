@@ -6,6 +6,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 import { User } from 'src/domain/user';
 
@@ -22,7 +23,14 @@ export class UserRoleGuard implements CanActivate {
     );
     if (!validRoles) return true;
     if (validRoles.length === 0) return true;
-    const req = context.switchToHttp().getRequest();
+    let req = null;
+    if (context.getType() === 'http') {
+      req = context.switchToHttp().getRequest();
+    } else if ((context.getType() as string) === 'graphql') {
+      const ctx = GqlExecutionContext.create(context);
+      req = ctx.getContext().req;
+    }
+
     const user: User = req.user;
 
     if (!user) throw new BadRequestException('User not found');
