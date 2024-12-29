@@ -9,6 +9,11 @@ export class ListProductsArgs {
   @IsBoolean()
   isActive?: boolean;
 
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsUUID()
+  categoryId?: string;
+
   @Field(() => Int)
   @IsNumber()
   first: number;

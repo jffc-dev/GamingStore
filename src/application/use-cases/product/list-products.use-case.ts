@@ -10,6 +10,7 @@ export interface IListProductsUseCaseProps {
   isActive?: boolean;
   first: number;
   after?: string;
+  categoryId?: string;
 }
 
 @Injectable()

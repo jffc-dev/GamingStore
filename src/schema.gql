@@ -88,7 +88,7 @@ type Order {
 }
 
 type Query {
-  products(isActive: Boolean, first: Int!, after: String): PaginatedProducts!
+  products(isActive: Boolean, categoryId: String, first: Int!, after: String): PaginatedProducts!
   product(productId: String!): Product!
   cartItems: [CartDetail!]!
   likedProducts: [LikeProduct!]!

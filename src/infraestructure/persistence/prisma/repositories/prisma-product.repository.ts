@@ -11,7 +11,8 @@ export class PrismaProductRepository implements ProductRepository {
 
   async filterProducts(dto: IListProductsUseCaseProps): Promise<Product[]> {
     try {
-      const { first, after, isActive } = dto;
+      const { first, after, isActive, categoryId } = dto;
+      const filters = { isActive, categoryId };
       const take = first;
       const cursor = after ? { productId: after } : undefined;
 
@@ -21,7 +22,7 @@ export class PrismaProductRepository implements ProductRepository {
         cursor,
         where: {
           isDeleted: false,
-          isActive,
+          ...filters,
         },
       });
 
