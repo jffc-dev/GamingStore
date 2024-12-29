@@ -15,7 +15,7 @@ import { CreateOrderFromCartUseCase } from 'src/application/use-cases/order/orde
 import { GetUserOrdersUseCase } from 'src/application/use-cases/order/get-user-orders.use-case';
 import { ListOrdersFilterDto } from '../../dto/order/list-orders.dto';
 import { OrderDetail } from '../../entities/order-detail.entity';
-import { OrderDetailsLoader } from '../product/dataloaders/order-details.loader';
+import { OrderDetailsLoader } from './dataloaders/order-details.loader';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 
