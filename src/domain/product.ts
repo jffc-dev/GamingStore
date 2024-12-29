@@ -2,6 +2,7 @@ import { Entity } from 'src/core/entity';
 
 export interface ProductProps {
   productId?: string;
+  categoryId: string;
   name: string;
   description?: string;
   stock?: number;
@@ -20,6 +21,10 @@ export class Product extends Entity<ProductProps> {
 
   get productId(): string {
     return this.props.productId;
+  }
+
+  get categoryId(): string {
+    return this.props.categoryId;
   }
 
   get name(): string {

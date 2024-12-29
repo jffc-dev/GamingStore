@@ -5,6 +5,9 @@ export class CreateProductInput {
   @Field(() => String)
   name: string;
 
+  @Field(() => String)
+  categoryId?: string;
+
   @Field(() => String, { nullable: true })
   description?: string;
 

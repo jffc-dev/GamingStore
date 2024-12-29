@@ -6,6 +6,7 @@ export class PrismaProductMapper {
   static toDomain(entity: PrismaProduct): Product {
     const model = new Product({
       productId: entity.productId,
+      categoryId: entity.categoryId,
       name: entity.name,
       description: entity.description,
       stock: entity.stock ? parseFloat(entity.stock.toString()) : undefined,
@@ -23,6 +24,7 @@ export class PrismaProductMapper {
   static toPrisma(product: Product): Prisma.ProductUncheckedCreateInput {
     return {
       productId: product.productId,
+      categoryId: product.categoryId,
       name: product.name,
       description: product.description,
       stock: product.stock,

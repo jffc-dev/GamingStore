@@ -58,6 +58,16 @@ type Order {
   orderDetails: [OrderDetail!]!
 }
 
+type Category {
+  categoryId: ID!
+  name: String!
+  description: String
+  isDeleted: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
 type Query {
   products(isActive: Boolean): [Product!]!
   product(productId: String!): Product!
@@ -65,6 +75,7 @@ type Query {
   likedProducts: [LikeProduct!]!
   myOrders: [Order!]!
   orders(userId: String): [Order!]!
+  categories: [Category!]!
 }
 
 type Mutation {
@@ -80,6 +91,7 @@ type Mutation {
 
 input CreateProductInput {
   name: String!
+  categoryId: String!
   description: String
   stock: Float
   isActive: Boolean
