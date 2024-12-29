@@ -17,7 +17,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = this.getRequest(context);
 
-    // Extraer el token del encabezado Authorization
     const authHeader = request.headers.authorization;
     console.log(authHeader);
 

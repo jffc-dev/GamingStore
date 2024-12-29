@@ -13,6 +13,7 @@ export class PrismaUserMapper {
       lastName: entity.lastName,
       email: entity.email,
       password: entity.password,
+      role: entity.role,
       resetPasswordToken: entity.resetPasswordToken,
       resetPasswordExpiresAt: entity.resetPasswordExpiresAt,
     });
