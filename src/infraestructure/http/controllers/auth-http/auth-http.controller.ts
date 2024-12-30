@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   Patch,
   Post,
@@ -20,6 +21,7 @@ import { ForgotPasswordDto } from '../../dto/user/forgot-password.dto';
 import { ResetPasswordDto } from '../../dto/user/reset-password.dto';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { LogoutUserUseCase } from 'src/application/use-cases/user/logout.user-case';
+import { Throttle } from '@nestjs/throttler';
 
 @UsePipes(
   new ValidationPipe({
@@ -87,6 +89,13 @@ export class AuthController {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  @Auth()
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Get('verify-login')
+  async verifyLogin() {
+    return true;
   }
 
   @Patch('reset-password')
