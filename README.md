@@ -310,29 +310,41 @@ This section tracks the progress of the project by listing completed and pending
 ### `feature/manage-orders`  
 
 #### **Order Creation**  
-- [ ] Add a feature to allow users to create orders from their shopping cart.  
-- [ ] Update the `Order` entity to include necessary fields (e.g., `orderId`, `userId`, `items`, `totalPrice`, `status`, `createdAt`).  
-- [ ] Implement a mutation in the `OrderResolver` to handle order creation.  
-- [ ] Create an `OrderItem` entity to represent individual items in an order, linked to products.  
-- [ ] Validate that the shopping cart items and their quantities are available before creating the order.  
-- [ ] Deduct stock quantities for purchased products upon successful order creation.  
-- [ ] Notify users of order confirmation and provide an order summary.  
-- [ ] Ensure proper error handling for cases like insufficient stock or invalid cart.  
-- [ ] Write unit tests for the order creation functionality.  
+- [x] Add a feature to allow users to create orders from their shopping cart.  
+- [x] Update the `Order` entity to include necessary fields (e.g., `orderId`, `userId`, `items`, `totalPrice`, `status`, `createdAt`).  
+- [x] Implement a mutation in the `OrderResolver` to handle order creation.  
+- [x] Create an `OrderItem` entity to represent individual items in an order, linked to products.  
+- [x] Validate that the shopping cart items and their quantities are available before creating the order.  
+- [x] Deduct stock quantities for purchased products upon successful order creation.  
+- [x] Notify users of order confirmation and provide an order summary.  
+- [x] Ensure proper error handling for cases like insufficient stock or invalid cart.  
+- [x] Write unit tests for the order creation functionality.  
 
 #### **Retrieve Orders**  
-- [ ] Implement a query in the `OrderResolver` to allow users to retrieve their orders.  
+- [x] Implement a query in the `OrderResolver` to allow users to retrieve their orders.  
   - Fields: `orderId`, `items`, `totalPrice`, `status`, `createdAt`.  
-- [ ] Allow filtering options for retrieving orders (e.g., by `status` or `date range`).  
-- [ ] Ensure orders are only accessible to the respective user.  
-- [ ] Write tests to validate order retrieval and authorization.
+- [x] Allow filtering options for retrieving orders (e.g., by `status` or `date range`).  
+- [x] Ensure orders are only accessible to the respective user.  
+- [x] Write tests to validate order retrieval and authorization.
 
 #### **Admin/Manager Order Queries**  
-- [ ] Implement a query in the `OrderResolver` to allow admins or managers to retrieve orders by user.  
+- [x] Implement a query in the `OrderResolver` to allow admins or managers to retrieve orders by user.  
   - Fields: `orderId`, `userId`, `items`, `totalPrice`, `status`, `createdAt`.  
-- [ ] Add support for pagination and sorting options for better manageability.  
-- [ ] Ensure proper role-based access control for this feature.  
-- [ ] Write tests to validate the retrieval of orders by user and access restrictions.
+- [x] Add support for pagination and sorting options for better manageability.  
+- [x] Ensure proper role-based access control for this feature.  
+- [x] Write tests to validate the retrieval of orders by user and access restrictions.
+
+---
+
+### **Stripe Webhook Controller**
+- [ ] Create a `WebhookController` in NestJS to handle incoming webhook requests.
+  - [ ] Define a `@Post()` route for the `/webhook` endpoint.
+  - [ ] Use `express.raw` middleware to parse incoming requests as raw data for Stripe signature verification.
+- [ ] Implement event handlers for:
+  - `payment_intent.succeeded`: Update order status to "Paid" and notify the user.
+  - `payment_method.attached`: Update the user record with the new payment method.
+  - (Add additional handlers as needed for other subscribed events.)
+- [ ] Log unhandled event types for debugging purposes.
 
 ---
 

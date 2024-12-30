@@ -1,12 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 // import { UnifiedExceptionFilter } from './infraestructure/common/filter/exception.filter';
 
 async function bootstrap() {
+  const port = process.env.PORT ?? 3000;
   const app = await NestFactory.create(AppModule);
-  // app.useGlobalFilters(new UnifiedExceptionFilter());
-  // app.useGlobalPipes(new ValidationPipe());
-  await app.listen(process.env.PORT ?? 3000);
+  const logger = new Logger();
+  await app.listen(port);
+  logger.log(`App running on port: ${port}`);
 }
 bootstrap();
