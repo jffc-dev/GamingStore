@@ -31,6 +31,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const request = this.getRequest(context);
 
     const authHeader: string = request.headers.authorization;
+    if (!authHeader) {
+      throw new UnauthorizedException();
+    }
+
     const token = authHeader.split(' ')[1];
     const invalid = await this.tokenRepository.existToken(token);
 

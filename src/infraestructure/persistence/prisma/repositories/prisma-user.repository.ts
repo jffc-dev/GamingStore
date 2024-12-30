@@ -69,13 +69,15 @@ export class PrismaUserRepository implements UserRepository {
     }
   }
 
-  async findOneBy(id: string): Promise<User> {
+  async findOneById(id: string): Promise<User | null> {
     try {
-      const foundUser = await this.prisma.user.findUniqueOrThrow({
+      const foundUser = await this.prisma.user.findUnique({
         where: {
           userId: id,
         },
       });
+
+      if (!foundUser) return null;
 
       return PrismaUserMapper.toDomain(foundUser);
     } catch (error) {
@@ -86,9 +88,7 @@ export class PrismaUserRepository implements UserRepository {
   handleDBError(error: any): void {
     const { code, meta } = error;
 
-    if (code === 'P2025') {
-      throw new Error(`User not found`);
-    } else if (code === 'P2002') {
+    if (code === 'P2002') {
       throw new Error(`${meta.target[0]} had been already registered`);
     }
 
