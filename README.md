@@ -336,7 +336,9 @@ This section tracks the progress of the project by listing completed and pending
 
 ---
 
-### **Stripe Webhook Controller**
+### `feature/stripe-integration`
+
+#### **Stripe Webhook Controller**
 - [ ] Create a `WebhookController` in NestJS to handle incoming webhook requests.
   - [ ] Define a `@Post()` route for the `/webhook` endpoint.
   - [ ] Use `express.raw` middleware to parse incoming requests as raw data for Stripe signature verification.
