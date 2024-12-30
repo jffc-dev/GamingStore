@@ -9,6 +9,7 @@ export const envSchema = z.object({
   RESET_PASSWORD_EXPIRATION_MS: z.coerce.number().min(1),
   STRIPE_API_KEY: z.string().min(1),
   STRIPE_WEBHOOK_KEY: z.string().min(1),
+  CORS_ORIGINS: z.string().min(1),
 });
 
 export type Env = z.infer<typeof envSchema>;
