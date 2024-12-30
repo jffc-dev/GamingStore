@@ -4,7 +4,7 @@ import { LikeProductInput } from '../../dto/like/input/like-product.input';
 import { LikeProductUseCase } from 'src/application/use-cases/like/like-product.use-case';
 import { User } from 'src/domain/user';
 import { GetLikedProductsUseCase } from '../../../../application/use-cases/like/get-likes.use-case';
-import { Auth } from 'src/infraestructure/common/decorators/auth.decorator';
+import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 
 @Resolver(() => LikeProduct)

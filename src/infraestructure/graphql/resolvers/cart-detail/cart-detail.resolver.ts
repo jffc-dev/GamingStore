@@ -5,7 +5,7 @@ import { CartDetailProps } from 'src/domain/cart-detail';
 import { User } from 'src/domain/user';
 import { CreateCartDetailInput } from '../../dto/cart/input/create-cart-detail.input';
 import { AddProductToCartUseCase } from 'src/application/use-cases/cart/add-to-cart.use-cases';
-import { Auth } from 'src/infraestructure/common/decorators/auth.decorator';
+import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 
 @Resolver(() => CartDetail)

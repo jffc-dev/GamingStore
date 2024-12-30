@@ -18,7 +18,7 @@ import { RegisterUserDto } from '../../dto/user/register-user.dto';
 import { LoginUserDto } from '../../dto/user/login-user.dto';
 import { ForgotPasswordDto } from '../../dto/user/forgot-password.dto';
 import { ResetPasswordDto } from '../../dto/user/reset-password.dto';
-import { Auth } from 'src/infraestructure/common/decorators/auth.decorator';
+import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 
 @UsePipes(
   new ValidationPipe({
