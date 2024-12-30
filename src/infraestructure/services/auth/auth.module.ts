@@ -18,7 +18,7 @@ import { GetUserByIdUseCase } from 'src/application/use-cases/user/get-user.use-
         return {
           secret: envService.get('JWT_SECRET'),
           signOptions: {
-            expiresIn: '1h',
+            expiresIn: '12h',
           },
         };
       },

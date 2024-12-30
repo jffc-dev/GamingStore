@@ -8,6 +8,33 @@ import { PrismaPaymentMapper } from '../mappers/prisma-payment.mapper';
 export class PrismaPaymentRepository implements PaymentRepository {
   constructor(private prisma: PrismaService) {}
 
+  async updatePayment(paymentId: string, data: Payment): Promise<Payment> {
+    const result = await this.prisma.$transaction(async (tx) => {
+      const updatedPayment = await tx.payment.update({
+        where: {
+          paymentId,
+        },
+        data: {
+          status: data.status as any,
+          paymentAt: data.paymentAt,
+        },
+      });
+
+      const updatedOrder = await tx.order.update({
+        where: {
+          orderId: updatedPayment.orderId,
+        },
+        data: {
+          status: data.status as any,
+        },
+      });
+
+      return { updatedPayment, updatedOrder };
+    });
+
+    return PrismaPaymentMapper.toDomain(result.updatedPayment);
+  }
+
   async createPayment(data: Payment): Promise<Payment> {
     const createdOrder = await this.prisma.payment.create({
       data: {

@@ -1,6 +1,6 @@
 import { Entity } from 'src/core/entity';
 
-type PaymentStatus = 'PENDING' | 'COMPLETED' | 'FAILED';
+type PaymentStatus = 'PENDING' | 'PAID' | 'FAILED';
 
 export interface PaymentProps {
   paymentId?: string;
@@ -53,5 +53,17 @@ export class Payment extends Entity<PaymentProps> {
 
   get updatedAt(): Date | undefined {
     return this.props.updatedAt;
+  }
+
+  set status(status: PaymentStatus) {
+    this.props.status = status;
+  }
+
+  set paymentAt(paymentAt: Date) {
+    this.props.paymentAt = paymentAt;
+  }
+
+  set stripePaymentId(stripePaymentId: string) {
+    this.props.stripePaymentId = stripePaymentId;
   }
 }

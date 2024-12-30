@@ -31,4 +31,8 @@ export class StripeService {
 
     return paymentIntent;
   }
+
+  webhookConstructEvent(body: any, sig: any, endpointSecret: any) {
+    return this.stripe.webhooks.constructEvent(body, sig, endpointSecret);
+  }
 }
