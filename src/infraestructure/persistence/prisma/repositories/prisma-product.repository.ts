@@ -101,6 +101,8 @@ export class PrismaProductRepository implements ProductRepository {
         },
       });
 
+      if (!product) return null;
+
       return PrismaProductMapper.toDomain(product);
     } catch (error) {
       this.handleDBError(error);
