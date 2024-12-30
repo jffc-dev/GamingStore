@@ -3,17 +3,15 @@ import {
   Body,
   Controller,
   HttpCode,
-  HttpStatus,
   Patch,
   Post,
   Req,
-  Res,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { RegisterUserUseCase } from 'src/application/use-cases/user/register-user';
 import { LoginUserUseCase } from 'src/application/use-cases/user/login-user';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { ForgotPasswordUseCase } from 'src/application/use-cases/user/forgot-password';
 import { ResetPasswordUseCase } from 'src/application/use-cases/user/reset-password';
 import { RegisterUserDto } from '../../dto/user/register-user.dto';

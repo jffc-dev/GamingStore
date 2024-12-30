@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
-// import { UnifiedExceptionFilter } from './infraestructure/common/filter/exception.filter';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const port = process.env.PORT ?? 3000;
@@ -9,8 +9,12 @@ async function bootstrap() {
     rawBody: true,
     bodyParser: true,
   });
-  const logger = new Logger();
+
+  app.use(helmet());
+
   await app.listen(port);
+
+  const logger = new Logger();
   logger.log(`App running on port: ${port}`);
 }
 bootstrap();
