@@ -7,6 +7,7 @@ export const envSchema = z.object({
   PG_DBNAME: z.string(),
   JWT_SECRET: z.string(),
   RESET_PASSWORD_EXPIRATION_MS: z.coerce.number().min(1),
+  STRIPE_API_KEY: z.string().min(1),
 });
 
 export type Env = z.infer<typeof envSchema>;

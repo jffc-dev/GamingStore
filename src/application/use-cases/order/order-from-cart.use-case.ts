@@ -61,6 +61,7 @@ export class CreateOrderFromCartUseCase {
       total: total,
     });
 
+    // TODO: delete
     await new Promise((resolve) => {
       setTimeout(() => {
         resolve(1);
