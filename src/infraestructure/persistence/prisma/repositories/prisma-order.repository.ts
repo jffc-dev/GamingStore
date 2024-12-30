@@ -12,6 +12,22 @@ import {
 export class PrismaOrderRepository implements OrderRepository {
   constructor(private prisma: PrismaService) {}
 
+  async getOrder(orderId: string): Promise<Order | null> {
+    const order = await this.prisma.order.findUnique({
+      where: {
+        orderId,
+      },
+    });
+
+    if (!order) {
+      return null;
+    }
+
+    if (!order) return null;
+
+    return PrismaOrderMapper.toDomain(order);
+  }
+
   async createOrder(order: Order): Promise<Order> {
     const createdOrder = await this.prisma.order.create({
       data: {
@@ -122,7 +138,7 @@ export class PrismaOrderRepository implements OrderRepository {
     const { code, meta } = error;
 
     if (code === 'P2025') {
-      throw new Error(`Product not found`);
+      throw new Error(`Order not found`);
     } else if (code === 'P2002') {
       throw new Error(`${meta.target[0]} had been already registered`);
     }

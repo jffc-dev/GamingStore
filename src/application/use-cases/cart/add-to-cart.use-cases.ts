@@ -23,6 +23,10 @@ export class AddProductToCartUseCase {
     const productResponse =
       await this.productRepository.getProductById(productId);
 
+    if (!productResponse) {
+      throw new BadRequestException('Product not found');
+    }
+
     if (productResponse.stock < quantity) {
       throw new BadRequestException('Insufficient stock');
     }

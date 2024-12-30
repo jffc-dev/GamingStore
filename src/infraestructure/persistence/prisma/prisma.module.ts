@@ -15,6 +15,8 @@ import { OrderRepository } from 'src/application/contracts/persistence/order.rep
 import { PrismaOrderRepository } from './repositories/prisma-order.repository';
 import { CategoryRepository } from 'src/application/contracts/persistence/category.repository';
 import { PrismaCategoryRepository } from './repositories/prisma-category.repository';
+import { PaymentRepository } from 'src/application/contracts/persistence/payment.repository';
+import { PrismaPaymentRepository } from './repositories/prisma-payment.repository';
 
 @Module({
   imports: [EnvModule],
@@ -48,6 +50,10 @@ import { PrismaCategoryRepository } from './repositories/prisma-category.reposit
       provide: CategoryRepository,
       useClass: PrismaCategoryRepository,
     },
+    {
+      provide: PaymentRepository,
+      useClass: PrismaPaymentRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -58,6 +64,7 @@ import { PrismaCategoryRepository } from './repositories/prisma-category.reposit
     ProductImageRepository,
     OrderRepository,
     CategoryRepository,
+    PaymentRepository,
   ],
 })
 export class PrismaModule {}
