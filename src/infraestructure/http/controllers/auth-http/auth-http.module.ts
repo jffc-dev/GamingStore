@@ -9,6 +9,7 @@ import { ResetPasswordUseCase } from 'src/application/use-cases/user/reset-passw
 import { BcryptModule } from 'src/infraestructure/services/bcrypt/bcrypt.module';
 import { UuidModule } from 'src/infraestructure/services/uuid/uuid.module';
 import { AuthModule } from 'src/infraestructure/services/auth/auth.module';
+import { LogoutUserUseCase } from 'src/application/use-cases/user/logout.user-case';
 
 @Module({
   providers: [
@@ -16,6 +17,7 @@ import { AuthModule } from 'src/infraestructure/services/auth/auth.module';
     LoginUserUseCase,
     ForgotPasswordUseCase,
     ResetPasswordUseCase,
+    LogoutUserUseCase,
   ],
   controllers: [AuthController],
   imports: [

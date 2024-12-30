@@ -50,7 +50,6 @@ export class ProductResolver {
   @Query(() => PaginatedProducts, { name: 'products' })
   async findAll(@Args() dto: ListProductsArgs): Promise<PaginatedProducts> {
     const products = await this.listProductsUseCase.execute(dto);
-    console.log(products);
     return products;
   }
 

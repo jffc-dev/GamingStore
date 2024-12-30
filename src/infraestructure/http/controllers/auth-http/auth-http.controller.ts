@@ -2,16 +2,18 @@ import {
   BadRequestException,
   Body,
   Controller,
+  HttpCode,
   HttpStatus,
   Patch,
   Post,
+  Req,
   Res,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { RegisterUserUseCase } from 'src/application/use-cases/user/register-user';
 import { LoginUserUseCase } from 'src/application/use-cases/user/login-user';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { ForgotPasswordUseCase } from 'src/application/use-cases/user/forgot-password';
 import { ResetPasswordUseCase } from 'src/application/use-cases/user/reset-password';
 import { RegisterUserDto } from '../../dto/user/register-user.dto';
@@ -19,6 +21,7 @@ import { LoginUserDto } from '../../dto/user/login-user.dto';
 import { ForgotPasswordDto } from '../../dto/user/forgot-password.dto';
 import { ResetPasswordDto } from '../../dto/user/reset-password.dto';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
+import { LogoutUserUseCase } from 'src/application/use-cases/user/logout.user-case';
 
 @UsePipes(
   new ValidationPipe({
@@ -37,6 +40,7 @@ export class AuthController {
     private readonly loginUserUseCase: LoginUserUseCase,
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly logoutUserUseCase: LogoutUserUseCase,
   ) {}
 
   @Post('register')
@@ -60,13 +64,18 @@ export class AuthController {
     }
   }
 
+  @HttpCode(204)
   @Auth()
   @Post('logout')
-  async logoutUser(@Res() res: Response) {
+  async logoutUser(@Req() request: Request) {
     try {
-      res.clearCookie('auth_token');
+      const authHeader = request.headers['authorization'];
+      const token = authHeader.split(' ')[1];
+      const response = await this.logoutUserUseCase.execute({ token });
 
-      return res.status(HttpStatus.OK).json({ message: 'Logout successful' });
+      if (!response) {
+        throw new BadRequestException();
+      }
     } catch (error) {
       throw new BadRequestException(error.message);
     }

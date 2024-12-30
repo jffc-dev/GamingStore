@@ -17,6 +17,8 @@ import { CategoryRepository } from 'src/application/contracts/persistence/catego
 import { PrismaCategoryRepository } from './repositories/prisma-category.repository';
 import { PaymentRepository } from 'src/application/contracts/persistence/payment.repository';
 import { PrismaPaymentRepository } from './repositories/prisma-payment.repository';
+import { TokenRepository } from 'src/application/contracts/persistence/token.repository';
+import { PrismaTokenRepository } from './repositories/prisma-token.repository';
 
 @Module({
   imports: [EnvModule],
@@ -54,6 +56,10 @@ import { PrismaPaymentRepository } from './repositories/prisma-payment.repositor
       provide: PaymentRepository,
       useClass: PrismaPaymentRepository,
     },
+    {
+      provide: TokenRepository,
+      useClass: PrismaTokenRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -65,6 +71,7 @@ import { PrismaPaymentRepository } from './repositories/prisma-payment.repositor
     OrderRepository,
     CategoryRepository,
     PaymentRepository,
+    TokenRepository,
   ],
 })
 export class PrismaModule {}

@@ -21,7 +21,6 @@ export class PaymentController {
     @Body() paymentIntentDto: CreatePaymentIntentDto,
     @GetUser() user: User,
   ): Promise<Payment> {
-    console.log(user);
     const payment = await this.createPaymentUseCase.execute({
       ...paymentIntentDto,
       userId: user.id,
