@@ -4,6 +4,7 @@ import { User } from 'src/domain/user';
 import { EnvService } from 'src/infraestructure/env/env.service';
 import { UuidService } from 'src/infraestructure/services/uuid/uuid.service';
 import { ForgotPasswordDto } from 'src/infraestructure/http/dto/user/forgot-password.dto';
+import { NotificationsService } from 'src/infraestructure/notifications/notifications.service';
 
 @Injectable()
 export class ForgotPasswordUseCase {
@@ -11,6 +12,7 @@ export class ForgotPasswordUseCase {
     private readonly userRepository: UserRepository,
     private readonly envService: EnvService,
     private readonly uuidService: UuidService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async execute({ email }: ForgotPasswordDto): Promise<User> {
@@ -32,6 +34,21 @@ export class ForgotPasswordUseCase {
       id,
       updateData,
     );
+
+    const hostApi = this.envService.get('HOST_API');
+    const resetLink = `${hostApi}/reset-password/${updatedUser.resetPasswordToken}`; // emulate fronend route
+    await this.notificationsService.sendEmail({
+      body: `
+        <p>Hello,</p>
+        <p>We received a request to reset your password. Please click the link below to set a new password:</p>
+        <p><a href="${resetLink}" style="color: #4CAF50; text-decoration: none;">Reset My Password</a></p>
+        <p>If you didn’t request a password reset, you can ignore this email. Your password will remain unchanged.</p>
+        <p>For security reasons, this link will expire in 24 hours.</p>
+        <p>Best regards,<br>Your Company Name</p>
+      `,
+      subject: 'Password Reset Request',
+      to: updatedUser.email,
+    });
 
     return updatedUser;
   }

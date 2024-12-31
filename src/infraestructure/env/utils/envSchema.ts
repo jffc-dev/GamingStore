@@ -14,6 +14,7 @@ export const envSchema = z.object({
   MAIL_PORT: z.coerce.number().min(1),
   MAIL_USER: z.string().min(1),
   MAIL_PASS: z.string().min(1),
+  HOST_API: z.string().min(1),
 });
 
 export type Env = z.infer<typeof envSchema>;
