@@ -1,4 +1,4 @@
-import { Entity } from 'src/core/entity';
+import { Entity } from 'src/application/core/entity';
 
 export interface LikeProductProps {
   userId: string;

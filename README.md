@@ -22,9 +22,68 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-# Nerdery - Nodejs Final challenge
+# Nerdery - NestJs challenge
 
-Requirements:
+# Setup in development enviroment
+
+Make sure to have docker and node installed.
+
+1. Clone the project
+
+```
+git clone https://github.com/jffc-dev/GamingStore.git
+```
+
+2. Fetch dependencies
+
+```
+cd GamingStore
+npm install
+```
+
+3. Create an .env file in the root of the project to configure the necessary environment variables. You can use the .env.example file as a reference. Make sure to change the values to match your database, JWT, and other services configurations.
+
+```
+cp .env.example .env
+```
+
+4. Set Up PostgreSQL with Docker
+```
+docker-compose up -d
+```
+
+5. Run Prisma Migrations. Once the PostgreSQL container is running, run the Prisma migrations to create the tables in the database:
+
+```
+npx prisma migrate dev
+```
+
+6. If you want seed data, you can use:
+
+```
+npm run seed
+```
+
+# Introduction:
+
+This application is based on Clean Architecture, a software design philosophy that aims to separate concerns and ensure the maintainability and scalability of an application. By following Clean Architecture principles, we organize the code in a way that keeps the core business logic independent of external frameworks, databases, and user interfaces.
+
+![Nest Clean Architecture](./docs/clean-architecture.jpg)
+
+In this application, we used NestJS, which provides a robust foundation for building scalable and maintainable applications, while adhering to the principles of Clean Architecture. This helps us achieve a well-structured codebase, where the core logic (domain layer) is decoupled from the outer layers (like database access, APIs, etc.).
+
+Why Use Clean Architecture:
+- Separation of Concerns: Clean Architecture divides the application into layers, where each layer has a specific responsibility. This separation makes it easier to manage the code and prevents dependencies from reaching the core logic.
+- Testability: With a clear separation between business logic and external systems, testing becomes more straightforward. The core logic can be unit tested independently of the database, APIs, or other external systems.
+- Maintainability: As the application grows, the codebase remains organized, and modifications in one part of the system do not affect other parts. This reduces the risk of introducing bugs when implementing new features or making changes.
+- Scalability: Clean Architecture supports scaling the application easily. You can add new features, like integrating with third-party services or databases, without impacting the core functionality.
+By applying these principles to this app, we ensure that it remains flexible, maintainable, and easily extendable in the long run, while leveraging the power of NestJS to handle the application logic efficiently.
+
+
+
+
+
+# Requirements:
 
 ```jsx
 # Homework
@@ -108,7 +167,7 @@ This section tracks the progress of the project by listing completed and pending
 
 ### `main`
 - [x] Initialize project with `NestJS`.  
-- [ ] Deploy initial version to production. 
+- [x] Deploy initial version to production. 
 
 ---
 
@@ -206,8 +265,8 @@ This section tracks the progress of the project by listing completed and pending
   - [x] Use a library like `crypto` or `uuid` to generate unique, secure tokens.
   - [x] Configure the expiration time for reset tokens (e.g., 15 minutes or 1 hour).
 
-- [ ] **Send the reset email**
-  - [ ] Integrate an email service (e.g., SendGrid, Nodemailer) to send the reset link.
+- [x] **Send the reset email**
+  - [x] Integrate an email service (e.g., SendGrid, Nodemailer) to send the reset link.
   - [x] Include the token and instructions in the email, such as:
     ```
     Click the link below to reset your password:
@@ -286,7 +345,7 @@ This section tracks the progress of the project by listing completed and pending
 - [x] **Add validations and edge cases**
   - [x] Ensure product stock is sufficient for the requested quantity.
   - [x] Handle cases where the user or product does not exist.
-  - [ ] Prevent negative or zero quantities from being added.
+  - [x] Prevent negative or zero quantities from being added.
 
 ---
 
@@ -339,14 +398,14 @@ This section tracks the progress of the project by listing completed and pending
 ### `feature/stripe-integration`
 
 #### **Stripe Webhook Controller**
-- [ ] Create a `WebhookController` in NestJS to handle incoming webhook requests.
-  - [ ] Define a `@Post()` route for the `/webhook` endpoint.
-  - [ ] Use `express.raw` middleware to parse incoming requests as raw data for Stripe signature verification.
-- [ ] Implement event handlers for:
+- [x] Create a `WebhookController` in NestJS to handle incoming webhook requests.
+  - [x] Define a `@Post()` route for the `/webhook` endpoint.
+  - [x] Use `express.raw` middleware to parse incoming requests as raw data for Stripe signature verification.
+- [x] Implement event handlers for:
   - `payment_intent.succeeded`: Update order status to "Paid" and notify the user.
   - `payment_method.attached`: Update the user record with the new payment method.
   - (Add additional handlers as needed for other subscribed events.)
-- [ ] Log unhandled event types for debugging purposes.
+- [x] Log unhandled event types for debugging purposes.
 
 ---
 

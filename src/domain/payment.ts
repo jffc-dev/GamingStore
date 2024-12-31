@@ -1,4 +1,4 @@
-import { Entity } from 'src/core/entity';
+import { Entity } from 'src/application/core/entity';
 
 type PaymentStatus = 'PENDING' | 'PAID' | 'FAILED';
 type CurrencyType = 'USD';
