@@ -8,12 +8,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { SkipThrottle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { CreateProductImageUseCase } from 'src/application/use-cases/product-image/create-product-image.use-case';
 import { GetProductImageUseCase } from 'src/application/use-cases/product-image/get-product-image.use-case';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 
+@SkipThrottle()
 @Controller('api/products/:productId/images')
 export class ProductImageController {
   constructor(

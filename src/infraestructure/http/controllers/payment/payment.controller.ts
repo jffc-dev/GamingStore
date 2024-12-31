@@ -7,7 +7,9 @@ import { Payment } from 'src/domain/payment';
 import { GetUser } from 'src/infraestructure/common/decorators/get-user.decorator';
 import { User } from 'src/domain/user';
 import { ProcessPaymentUseCase } from 'src/application/use-cases/payment/process-payment.use-case';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('api/payments')
 export class PaymentController {
   constructor(

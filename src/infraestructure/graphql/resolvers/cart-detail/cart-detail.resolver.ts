@@ -8,8 +8,14 @@ import { AddProductToCartUseCase } from 'src/application/use-cases/cart/add-to-c
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 import { SkipThrottle } from '@nestjs/throttler';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 
 @SkipThrottle()
+@UsePipes(
+  new ValidationPipe({
+    transform: true,
+  }),
+)
 @Resolver(() => CartDetail)
 export class CartDetailResolver {
   constructor(
