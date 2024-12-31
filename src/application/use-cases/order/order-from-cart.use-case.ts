@@ -61,13 +61,6 @@ export class CreateOrderFromCartUseCase {
       total: total,
     });
 
-    // TODO: delete
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(1);
-      }, 10000);
-    });
-
     let id = 1;
     for (const cartDetail of cartDetailsResponse) {
       const product = productsResponse.find(

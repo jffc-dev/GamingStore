@@ -15,7 +15,6 @@ export class UpdateProductUseCase {
     productId: string,
     updateProductDto: UpdateProductInput,
   ): Promise<any> {
-    //TODO: improve update dto
     const getResponse = await this.productRepository.getProductById(productId);
 
     if (!getResponse) {
