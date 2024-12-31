@@ -1,13 +1,14 @@
 import { Entity } from 'src/core/entity';
 
 type PaymentStatus = 'PENDING' | 'PAID' | 'FAILED';
+type CurrencyType = 'USD';
 
 export interface PaymentProps {
   paymentId?: string;
   orderId: string;
   stripePaymentId: string;
   amount: number;
-  currency: string;
+  currency: CurrencyType;
   status: PaymentStatus;
   paymentAt?: Date;
   createdAt?: Date;
@@ -35,7 +36,7 @@ export class Payment extends Entity<PaymentProps> {
     return this.props.amount;
   }
 
-  get currency(): string {
+  get currency(): CurrencyType {
     return this.props.currency;
   }
 

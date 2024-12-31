@@ -31,10 +31,12 @@ export class AvailableProductUseCase {
       );
     }
 
-    //TODO: improve update dto
     const product = new Product({
+      categoryId: validateProduct.categoryId,
+      name: validateProduct.name,
+      price: validateProduct.price,
       isActive,
-    } as any);
+    });
 
     const productResponse = await this.productRepository.updateProduct(
       productId,

@@ -14,6 +14,9 @@ export class Product {
   @Field(() => String)
   name: string;
 
+  @Field(() => Float)
+  stock: number;
+
   @Field(() => String, { nullable: true })
   description?: string;
 
@@ -41,6 +44,7 @@ export class Product {
       categoryId: domainObject.categoryId,
       name: domainObject.name,
       price: domainObject.price,
+      stock: domainObject.stock,
       description: domainObject.description,
       isActive: domainObject.isActive,
       createdAt: domainObject.createdAt,

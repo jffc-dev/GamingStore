@@ -15,19 +15,23 @@ export class PrismaPaymentRepository implements PaymentRepository {
           paymentId,
         },
         data: {
-          status: data.status as any,
+          status: data.status,
           paymentAt: data.paymentAt,
         },
       });
 
-      const updatedOrder = await tx.order.update({
-        where: {
-          orderId: updatedPayment.orderId,
-        },
-        data: {
-          status: data.status as any,
-        },
-      });
+      let updatedOrder = null;
+
+      if (data.status === 'PAID') {
+        updatedOrder = await tx.order.update({
+          where: {
+            orderId: updatedPayment.orderId,
+          },
+          data: {
+            status: data.status,
+          },
+        });
+      }
 
       return { updatedPayment, updatedOrder };
     });

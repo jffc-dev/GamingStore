@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 
 interface ICreatePaymentIntentProps {
   amount: number;
-  currency: 'usd';
+  currency: 'USD';
   metadata: { paymentId: string };
 }
 

@@ -50,7 +50,7 @@ export class CreatePaymentUseCase {
 
     const stripeResponse = await this.stripeService.createPaymentIntent({
       amount: amount,
-      currency: currency as any,
+      currency: currency,
       metadata: { paymentId },
     });
 
