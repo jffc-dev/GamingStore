@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { OrderRepository } from '../../../../application/contracts/persistence/order.repository';
 import { Order } from 'src/domain/order';
@@ -138,11 +143,13 @@ export class PrismaOrderRepository implements OrderRepository {
     const { code, meta } = error;
 
     if (code === 'P2025') {
-      throw new Error(`Order not found`);
+      throw new NotFoundException(`Order not found`);
     } else if (code === 'P2002') {
-      throw new Error(`${meta.target[0]} had been already registered`);
+      throw new NotAcceptableException(
+        `${meta.target[0]} had been already registered`,
+      );
     }
 
-    throw new Error(`Internal server error`);
+    throw new InternalServerErrorException(error);
   }
 }

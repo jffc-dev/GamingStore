@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CategoryRepository } from 'src/application/contracts/persistence/category.repository';
 import { Category } from 'src/domain/category';
@@ -40,11 +45,13 @@ export class PrismaCategoryRepository implements CategoryRepository {
     const { code, meta } = error;
 
     if (code === 'P2025') {
-      throw new Error(`Product not found`);
+      throw new NotFoundException(`Category not found`);
     } else if (code === 'P2002') {
-      throw new Error(`${meta.target[0]} had been already registered`);
+      throw new NotAcceptableException(
+        `${meta.target[0]} had been already registered`,
+      );
     }
 
-    throw new Error(`Internal server error`);
+    throw new InternalServerErrorException(error);
   }
 }

@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotImplementedException,
+} from '@nestjs/common';
 import { FileStorageService } from 'src/domain/adapters/file-storage';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
@@ -20,6 +24,6 @@ export class CloudinaryStorageService extends FileStorageService {
   }
 
   getFilePath(): string {
-    throw new InternalServerErrorException('Not implemented');
+    throw new NotImplementedException('Not implemented');
   }
 }

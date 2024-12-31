@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { UserRepository } from 'src/application/contracts/persistence/user.repository';
 import { User } from 'src/domain/user';
@@ -91,9 +95,11 @@ export class PrismaUserRepository implements UserRepository {
     const { code, meta } = error;
 
     if (code === 'P2002') {
-      throw new Error(`${meta.target[0]} had been already registered`);
+      throw new NotAcceptableException(
+        `${meta.target[0]} had been already registered`,
+      );
     }
 
-    throw new Error(`Internal server error`);
+    throw new InternalServerErrorException(error.message);
   }
 }

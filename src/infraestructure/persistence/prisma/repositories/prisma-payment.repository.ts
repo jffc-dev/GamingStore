@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PaymentRepository } from 'src/application/contracts/persistence/payment.repository';
 import { PrismaService } from '../prisma.service';
 import { Payment } from 'src/domain/payment';
@@ -73,11 +78,13 @@ export class PrismaPaymentRepository implements PaymentRepository {
     const { code, meta } = error;
 
     if (code === 'P2025') {
-      throw new Error(`Payment not found`);
+      throw new NotFoundException(`Payment not found`);
     } else if (code === 'P2002') {
-      throw new Error(`${meta.target[0]} had been already registered`);
+      throw new NotAcceptableException(
+        `${meta.target[0]} had been already registered`,
+      );
     }
 
-    throw new Error(`Internal server error`);
+    throw new InternalServerErrorException(error);
   }
 }

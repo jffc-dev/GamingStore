@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { ProductRepository } from 'src/application/contracts/persistence/product.repository';
 import { Product } from 'src/domain/product';
@@ -130,11 +135,14 @@ export class PrismaProductRepository implements ProductRepository {
     const { code, meta } = error;
     console.log(error);
     if (code === 'P2025') {
-      throw new Error(`Product not found`);
+      throw new NotFoundException(`Product not found`);
     } else if (code === 'P2002') {
-      throw new Error(`${meta.target[0]} had been already registered`);
+      throw new NotAcceptableException(
+        `${meta.target[0]} had been already registered`,
+      );
     } else if (code === 'P2003') {
-      throw new Error(`Relation ${meta.field_name} failed`);
+      throw new NotAcceptableException(`Relation ${meta.field_name} failed`);
     }
+    throw new InternalServerErrorException(error);
   }
 }

@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   UnauthorizedException,
+  UnsupportedMediaTypeException,
 } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
@@ -24,7 +25,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       const ctx = GqlExecutionContext.create(context);
       return ctx.getContext().req;
     }
-    throw new Error('Unsupported context type');
+    throw new UnsupportedMediaTypeException('Unsupported context type');
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

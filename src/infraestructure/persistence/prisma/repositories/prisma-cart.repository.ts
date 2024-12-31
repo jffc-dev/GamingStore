@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CartDetailRepository } from 'src/application/contracts/persistence/cart.repository';
 import { CartDetail } from 'src/domain/cart-detail';
@@ -47,11 +52,13 @@ export class PrismaCartDetailRepository implements CartDetailRepository {
     const { code, meta } = error;
 
     if (code === 'P2025') {
-      throw new Error(`Product not found`);
+      throw new NotFoundException(`Product not found`);
     } else if (code === 'P2002') {
-      throw new Error(`${meta.target[0]} had been already registered`);
+      throw new NotAcceptableException(
+        `${meta.target[0]} had been already registered`,
+      );
     }
 
-    throw new Error(`Internal server error`);
+    throw new InternalServerErrorException(error);
   }
 }

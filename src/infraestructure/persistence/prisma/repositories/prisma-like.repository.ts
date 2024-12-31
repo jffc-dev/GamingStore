@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { LikeProductRepository } from 'src/application/contracts/persistence/like.repository';
 import { LikeProduct } from 'src/domain/like-product';
@@ -48,11 +53,13 @@ export class PrismaLikeProductRepository implements LikeProductRepository {
     const { code, meta } = error;
 
     if (code === 'P2025') {
-      throw new Error(`Product not found`);
+      throw new NotFoundException(`Like not found`);
     } else if (code === 'P2002') {
-      throw new Error(`${meta.target[0]} had been already registered`);
+      throw new NotAcceptableException(
+        `${meta.target[0]} had been already registered`,
+      );
     }
 
-    throw new Error(`Internal server error`);
+    throw new InternalServerErrorException(error);
   }
 }

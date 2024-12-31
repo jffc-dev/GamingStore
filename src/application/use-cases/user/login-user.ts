@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserRepository } from '../../contracts/persistence/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from 'src/infraestructure/services/bcrypt/bcrypt.service';
@@ -22,7 +22,7 @@ export class LoginUserUseCase {
     } = userResponse;
 
     if (!(await this.bcryptService.compare(password, userPassword))) {
-      throw new Error('Invalid credentials');
+      throw new BadRequestException('Invalid credentials');
     }
 
     const payload = { id: userId, email: userEmail };

@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { ProductImageRepository } from 'src/application/contracts/persistence/product-image.repository';
 import { ProductImage } from 'src/domain/product-image';
@@ -61,9 +66,12 @@ export class PrismaProductImageRepository implements ProductImageRepository {
     const { code, meta } = error;
 
     if (code === 'P2025') {
-      throw new Error(`Product not found`);
+      throw new NotFoundException(`Product image not found`);
     } else if (code === 'P2002') {
-      throw new Error(`${meta.target[0]} had been already registered`);
+      throw new NotAcceptableException(
+        `${meta.target[0]} had been already registered`,
+      );
     }
+    throw new InternalServerErrorException(error);
   }
 }
