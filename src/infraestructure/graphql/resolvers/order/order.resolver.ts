@@ -18,7 +18,9 @@ import { OrderDetail } from '../../entities/order-detail.entity';
 import { OrderDetailsLoader } from './dataloaders/order-details.loader';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @UsePipes(
   new ValidationPipe({
     transform: true,

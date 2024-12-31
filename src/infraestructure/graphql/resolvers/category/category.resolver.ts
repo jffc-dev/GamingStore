@@ -1,8 +1,10 @@
 import { Query, Resolver } from '@nestjs/graphql';
 import { GetCategoriesUseCase } from 'src/application/use-cases/category/get-categories.use-case';
 import { Category } from '../../entities/category.entity';
+import { SkipThrottle } from '@nestjs/throttler';
 
-@Resolver()
+@SkipThrottle()
+@Resolver(() => Category)
 export class CategoryResolver {
   constructor(private readonly getCategoriesUseCase: GetCategoriesUseCase) {}
 

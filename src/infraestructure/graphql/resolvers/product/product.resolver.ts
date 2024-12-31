@@ -27,7 +27,9 @@ import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decor
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 import { Category } from '../../entities/category.entity';
 import { CategoryLoader } from './dataloaders/category.loader';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @UsePipes(
   new ValidationPipe({
     transform: true,

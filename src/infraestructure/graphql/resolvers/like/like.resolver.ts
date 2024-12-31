@@ -6,7 +6,9 @@ import { User } from 'src/domain/user';
 import { GetLikedProductsUseCase } from '../../../../application/use-cases/like/get-likes.use-case';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Resolver(() => LikeProduct)
 export class LikeResolver {
   constructor(

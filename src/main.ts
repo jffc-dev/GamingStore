@@ -9,9 +9,10 @@ async function bootstrap() {
     rawBody: true,
     bodyParser: true,
   });
-  console.log(process.env.CORS_ORIGINS?.split(','));
+
   app.use(helmet());
   app.enableCors({
+    origin: process.env.CORS_ORIGINS?.split(','),
     methods: 'GET,PUT,PATCH,POST,DELETE',
     credentials: true,
     allowedHeaders: 'Content-Type, Authorization',

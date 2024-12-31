@@ -7,7 +7,9 @@ import { CreateCartDetailInput } from '../../dto/cart/input/create-cart-detail.i
 import { AddProductToCartUseCase } from 'src/application/use-cases/cart/add-to-cart.use-cases';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Resolver(() => CartDetail)
 export class CartDetailResolver {
   constructor(
