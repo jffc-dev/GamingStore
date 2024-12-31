@@ -28,11 +28,16 @@ export class ResetPasswordUseCase {
       id,
       updateData,
     );
-    const notificationResponse = await this.notificationsService.sendEmailTest(
-      updatedUser.email,
-      'subject',
-      'body',
-    );
+    const notificationResponse = await this.notificationsService.sendEmail({
+      body: 'Password Reset Confirmations',
+      subject: `
+        <p>Hello,</p>
+        <p>Your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
+        <p>If you need further assistance, feel free to reach out to us at support@example.com.</p>
+        <p>Best regards,<br>Your Company Name</p>
+      `,
+      to: updatedUser.email,
+    });
 
     return notificationResponse;
   }

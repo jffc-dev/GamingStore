@@ -1,41 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { EnvService } from '../env/env.service';
 
+interface SendEmailProps {
+  to: string;
+  subject: string;
+  body: string;
+}
 @Injectable()
 export class NotificationsService {
-  async sendEmail(to: string, subject: string, body: string): Promise<void> {
+  constructor(private readonly envService: EnvService) {}
+  async sendEmail({ to, subject, body }: SendEmailProps): Promise<void> {
+    const host = this.envService.get('MAIL_HOST');
+    const port = this.envService.get('MAIL_PORT');
+    const user = this.envService.get('MAIL_USER');
+    const pass = this.envService.get('MAIL_PASS');
+
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT, 10),
-      secure: false,
+      host: host,
+      port: port,
+      secure: true,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: user,
+        pass: pass,
       },
     });
 
     await transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: user,
       to,
       subject,
       html: body,
     });
-  }
-
-  async sendEmailTest(
-    to: string,
-    subject: string,
-    body: string,
-  ): Promise<void> {
-    const promise = new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(to);
-        console.log(subject);
-        console.log(body);
-        resolve(1);
-      }, 2000);
-    });
-
-    await promise;
   }
 }

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../../contracts/persistence/user.repository';
 import { User } from 'src/domain/user';
 import { EnvService } from 'src/infraestructure/env/env.service';
-import { NotificationsService } from 'src/infraestructure/notifications/notifications.service';
 import { UuidService } from 'src/infraestructure/services/uuid/uuid.service';
 import { ForgotPasswordDto } from 'src/infraestructure/http/dto/user/forgot-password.dto';
 
@@ -11,11 +10,10 @@ export class ForgotPasswordUseCase {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly envService: EnvService,
-    private readonly notificationsService: NotificationsService,
     private readonly uuidService: UuidService,
   ) {}
 
-  async execute({ email }: ForgotPasswordDto): Promise<any> {
+  async execute({ email }: ForgotPasswordDto): Promise<User> {
     const userResponse = await this.userRepository.findUserByEmail(email);
 
     const expirationMilliseconds = this.envService.get(
@@ -35,12 +33,6 @@ export class ForgotPasswordUseCase {
       updateData,
     );
 
-    const notificationResponse = await this.notificationsService.sendEmailTest(
-      updatedUser.email,
-      'subject',
-      'body',
-    );
-
-    return notificationResponse;
+    return updatedUser;
   }
 }

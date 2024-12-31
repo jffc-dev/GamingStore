@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   Patch,
   Post,
@@ -21,6 +22,7 @@ import { ResetPasswordDto } from '../../dto/user/reset-password.dto';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { LogoutUserUseCase } from 'src/application/use-cases/user/logout.user-case';
 import { SkipThrottle } from '@nestjs/throttler';
+import { NotificationsService } from 'src/infraestructure/notifications/notifications.service';
 
 @SkipThrottle()
 @UsePipes(
@@ -41,6 +43,8 @@ export class AuthController {
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
     private readonly logoutUserUseCase: LogoutUserUseCase,
+
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   @Post('register')
@@ -81,12 +85,13 @@ export class AuthController {
     }
   }
 
+  // @HttpCode(204)
   @SkipThrottle({ default: false })
   @Post('forgot-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     try {
       const data = await this.forgotPasswordUseCase.execute(forgotPasswordDto);
-      return data;
+      return { token: data.resetPasswordToken };
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -101,5 +106,15 @@ export class AuthController {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  @Get('valid')
+  async valid() {
+    await this.notificationsService.sendEmail({
+      subject: 'Forgot',
+      body: 'data',
+      to: 'javierflores@ravn.co',
+    });
+    return 1;
   }
 }
