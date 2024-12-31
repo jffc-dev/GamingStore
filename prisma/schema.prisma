@@ -49,27 +49,10 @@ model User {
   updatedAt              DateTime?       @updatedAt @map("updated_at")
   deletedAt              DateTime?       @map("deleted_at")
   cart                   CartDetail[]
-  notifications          Notification[]
   orders                 Order[]
   productLikes           ProductLike[]
 
   @@map("customer_user")
-}
-
-model Notification {
-  notificationId String                  @id @map("notification_id") @db.Uuid
-  userId         String                  @map("user_id") @db.Uuid
-  title          String                  @db.VarChar(200)
-  description    String?
-  priority       priority_enum           @default(NORMAL)
-  status         status_enum?            @default(UNREAD)
-  type           notification_type_enum? @default(EMAIL)
-  createdAt      DateTime?               @default(now()) @map("created_at") @db.Timestamp(6)
-  sendAt         DateTime?               @map("send_at") @db.Timestamp(6)
-  readAt         DateTime?               @map("read_at") @db.Timestamp(6)
-  user           User                    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-
-  @@map("notification")
 }
 
 model Order {
@@ -106,7 +89,7 @@ model Payment {
   orderId         String              @map("order_id") @db.Uuid
   stripePaymentId String              @unique @map("stripe_payment_id") @db.VarChar(255)
   amount          Decimal             @db.Decimal(10, 2)
-  currency        String
+  currency        payment_currency_enum
   status          payment_status_enum @default(PENDING)
   paymentAt       DateTime?           @map("payment_at") @db.Timestamptz(3)
   createdAt       DateTime?           @default(now()) @map("created_at")
@@ -166,11 +149,10 @@ model RevokedToken {
   @@map("revoked_token")
 }
 
-enum notification_type_enum {
-  EMAIL
-  SMS
-  WHATSAPP
+enum payment_currency_enum {
+  USD
 }
+
 
 enum order_status_enum {
   PAID
