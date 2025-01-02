@@ -5,6 +5,8 @@ import { Order } from 'src/domain/order';
 import { UuidService } from 'src/infraestructure/services/uuid/uuid.service';
 import { OrderRepository } from '../../contracts/persistence/order.repository';
 import { OrderDetail } from 'src/domain/order-detail';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
 
 interface ICreateOrderFromCartUseCaseProps {
   userId: string;
@@ -16,6 +18,8 @@ export class CreateOrderFromCartUseCase {
     private readonly productRepository: ProductRepository,
     private readonly uuidService: UuidService,
     private readonly orderRepository: OrderRepository,
+
+    @InjectQueue('stock-notifications') private stockNotificationsQueue: Queue,
   ) {}
 
   async execute({ userId }: ICreateOrderFromCartUseCaseProps): Promise<Order> {
@@ -86,6 +90,29 @@ export class CreateOrderFromCartUseCase {
       order,
       userId,
     );
+
+    for (const cartDetail of cartDetailsResponse) {
+      const product = productsResponse.find(
+        (product) => product.productId === cartDetail.productId,
+      );
+
+      if (product.stock <= 3) {
+        await this.stockNotificationsQueue.add(
+          'check-stock',
+          {
+            productId: product.productId,
+            stock: product.stock,
+          },
+          {
+            attempts: 3,
+            backoff: {
+              type: 'exponential',
+              delay: 1000,
+            },
+          },
+        );
+      }
+    }
 
     return orderResponse;
   }
