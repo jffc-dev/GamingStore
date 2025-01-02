@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
-import helmet from 'helmet';
 
 async function bootstrap() {
   const port = process.env.PORT ?? 3000;
@@ -10,7 +9,6 @@ async function bootstrap() {
     bodyParser: true,
   });
 
-  app.use(helmet());
   app.enableCors({
     origin: process.env.CORS_ORIGINS?.split(','),
     methods: 'GET,PUT,PATCH,POST,DELETE',
