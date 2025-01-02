@@ -10,8 +10,8 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { RegisterUserUseCase } from 'src/application/use-cases/user/register-user';
-import { LoginUserUseCase } from 'src/application/use-cases/user/login-user';
+import { RegisterUserUseCase } from 'src/application/use-cases/user/register-user.use-case';
+import { LoginUserUseCase } from 'src/application/use-cases/user/login-user.use-case';
 import { Request } from 'express';
 import { ForgotPasswordUseCase } from 'src/application/use-cases/user/forgot-password';
 import { ResetPasswordUseCase } from 'src/application/use-cases/user/reset-password';

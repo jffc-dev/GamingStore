@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '../../contracts/persistence/user.repository';
 import { User } from 'src/domain/user';
 import { EnvService } from 'src/infraestructure/env/env.service';
@@ -17,6 +17,10 @@ export class ForgotPasswordUseCase {
 
   async execute({ email }: ForgotPasswordDto): Promise<User> {
     const userResponse = await this.userRepository.findUserByEmail(email);
+
+    if (!userResponse) {
+      throw new NotFoundException('Not found user');
+    }
 
     const expirationMilliseconds = this.envService.get(
       'RESET_PASSWORD_EXPIRATION_MS',

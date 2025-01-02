@@ -7,7 +7,7 @@ import { StripeService } from 'src/infraestructure/services/stripe/stripe.servic
 import {
   DEFAULT_CURRENCY,
   INITIAL_PAYMENT_STATE,
-} from 'src/infraestructure/common/utils/constants';
+} from 'src/application/utils/constants';
 
 interface ICreatePaymentUseCaseProps {
   orderId: string;
@@ -48,13 +48,12 @@ export class CreatePaymentUseCase {
     const paymentResponse = await this.paymentRepository.createPayment(payment);
     const { amount, currency, paymentId } = paymentResponse;
 
-    const stripeResponse = await this.stripeService.createPaymentIntent({
+    await this.stripeService.createPaymentIntent({
       amount: amount,
       currency: currency,
       metadata: { paymentId },
     });
 
-    console.log(stripeResponse);
     return paymentResponse;
   }
 }

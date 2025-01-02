@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth-http.controller';
-import { RegisterUserUseCase } from 'src/application/use-cases/user/register-user';
-import { LoginUserUseCase } from 'src/application/use-cases/user/login-user';
+import { RegisterUserUseCase } from 'src/application/use-cases/user/register-user.use-case';
+import { LoginUserUseCase } from 'src/application/use-cases/user/login-user.use-case';
 import { EnvModule } from 'src/infraestructure/env/env.module';
 import { ForgotPasswordUseCase } from 'src/application/use-cases/user/forgot-password';
 import { NotificationsModule } from 'src/infraestructure/notifications/notifications.module';
