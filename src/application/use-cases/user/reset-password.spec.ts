@@ -5,6 +5,10 @@ import { NotificationsService } from 'src/infraestructure/notifications/notifica
 import { BcryptService } from 'src/infraestructure/services/bcrypt/bcrypt.service';
 import { User } from 'src/domain/user';
 import { ResetPasswordUseCase } from './reset-password';
+import {
+  RESET_PASSWORD_BODY,
+  RESET_PASSWORD_SUBJECT,
+} from 'src/application/utils/constants';
 
 describe('ResetPasswordUseCase', () => {
   let useCase: ResetPasswordUseCase;
@@ -85,8 +89,8 @@ describe('ResetPasswordUseCase', () => {
       password: hashedPassword,
     });
     expect(notificationsService.sendEmail).toHaveBeenCalledWith({
-      body: '<p>ola</p>',
-      subject: 'Password Reset Confirmations',
+      body: RESET_PASSWORD_BODY,
+      subject: RESET_PASSWORD_SUBJECT,
       to: mockUser.email,
     });
     expect(result).toEqual(emailResponse);
