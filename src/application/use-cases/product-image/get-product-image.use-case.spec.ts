@@ -1,25 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { ProductImageRepository } from 'src/application/contracts/persistence/product-image.repository';
 import { FileStorageService } from 'src/domain/adapters/file-storage';
+import { BadRequestException } from '@nestjs/common';
 import { ProductImage } from 'src/domain/product-image';
 import { GetProductImageUseCase } from './get-product-image.use-case';
 
 describe('GetProductImageUseCase', () => {
-  let getProductImageUseCase: GetProductImageUseCase;
-  let productImageRepositoryMock: ProductImageRepository;
-  let fileStorageServiceMock: FileStorageService;
+  let getProductImageUseCase: jest.Mocked<GetProductImageUseCase>;
+  let productImageRepositoryMock: jest.Mocked<ProductImageRepository>;
+  let fileStorageServiceMock: jest.Mocked<FileStorageService>;
 
-  const mockProductImage = new ProductImage({
-    productId: 'product-id',
-    url: 'url',
-  });
+  const mockProductImage = new ProductImage();
   mockProductImage.url = 'mock-image-url';
 
   const imageId = 'mock-image-id';
   const productId = 'mock-product-id';
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleRef = await Test.createTestingModule({
       providers: [
         GetProductImageUseCase,
         {
@@ -36,14 +34,6 @@ describe('GetProductImageUseCase', () => {
         },
       ],
     }).compile();
-
-    getProductImageUseCase = module.get<GetProductImageUseCase>(
-      GetProductImageUseCase,
-    );
-    productImageRepositoryMock = module.get<ProductImageRepository>(
-      ProductImageRepository,
-    );
-    fileStorageServiceMock = module.get<FileStorageService>(FileStorageService);
   });
 
   it('should be defined', () => {
@@ -64,6 +54,38 @@ describe('GetProductImageUseCase', () => {
     );
     expect(fileStorageServiceMock.getFilePath).toHaveBeenCalledWith(
       mockProductImage.url,
+    );
+  });
+
+  it('should throw BadRequestException if the product image is not found', async () => {
+    productImageRepositoryMock.getProductImageById.mockResolvedValue(null);
+
+    await expect(
+      getProductImageUseCase.execute({
+        imageId,
+        productId,
+      }),
+    ).rejects.toThrowError(BadRequestException);
+
+    expect(productImageRepositoryMock.getProductImageById).toHaveBeenCalledWith(
+      imageId,
+      productId,
+    );
+  });
+
+  it('should throw an error if file storage service fails', async () => {
+    fileStorageServiceMock.getFilePath.mockResolvedValue(new Error());
+
+    await expect(
+      getProductImageUseCase.execute({
+        imageId,
+        productId,
+      }),
+    ).rejects.toThrowError('File not found');
+
+    expect(productImageRepositoryMock.getProductImageById).toHaveBeenCalledWith(
+      imageId,
+      productId,
     );
   });
 });
