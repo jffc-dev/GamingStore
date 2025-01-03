@@ -133,7 +133,7 @@ export class PrismaProductRepository implements ProductRepository {
 
   handleDBError(error: Prisma.PrismaClientKnownRequestError): void {
     const { code, meta } = error;
-    console.log(error);
+
     if (code === 'P2025') {
       throw new NotFoundException(`Product not found`);
     } else if (code === 'P2002') {

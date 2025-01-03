@@ -141,7 +141,7 @@ describe('CreateOrderFromCartUseCase', () => {
       mockRepositories.cartDetail.getCartDetailsByUser.mockResolvedValue(
         mockCartDetails,
       );
-      console.log(mockProducts);
+
       mockRepositories.product.getProductsByIds.mockResolvedValue(mockProducts);
       mockRepositories.order.createFullOrder.mockImplementation(
         (order) => order,

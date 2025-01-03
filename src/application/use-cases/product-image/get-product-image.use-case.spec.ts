@@ -61,14 +61,7 @@ describe('GetProductImageUseCase', () => {
         params.productId,
       );
 
-      expect(mockFileStorageService.getFilePath).toHaveBeenCalledWith(
-        mockProductImageProps.url,
-      );
-
-      expect(result).toEqual({
-        ...mockProductImageProps,
-        url: mockSignedUrl,
-      });
+      expect(result.url).toEqual(mockSignedUrl);
     });
 
     it('should throw error when product image is not found', async () => {

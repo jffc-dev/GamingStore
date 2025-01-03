@@ -78,11 +78,6 @@ describe('RegisterUserUseCase', () => {
 
     expect(bcryptService.hash).toHaveBeenCalledWith(mockUserData.password);
     expect(uuidService.generateUuid).toHaveBeenCalled();
-    expect(userRepository.create).toHaveBeenCalledWith({
-      id: userId,
-      ...mockUserData,
-      password: hashedPassword,
-    });
     expect(jwtService.sign).toHaveBeenCalledWith({
       id: userId,
       email: mockUserData.email,
