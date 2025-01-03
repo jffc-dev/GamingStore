@@ -36,12 +36,12 @@ export class ResetPasswordUseCase {
       id,
       updateData,
     );
-    const notificationResponse = await this.notificationsService.sendEmail({
+    await this.notificationsService.sendEmail({
       body: RESET_PASSWORD_BODY,
       subject: RESET_PASSWORD_SUBJECT,
       to: updatedUser.email,
     });
 
-    return notificationResponse;
+    return true;
   }
 }

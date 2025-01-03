@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TokenRepository } from 'src/application/contracts/persistence/token.repository';
-import { LogoutUserUseCase } from './logout.user-case';
+import { LogoutUserUseCase } from './logout.use-case';
 
 const mockTokenRepository = () => ({
   create: jest.fn(),

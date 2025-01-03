@@ -4,7 +4,7 @@ import { UserRepository } from '../../contracts/persistence/user.repository';
 import { NotificationsService } from 'src/infraestructure/notifications/notifications.service';
 import { BcryptService } from 'src/infraestructure/services/bcrypt/bcrypt.service';
 import { User } from 'src/domain/user';
-import { ResetPasswordUseCase } from './reset-password';
+import { ResetPasswordUseCase } from './reset-password.use-case';
 import {
   RESET_PASSWORD_BODY,
   RESET_PASSWORD_SUBJECT,
@@ -60,7 +60,6 @@ describe('ResetPasswordUseCase', () => {
     const resetToken = 'valid-token';
     const newPassword = 'new-password';
     const hashedPassword = 'new-hash';
-    const emailResponse = { success: true };
 
     userRepository.findUserByResetToken.mockResolvedValue(mockUser);
     bcryptService.hash.mockResolvedValue(hashedPassword);
@@ -93,7 +92,7 @@ describe('ResetPasswordUseCase', () => {
       subject: RESET_PASSWORD_SUBJECT,
       to: mockUser.email,
     });
-    expect(result).toEqual(emailResponse);
+    expect(result).toEqual(true);
   });
 
   it('should throw BadRequestException when reset token is invalid', async () => {
