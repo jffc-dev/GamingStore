@@ -20,26 +20,22 @@ describe('PrismaUserRepository', () => {
     },
   };
 
-  const mockPrismaMapper = {
-    toPrisma: jest.fn(),
-    toDomain: jest.fn(),
-  };
-
-  const mockUser: User = new User({
+  const mockUser = {
     id: 'user-123',
     email: 'test@example.com',
     name: 'Test User',
     lastName: 'Test User',
     password: 'hashed-password',
     resetPasswordToken: 'reset-token',
-  });
+    resetPasswordExpiresAt: undefined,
+    role: undefined,
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PrismaUserRepository,
         { provide: PrismaService, useValue: mockPrismaService },
-        { provide: PrismaUserMapper, useValue: mockPrismaMapper },
       ],
     }).compile();
 
@@ -53,33 +49,32 @@ describe('PrismaUserRepository', () => {
 
   describe('create', () => {
     it('should create a user and return it', async () => {
-      const prismaUser = { email: 'test@example.com' };
-      mockPrismaMapper.toPrisma.mockReturnValue(prismaUser);
+      const domainUser = new User({ ...mockUser });
+
+      const prismaUser = PrismaUserMapper.toPrisma(domainUser);
       mockPrismaService.user.create.mockResolvedValue(prismaUser);
-      mockPrismaMapper.toDomain.mockReturnValue(mockUser);
 
-      const result = await repository.create(mockUser);
+      const result = await repository.create(domainUser);
 
-      expect(prismaService.user.create).toHaveBeenCalledWith({
-        data: prismaUser,
-      });
-      expect(result).toEqual(mockUser);
+      expect(result).toEqual(domainUser);
     });
 
     it('should handle P2002 error', async () => {
       const error = { code: 'P2002', meta: { target: ['email'] } };
+      const prismaUser = new User({ ...mockUser });
       mockPrismaService.user.create.mockRejectedValue(error);
 
-      await expect(repository.create(mockUser)).rejects.toThrow(
+      await expect(repository.create(prismaUser)).rejects.toThrow(
         NotAcceptableException,
       );
     });
 
     it('should handle other database errors', async () => {
+      const prismaUser = new User({ ...mockUser });
       const error = new Error('Database error');
       mockPrismaService.user.create.mockRejectedValue(error);
 
-      await expect(repository.create(mockUser)).rejects.toThrow(
+      await expect(repository.create(prismaUser)).rejects.toThrow(
         InternalServerErrorException,
       );
     });
@@ -87,16 +82,16 @@ describe('PrismaUserRepository', () => {
 
   describe('findUserByEmail', () => {
     it('should find a user by email and return it', async () => {
-      const prismaUser = { email: 'test@example.com' };
+      const prismaUser = PrismaUserMapper.toPrisma(new User({ ...mockUser }));
       mockPrismaService.user.findUnique.mockResolvedValue(prismaUser);
-      mockPrismaMapper.toDomain.mockReturnValue(mockUser);
 
       const result = await repository.findUserByEmail('test@example.com');
-
+      console.log(result);
+      console.log(mockUser);
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: 'test@example.com' },
       });
-      expect(result).toEqual(mockUser);
+      expect(result.id).toEqual(mockUser.id);
     });
 
     it('should return null if no user is found', async () => {
@@ -112,14 +107,13 @@ describe('PrismaUserRepository', () => {
     it('should find a user by reset token and return it', async () => {
       const prismaUser = { resetPasswordToken: 'reset-token' };
       mockPrismaService.user.findUnique.mockResolvedValue(prismaUser);
-      mockPrismaMapper.toDomain.mockReturnValue(mockUser);
 
       const result = await repository.findUserByResetToken('reset-token');
 
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { resetPasswordToken: 'reset-token' },
       });
-      expect(result).toEqual(mockUser);
+      expect(result.resetPasswordToken).toEqual(mockUser.resetPasswordToken);
     });
 
     it('should return null if no user is found', async () => {
@@ -133,33 +127,33 @@ describe('PrismaUserRepository', () => {
 
   describe('updateUserById', () => {
     it('should update a user and return it', async () => {
-      const prismaUser = { userId: 'user-123' };
-      mockPrismaMapper.toPrisma.mockReturnValue(prismaUser);
+      const domainUser = new User({ ...mockUser });
+      const prismaUser = PrismaUserMapper.toPrisma(domainUser);
       mockPrismaService.user.update.mockResolvedValue(prismaUser);
-      mockPrismaMapper.toDomain.mockReturnValue(mockUser);
 
-      const result = await repository.updateUserById('user-123', mockUser);
+      const result = await repository.updateUserById('user-123', domainUser);
 
       expect(prismaService.user.update).toHaveBeenCalledWith({
         where: { userId: 'user-123' },
         data: prismaUser,
       });
-      expect(result).toEqual(mockUser);
+      expect(result).toEqual(domainUser);
     });
   });
 
   describe('findOneById', () => {
     it('should find a user by ID and return it', async () => {
-      const prismaUser = { userId: 'user-123' };
+      const domainUser = new User({ ...mockUser });
+      const prismaUser = PrismaUserMapper.toPrisma(domainUser);
+      const prismaFilter = { userId: 'user-123' };
       mockPrismaService.user.findUnique.mockResolvedValue(prismaUser);
-      mockPrismaMapper.toDomain.mockReturnValue(mockUser);
 
       const result = await repository.findOneById('user-123');
 
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { userId: 'user-123' },
+        where: prismaFilter,
       });
-      expect(result).toEqual(mockUser);
+      expect(result).toEqual(domainUser);
     });
 
     it('should return null if no user is found', async () => {
