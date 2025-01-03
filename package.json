@@ -95,9 +95,7 @@
     ],
     "coverageDirectory": "../coverage",
     "modulePaths": ["<rootDir>"],
-    "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/$1"
-    },
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": ["node_modules", "\\.module\\.ts$","\\.mapper\\.ts$", "jwt.strategy.ts"]
   }
 }

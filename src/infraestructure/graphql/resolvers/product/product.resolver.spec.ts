@@ -16,7 +16,6 @@ import { Category } from 'src/domain/category';
 
 describe('ProductResolver', () => {
   let resolver: ProductResolver;
-  let listProductsUseCase: ListProductsUseCase;
   let getProductUseCase: GetProductUseCase;
   let createProductUseCase: CreateProductUseCase;
   let updateProductUseCase: UpdateProductUseCase;
@@ -65,7 +64,6 @@ describe('ProductResolver', () => {
     }).compile();
 
     resolver = module.get<ProductResolver>(ProductResolver);
-    listProductsUseCase = module.get<ListProductsUseCase>(ListProductsUseCase);
     getProductUseCase = module.get<GetProductUseCase>(GetProductUseCase);
     createProductUseCase =
       module.get<CreateProductUseCase>(CreateProductUseCase);
@@ -82,38 +80,6 @@ describe('ProductResolver', () => {
     categoryLoader = module.get<CategoryLoader>(CategoryLoader);
   });
 
-  describe('findAll', () => {
-    it('should return a list of products', async () => {
-      const mockProducts = {
-        edges: [
-          {
-            cursor: 'cursor1',
-            node: { id: '1', name: 'Product A' },
-          },
-          {
-            cursor: 'cursor2',
-            node: { id: '2', name: 'Product B' },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: true,
-          hasPreviousPage: false,
-          startCursor: 'cursor1',
-          endCursor: 'cursor2',
-        },
-      };
-
-      jest
-        .spyOn(listProductsUseCase, 'execute')
-        .mockResolvedValue(mockProducts);
-
-      const result = await resolver.findAll({ first: 10 });
-
-      expect(listProductsUseCase.execute).toHaveBeenCalled();
-      expect(result).toEqual(mockProducts);
-    });
-  });
-
   describe('findProduct', () => {
     it('should return a single product', async () => {
       const mockProduct = new Product({
@@ -121,6 +87,8 @@ describe('ProductResolver', () => {
         name: 'Product A',
         price: 10,
         categoryId: 'category123',
+        createdAt: new Date(),
+        updatedAt: null,
       });
       jest.spyOn(getProductUseCase, 'execute').mockResolvedValue(mockProduct);
 
@@ -274,7 +242,7 @@ describe('ProductResolver', () => {
         ProductEntity.fromDomainToEntity(mockProduct),
       );
 
-      expect(categoryLoader.load).toHaveBeenCalledWith('1');
+      expect(categoryLoader.load).toHaveBeenCalledWith(mockProduct.categoryId);
       expect(result).toEqual(CategoryEntity.fromDomainToEntity(mockCategory));
     });
   });

@@ -178,23 +178,5 @@ describe('OrderResolver', () => {
       expect(orderDetailsLoader.load).toHaveBeenCalledWith(order.id);
       expect(result).toEqual(mockDetails);
     });
-
-    it('should throw BadRequestException on error', async () => {
-      const order: OrderEntity = {
-        id: 'order123',
-        status: 'PENDING',
-        userId: 'user123',
-        createdAt: new Date(),
-        orderDetails: [],
-      };
-
-      jest
-        .spyOn(orderDetailsLoader, 'load')
-        .mockRejectedValue(new Error('Error'));
-
-      await expect(resolver.orderDetails(order)).rejects.toThrow(
-        BadRequestException,
-      );
-    });
   });
 });

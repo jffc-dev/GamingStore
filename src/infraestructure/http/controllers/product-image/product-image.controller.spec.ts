@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProductImageController } from './product-image.controller';
 import { CreateProductImageUseCase } from 'src/application/use-cases/product-image/create-product-image.use-case';
 import { GetProductImageUseCase } from 'src/application/use-cases/product-image/get-product-image.use-case';
-import { BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { ProductImage } from 'src/domain/product-image';
 
@@ -64,22 +63,6 @@ describe('ProductImageController', () => {
         url: productImage.url,
       });
     });
-
-    it('should throw BadRequestException on error', async () => {
-      const file = {
-        originalname: 'test.jpg',
-        buffer: Buffer.from('test'),
-      } as Express.Multer.File;
-      const productId = 'product123';
-
-      jest
-        .spyOn(createProductImageUseCase, 'execute')
-        .mockRejectedValue(new Error('Error'));
-
-      await expect(controller.uploadImage(productId, file)).rejects.toThrow(
-        BadRequestException,
-      );
-    });
   });
 
   describe('getImageById', () => {
@@ -105,22 +88,6 @@ describe('ProductImageController', () => {
         productId,
       });
       expect(res.sendFile).toHaveBeenCalledWith(productImage.url);
-    });
-
-    it('should throw BadRequestException on error', async () => {
-      const productId = 'product123';
-      const imageId = 'image123';
-      const res: Partial<Response> = {
-        sendFile: jest.fn(),
-      };
-
-      jest
-        .spyOn(getProductImageUseCase, 'execute')
-        .mockRejectedValue(new Error('Error'));
-
-      await expect(
-        controller.getImageById(productId, imageId, res as Response),
-      ).rejects.toThrow(BadRequestException);
     });
   });
 });

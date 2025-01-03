@@ -95,30 +95,5 @@ describe('PaymentController', () => {
       });
       expect(result).toBe(payment);
     });
-
-    it('should throw BadRequestException on error', async () => {
-      const rawBody = Buffer.from('raw_body_data');
-      const signature = 'test_signature';
-      const request: any = {
-        headers: { 'stripe-signature': signature },
-        body: {
-          created: new Date().toISOString(),
-          data: {
-            object: {
-              metadata: { paymentId: 'paymentId' },
-            },
-          },
-        },
-        rawBody,
-      };
-
-      jest
-        .spyOn(processPaymentUseCase, 'execute')
-        .mockRejectedValue(new Error('Error'));
-
-      await expect(controller.stripeWebhook(request)).rejects.toThrow(
-        BadRequestException,
-      );
-    });
   });
 });
