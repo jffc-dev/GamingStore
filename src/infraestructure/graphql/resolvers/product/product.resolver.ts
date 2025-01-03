@@ -16,7 +16,7 @@ import { GetProductDto } from '../../dto/product/get-product.dto';
 import { UpdateProductUseCase } from 'src/application/use-cases/product/update-product.use-case';
 import { HttpCode, UsePipes, ValidationPipe } from '@nestjs/common';
 import { DeleteProductUseCase } from 'src/application/use-cases/product/delete-product.use-case';
-import { AvailableProductUseCase } from '../../../../application/use-cases/product/avilable-product.use-case';
+import { AvailableProductUseCase } from '../../../../application/use-cases/product/available-product.use-case';
 import {
   ListProductsArgs,
   PaginatedProducts,

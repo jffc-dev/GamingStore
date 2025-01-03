@@ -1,91 +1,126 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { GetProductImageUseCase } from './get-product-image.use-case';
 import { ProductImageRepository } from 'src/application/contracts/persistence/product-image.repository';
 import { FileStorageService } from 'src/domain/adapters/file-storage';
-import { BadRequestException } from '@nestjs/common';
 import { ProductImage } from 'src/domain/product-image';
-import { GetProductImageUseCase } from './get-product-image.use-case';
 
 describe('GetProductImageUseCase', () => {
-  let getProductImageUseCase: jest.Mocked<GetProductImageUseCase>;
-  let productImageRepositoryMock: jest.Mocked<ProductImageRepository>;
-  let fileStorageServiceMock: jest.Mocked<FileStorageService>;
+  let useCase: GetProductImageUseCase;
+  let productImageRepository: jest.Mocked<ProductImageRepository>;
 
-  const mockProductImage = new ProductImage();
-  mockProductImage.url = 'mock-image-url';
+  const mockProductImageProps = {
+    id: 'image-123',
+    productId: 'product-456',
+    url: 'original/path/image.jpg',
+    createdAt: new Date(),
+  };
 
-  const imageId = 'mock-image-id';
-  const productId = 'mock-product-id';
+  const mockSignedUrl = 'https://cdn.example.com/signed-url/image.jpg';
+
+  const mockFileStorageService = {
+    getFilePath: jest.fn(),
+  };
 
   beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       providers: [
         GetProductImageUseCase,
         {
           provide: ProductImageRepository,
           useValue: {
-            getProductImageById: jest.fn().mockResolvedValue(mockProductImage),
+            getProductImageById: jest.fn(),
           },
         },
         {
           provide: FileStorageService,
-          useValue: {
-            getFilePath: jest.fn().mockResolvedValue('mock-file-path'),
-          },
+          useValue: mockFileStorageService,
         },
       ],
     }).compile();
+
+    useCase = module.get<GetProductImageUseCase>(GetProductImageUseCase);
+    productImageRepository = module.get(ProductImageRepository);
+
+    productImageRepository.getProductImageById.mockResolvedValue(
+      new ProductImage({ ...mockProductImageProps }),
+    );
+    mockFileStorageService.getFilePath.mockResolvedValue(mockSignedUrl);
   });
 
-  it('should be defined', () => {
-    expect(getProductImageUseCase).toBeDefined();
-  });
+  describe('execute', () => {
+    it('should successfully get a product image with signed URL', async () => {
+      const params = {
+        imageId: mockProductImageProps.id,
+        productId: mockProductImageProps.productId,
+      };
 
-  it('should return product image with the correct file path', async () => {
-    const result = await getProductImageUseCase.execute({
-      imageId,
-      productId,
+      const result = await useCase.execute(params);
+
+      expect(productImageRepository.getProductImageById).toHaveBeenCalledWith(
+        params.imageId,
+        params.productId,
+      );
+
+      expect(mockFileStorageService.getFilePath).toHaveBeenCalledWith(
+        mockProductImageProps.url,
+      );
+
+      expect(result).toEqual({
+        ...mockProductImageProps,
+        url: mockSignedUrl,
+      });
     });
 
-    expect(result).toBeDefined();
-    expect(result.url).toBe('mock-file-path');
-    expect(productImageRepositoryMock.getProductImageById).toHaveBeenCalledWith(
-      imageId,
-      productId,
-    );
-    expect(fileStorageServiceMock.getFilePath).toHaveBeenCalledWith(
-      mockProductImage.url,
-    );
-  });
+    it('should throw error when product image is not found', async () => {
+      productImageRepository.getProductImageById.mockRejectedValue(
+        new Error('Product image not found'),
+      );
 
-  it('should throw BadRequestException if the product image is not found', async () => {
-    productImageRepositoryMock.getProductImageById.mockResolvedValue(null);
+      const params = {
+        imageId: 'non-existent-image',
+        productId: 'non-existent-product',
+      };
 
-    await expect(
-      getProductImageUseCase.execute({
-        imageId,
-        productId,
-      }),
-    ).rejects.toThrowError(BadRequestException);
+      await expect(useCase.execute(params)).rejects.toThrow(
+        'Product image not found',
+      );
+    });
 
-    expect(productImageRepositoryMock.getProductImageById).toHaveBeenCalledWith(
-      imageId,
-      productId,
-    );
-  });
+    it('should throw error when file storage service fails', async () => {
+      mockFileStorageService.getFilePath.mockRejectedValue(
+        new Error('Failed to generate signed URL'),
+      );
 
-  it('should throw an error if file storage service fails', async () => {
-    fileStorageServiceMock.getFilePath.mockResolvedValue(new Error());
+      const params = {
+        imageId: mockProductImageProps.id,
+        productId: mockProductImageProps.productId,
+      };
 
-    await expect(
-      getProductImageUseCase.execute({
-        imageId,
-        productId,
-      }),
-    ).rejects.toThrowError('File not found');
+      await expect(useCase.execute(params)).rejects.toThrow(
+        'Failed to generate signed URL',
+      );
+    });
 
-    expect(productImageRepositoryMock.getProductImageById).toHaveBeenCalledWith(
-      imageId,
-      productId,
-    );
+    it('should pass the correct URL to file storage service', async () => {
+      const customMockImage = {
+        ...mockProductImageProps,
+        url: 'custom/path/special-image.png',
+      };
+
+      productImageRepository.getProductImageById.mockResolvedValue(
+        new ProductImage({ ...customMockImage }),
+      );
+
+      const params = {
+        imageId: customMockImage.id,
+        productId: customMockImage.productId,
+      };
+
+      await useCase.execute(params);
+
+      expect(mockFileStorageService.getFilePath).toHaveBeenCalledWith(
+        'custom/path/special-image.png',
+      );
+    });
   });
 });

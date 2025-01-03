@@ -6,7 +6,7 @@ import { ProductResolver } from './product.resolver';
 import { GetProductUseCase } from 'src/application/use-cases/product/get-product.use-case';
 import { UpdateProductUseCase } from 'src/application/use-cases/product/update-product.use-case';
 import { DeleteProductUseCase } from 'src/application/use-cases/product/delete-product.use-case';
-import { AvailableProductUseCase } from 'src/application/use-cases/product/avilable-product.use-case';
+import { AvailableProductUseCase } from 'src/application/use-cases/product/available-product.use-case';
 import { GetImagesByProductUseCase } from 'src/application/use-cases/product-image/images-by-product.use-case';
 import { ImagesByProductLoader } from './dataloaders/images-by-product.loader';
 import { CategoryLoader } from './dataloaders/category.loader';
