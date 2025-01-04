@@ -39,7 +39,6 @@ describe('LikeResolver', () => {
       const mockInput: LikeProductInput = { productId: 'product1' };
       const mockUser: User = { id: 'user1' } as User;
       const mockResult: LikeProductEntity = {
-        id: 'like1',
         productId: 'product1',
         userId: 'user1',
       } as LikeProductEntity;
@@ -96,7 +95,9 @@ describe('LikeResolver', () => {
       expect(getLikedProductsUseCase.execute).toHaveBeenCalledWith({
         userId: 'user1',
       });
-      expect(result).toEqual(mockLikedProducts);
+      expect(result).toEqual(
+        mockLikedProducts.map(LikeProductEntity.fromDomainToEntity),
+      );
     });
 
     it('should return an empty array if the user has no liked products', async () => {

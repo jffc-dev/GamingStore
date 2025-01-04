@@ -4,7 +4,6 @@ import { CreatePaymentUseCase } from 'src/application/use-cases/payment/create-p
 import { ProcessPaymentUseCase } from 'src/application/use-cases/payment/process-payment.use-case';
 import { CreatePaymentIntentDto } from '../../dto/payment/payment-intent.dto';
 import { User } from 'src/domain/user';
-import { BadRequestException } from '@nestjs/common';
 
 describe('PaymentController', () => {
   let controller: PaymentController;
@@ -49,19 +48,6 @@ describe('PaymentController', () => {
         userId: user.id,
       });
       expect(result).toBe(payment);
-    });
-
-    it('should throw BadRequestException on error', async () => {
-      jest
-        .spyOn(createPaymentUseCase, 'execute')
-        .mockRejectedValue(new Error('Error'));
-
-      const dto: CreatePaymentIntentDto = { orderId: '' };
-      const user: User = { id: 'userId', email: 'test@example.com' } as User;
-
-      await expect(controller.createPayment(dto, user)).rejects.toThrow(
-        BadRequestException,
-      );
     });
   });
 

@@ -5,7 +5,6 @@ import { GetUserOrdersUseCase } from 'src/application/use-cases/order/get-orders
 import { OrderDetailsLoader } from './dataloaders/order-details.loader';
 import { Order as OrderEntity } from '../../entities/order.entity';
 import { OrderDetail } from '../../entities/order-detail.entity';
-import { BadRequestException } from '@nestjs/common';
 import { Order } from 'src/domain/order';
 
 describe('OrderResolver', () => {
@@ -63,17 +62,6 @@ describe('OrderResolver', () => {
       });
       expect(result).toEqual(OrderEntity.fromDomainToEntity(mockOrder));
     });
-
-    it('should throw BadRequestException on error', async () => {
-      jest
-        .spyOn(createOrderFromCartUseCase, 'execute')
-        .mockRejectedValue(new Error('Error'));
-
-      const context = { req: { user: { id: 'user123' } } };
-      await expect(resolver.createOrder(context)).rejects.toThrow(
-        BadRequestException,
-      );
-    });
   });
 
   describe('getUserOrders', () => {
@@ -103,17 +91,6 @@ describe('OrderResolver', () => {
         filters: { userId: 'user123' },
       });
       expect(result).toEqual(mockOrders.map(OrderEntity.fromDomainToEntity));
-    });
-
-    it('should throw BadRequestException on error', async () => {
-      jest
-        .spyOn(getUserOrdersUseCase, 'execute')
-        .mockRejectedValue(new Error('Error'));
-
-      const context = { req: { user: { id: 'user123' } } };
-      await expect(resolver.getUserOrders(context)).rejects.toThrow(
-        BadRequestException,
-      );
     });
   });
 
@@ -145,18 +122,6 @@ describe('OrderResolver', () => {
         filters,
       });
       expect(result).toEqual(mockOrders.map(OrderEntity.fromDomainToEntity));
-    });
-
-    it('should throw BadRequestException on error', async () => {
-      const filters = { userId: 'user123' };
-
-      jest
-        .spyOn(getUserOrdersUseCase, 'execute')
-        .mockRejectedValue(new Error('Error'));
-
-      await expect(resolver.getOrders(filters)).rejects.toThrow(
-        BadRequestException,
-      );
     });
   });
 

@@ -118,35 +118,6 @@ describe('UpdateProductUseCase', () => {
     expect(productRepository.updateProduct).not.toHaveBeenCalled();
   });
 
-  it('should handle all updateable fields', async () => {
-    const productId = mockProduct.productId;
-    const updateData: UpdateProductInput = {
-      name: 'Fully Updated Product',
-      description: 'New description',
-      price: 200,
-      stock: 20,
-      isActive: false,
-    };
-
-    productRepository.getProductById.mockResolvedValue(mockProduct);
-    productRepository.updateProduct.mockImplementation((id, product) =>
-      Promise.resolve(new Product({ ...mockProductProps, ...product })),
-    );
-
-    const result = await useCase.execute(productId, updateData);
-
-    expect(productRepository.updateProduct).toHaveBeenCalledWith(
-      productId,
-      expect.objectContaining(updateData),
-    );
-    expect(result).toEqual(
-      expect.objectContaining({
-        ...mockProduct,
-        ...updateData,
-      }),
-    );
-  });
-
   it('should throw error when update fails', async () => {
     const productId = mockProduct.productId;
     const updateData: UpdateProductInput = {

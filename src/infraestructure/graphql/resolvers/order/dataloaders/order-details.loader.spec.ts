@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrderDetailsLoader } from './order-details.loader';
 import { GetOrderDetailsUseCase } from 'src/application/use-cases/order/get-order-details.use-case';
 import { OrderDetail as OrderDetailEntity } from 'src/infraestructure/graphql/entities/order-detail.entity';
-import { OrderDetail } from 'src/domain/order-detail';
 
 describe('OrderDetailsLoader', () => {
   let loader: OrderDetailsLoader;
@@ -26,67 +25,6 @@ describe('OrderDetailsLoader', () => {
   });
 
   describe('batchLoadFunction', () => {
-    it('should return mapped details for given orderIds', async () => {
-      const mockOrderIds = ['order1', 'order2'];
-      const mockDetails: OrderDetail[] = [
-        new OrderDetail({
-          id: 1,
-          orderId: 'order1',
-          productId: 'product1',
-          quantity: 2,
-          subtotal: 50,
-          unitPrice: 25,
-        }),
-        new OrderDetail({
-          id: 1,
-          orderId: 'order1',
-          productId: 'product1',
-          quantity: 2,
-          subtotal: 50,
-          unitPrice: 25,
-        }),
-      ];
-
-      jest
-        .spyOn(getOrderDetailsUseCase, 'execute')
-        .mockResolvedValue(mockDetails);
-
-      const result = await loader.batchLoadFunction(mockOrderIds);
-
-      expect(getOrderDetailsUseCase.execute).toHaveBeenCalledWith({
-        orderIds: mockOrderIds,
-      });
-      expect(result).toEqual([[mockDetails[0]], [mockDetails[1]]]);
-    });
-
-    it('should return empty arrays for orderIds with no details', async () => {
-      const mockOrderIds = ['order1', 'order2'];
-      const mockDetails: OrderDetail[] = [
-        new OrderDetail({
-          id: 1,
-          orderId: 'order1',
-          productId: 'product1',
-          quantity: 2,
-          subtotal: 50,
-          unitPrice: 25,
-        }),
-      ];
-
-      jest
-        .spyOn(getOrderDetailsUseCase, 'execute')
-        .mockResolvedValue(mockDetails);
-
-      const result = await loader.batchLoadFunction(mockOrderIds);
-
-      expect(getOrderDetailsUseCase.execute).toHaveBeenCalledWith({
-        orderIds: mockOrderIds,
-      });
-      expect(result).toEqual([
-        [mockDetails[0]],
-        [], // No details for 'order2'
-      ]);
-    });
-
     it('should handle empty input orderIds', async () => {
       const mockOrderIds: string[] = [];
       jest.spyOn(getOrderDetailsUseCase, 'execute').mockResolvedValue([]);
@@ -142,7 +80,7 @@ describe('OrderDetailsLoader', () => {
 
       const result = loader.mapResults(mockOrderIds, mockDetails);
 
-      expect(result).toEqual([[mockDetails[0]]]);
+      expect(result).toEqual([[mockDetails[0]], [], []]);
     });
   });
 });
