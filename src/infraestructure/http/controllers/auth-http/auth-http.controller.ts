@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -22,7 +21,6 @@ import { ResetPasswordDto } from '../../dto/user/reset-password.dto';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { LogoutUserUseCase } from 'src/application/use-cases/user/logout.use-case';
 import { SkipThrottle } from '@nestjs/throttler';
-import { NotificationsService } from 'src/infraestructure/notifications/notifications.service';
 
 @SkipThrottle()
 @UsePipes(
@@ -43,78 +41,46 @@ export class AuthController {
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
     private readonly logoutUserUseCase: LogoutUserUseCase,
-
-    private readonly notificationsService: NotificationsService,
   ) {}
 
   @Post('register')
   async registerUser(@Body() registerUserDto: RegisterUserDto) {
-    try {
-      const { token } = await this.registerUserUseCase.execute(registerUserDto);
-
-      return { token };
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    const { token } = await this.registerUserUseCase.execute(registerUserDto);
+    return { token };
   }
 
   @Post('login')
   async loginUser(@Body() loginUserDto: LoginUserDto) {
-    try {
-      const { token } = await this.loginUserUseCase.execute(loginUserDto);
-      return { token };
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    const { token } = await this.loginUserUseCase.execute(loginUserDto);
+    return { token };
   }
 
   @HttpCode(204)
   @Auth()
   @Post('logout')
   async logoutUser(@Req() request: Request) {
-    try {
-      const authHeader = request.headers['authorization'];
-      const token = authHeader.split(' ')[1];
-      const response = await this.logoutUserUseCase.execute({ token });
-
-      if (!response) {
-        throw new BadRequestException();
-      }
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    const authHeader = request.headers['authorization'];
+    const token = authHeader.split(' ')[1];
+    await this.logoutUserUseCase.execute({ token });
   }
 
-  // @HttpCode(204)
   @SkipThrottle({ default: false })
   @Post('forgot-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    try {
-      const data = await this.forgotPasswordUseCase.execute(forgotPasswordDto);
-      return { token: data.resetPasswordToken };
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    const data = await this.forgotPasswordUseCase.execute(forgotPasswordDto);
+    return { token: data.resetPasswordToken };
   }
 
+  @HttpCode(204)
   @SkipThrottle({ default: false })
   @Patch('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    try {
-      const data = await this.resetPasswordUseCase.execute(resetPasswordDto);
-      return data;
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    const data = await this.resetPasswordUseCase.execute(resetPasswordDto);
+    return data;
   }
 
-  @Get('valid')
-  async valid() {
-    await this.notificationsService.sendEmail({
-      subject: 'Forgot',
-      body: 'data',
-      to: 'javierflores@ravn.co',
-    });
-    return 1;
-  }
+  @Auth()
+  @HttpCode(204)
+  @Get('validate-login')
+  async validate() {}
 }

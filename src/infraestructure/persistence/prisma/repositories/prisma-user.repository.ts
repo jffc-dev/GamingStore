@@ -1,12 +1,10 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotAcceptableException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { UserRepository } from 'src/application/contracts/persistence/user.repository';
 import { User } from 'src/domain/user';
 import { PrismaUserMapper } from '../mappers/prisma-user.mapper';
+import { Prisma } from '@prisma/client';
+import { ACTION_CREATE, ACTION_FIND } from 'src/application/utils/constants';
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
@@ -22,29 +20,27 @@ export class PrismaUserRepository implements UserRepository {
 
       return PrismaUserMapper.toDomain(createdUser);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_CREATE);
     }
   }
 
-  async findUserByEmail(email: string): Promise<User | null> {
+  async findUserByEmail(email: string): Promise<User> {
     try {
-      const foundUser = await this.prisma.user.findUnique({
+      const foundUser = await this.prisma.user.findUniqueOrThrow({
         where: {
           email,
         },
       });
 
-      if (!foundUser) return null;
-
       return PrismaUserMapper.toDomain(foundUser);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_FIND);
     }
   }
 
   async findUserByResetToken(resetToken: string): Promise<User | null> {
     try {
-      const foundUser = await this.prisma.user.findUnique({
+      const foundUser = await this.prisma.user.findUniqueOrThrow({
         where: {
           resetPasswordToken: resetToken,
         },
@@ -54,7 +50,7 @@ export class PrismaUserRepository implements UserRepository {
 
       return PrismaUserMapper.toDomain(foundUser);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_FIND);
     }
   }
 
@@ -93,15 +89,20 @@ export class PrismaUserRepository implements UserRepository {
     }
   }
 
-  handleDBError(error: any): void {
-    const { code, meta } = error;
+  handleDBError(
+    error: Prisma.PrismaClientKnownRequestError,
+    action?: string,
+  ): void {
+    const { code, meta = {} } = error;
+    meta.action = action;
 
+    // TODO: IMPROVE THIS
     if (code === 'P2002') {
-      throw new NotAcceptableException(
-        `${meta.target[0]} had been already registered`,
-      );
+      throw error;
+    } else if (code === 'P2025') {
+      throw error;
     }
 
-    throw new InternalServerErrorException(error.message);
+    throw error;
   }
 }

@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserRepository } from '../../contracts/persistence/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from 'src/infraestructure/services/bcrypt/bcrypt.service';
@@ -18,10 +14,6 @@ export class LoginUserUseCase {
 
   async execute({ password, email }: LoginUserDto): Promise<any> {
     const userResponse = await this.userRepository.findUserByEmail(email);
-
-    if (!userResponse) {
-      throw new NotFoundException('User not found');
-    }
 
     const {
       id: userId,
