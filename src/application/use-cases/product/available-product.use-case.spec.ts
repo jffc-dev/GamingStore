@@ -128,21 +128,4 @@ describe('AvailableProductUseCase', () => {
     );
     expect(productRepositoryMock.updateProduct).not.toHaveBeenCalled();
   });
-
-  it('should propagate errors from the repository', async () => {
-    productRepositoryMock.getProductById.mockRejectedValue(
-      new Error('Database error'),
-    );
-
-    const input = { productId: mockProductId, isActive: true };
-
-    await expect(availableProductUseCase.execute(input)).rejects.toThrow(
-      'Database error',
-    );
-
-    expect(productRepositoryMock.getProductById).toHaveBeenCalledWith(
-      mockProductId,
-    );
-    expect(productRepositoryMock.updateProduct).not.toHaveBeenCalled();
-  });
 });

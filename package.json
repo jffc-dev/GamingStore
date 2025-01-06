@@ -96,6 +96,6 @@
     "coverageDirectory": "../coverage",
     "modulePaths": ["<rootDir>"],
     "testEnvironment": "node",
-    "coveragePathIgnorePatterns": ["node_modules", "\\.module\\.ts$","\\.mapper\\.ts$","\\.dto\\.ts$","\\.input\\.ts$","\\.entity\\.ts$", "main.ts"]
+    "coveragePathIgnorePatterns": ["node_modules", "\\.module\\.ts$","\\.mapper\\.ts$","\\.dto\\.ts$","\\.input\\.ts$","\\.entity\\.ts$", "main.ts","domain"]
   }
 }

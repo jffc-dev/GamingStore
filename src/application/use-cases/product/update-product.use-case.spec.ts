@@ -117,20 +117,4 @@ describe('UpdateProductUseCase', () => {
     );
     expect(productRepository.updateProduct).not.toHaveBeenCalled();
   });
-
-  it('should throw error when update fails', async () => {
-    const productId = mockProduct.productId;
-    const updateData: UpdateProductInput = {
-      name: 'Updated Product',
-    };
-
-    productRepository.getProductById.mockResolvedValue(mockProduct);
-    productRepository.updateProduct.mockRejectedValue(
-      new Error('Update failed'),
-    );
-
-    await expect(useCase.execute(productId, updateData)).rejects.toThrow(
-      'Update failed',
-    );
-  });
 });

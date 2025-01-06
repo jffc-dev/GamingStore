@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { FileStorageService } from 'src/domain/adapters/file-storage';
+import { FileStorageService } from 'src/domain/adapters/file-storage.interface';
 import { CloudinaryStorageService } from './cloudinary-file-storage.service';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { EnvModule } from 'src/infraestructure/env/env.module';

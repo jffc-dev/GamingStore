@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaCategoryRepository } from './prisma-category.repository';
+import { Test } from '@nestjs/testing';
 import { PrismaService } from '../prisma.service';
-import { PrismaCategoryMapper } from '../mappers/prisma-category.mapper';
+import { PrismaCategoryRepository } from './prisma-category.repository';
 import { Category } from 'src/domain/category';
 import {
-  InternalServerErrorException,
   NotFoundException,
+  NotAcceptableException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 
 describe('PrismaCategoryRepository', () => {
@@ -18,26 +18,14 @@ describe('PrismaCategoryRepository', () => {
     },
   };
 
-  const mockPrismaMapper = {
-    toDomain: jest.fn(),
-  };
-
-  const mockCategories = [
-    new Category({ id: '1', name: 'Category 1', isDeleted: false }),
-    new Category({ id: '2', name: 'Category 2', isDeleted: false }),
-  ];
-
-  const mockPrismaCategories = [
-    { categoryId: '1', name: 'Category 1', isDeleted: false },
-    { categoryId: '2', name: 'Category 2', isDeleted: false },
-  ];
-
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       providers: [
         PrismaCategoryRepository,
-        { provide: PrismaService, useValue: mockPrismaService },
-        { provide: PrismaCategoryMapper, useValue: mockPrismaMapper },
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
       ],
     }).compile();
 
@@ -50,55 +38,164 @@ describe('PrismaCategoryRepository', () => {
   });
 
   describe('getCategoriesByIds', () => {
-    it('should return categories for given IDs', async () => {
-      const categoryIds = ['1', '2'];
+    const mockCategoryIds = ['1', '2'];
+    const mockPrismaCategories = [
+      {
+        categoryId: '1',
+        name: 'Electronics',
+        description: 'Electronic items',
+        isDeleted: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        categoryId: '2',
+        name: 'Books',
+        description: 'Book items',
+        isDeleted: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+
+    const mockCategories = mockPrismaCategories.map(
+      (cat) =>
+        new Category({
+          id: cat.categoryId,
+          name: cat.name,
+          description: cat.description,
+          isDeleted: cat.isDeleted,
+          createdAt: cat.createdAt,
+          updatedAt: cat.updatedAt,
+        }),
+    );
+
+    it('should successfully get categories by ids', async () => {
       mockPrismaService.category.findMany.mockResolvedValue(
         mockPrismaCategories,
       );
-      mockPrismaMapper.toDomain.mockImplementation((data) =>
-        mockCategories.find((c) => c.id === data.categoryId),
-      );
 
-      const result = await repository.getCategoriesByIds(categoryIds);
+      const result = await repository.getCategoriesByIds(mockCategoryIds);
 
       expect(prismaService.category.findMany).toHaveBeenCalledWith({
-        where: { categoryId: { in: categoryIds } },
+        where: {
+          categoryId: { in: mockCategoryIds },
+        },
       });
       expect(result).toEqual(mockCategories);
     });
 
-    it('should handle database errors gracefully', async () => {
-      const error = { code: 'P2025' };
+    it('should throw InternalServerErrorException on database error', async () => {
+      const error = new Error('Database error');
       mockPrismaService.category.findMany.mockRejectedValue(error);
 
-      await expect(repository.getCategoriesByIds(['1', '2'])).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        repository.getCategoriesByIds(mockCategoryIds),
+      ).rejects.toThrow(InternalServerErrorException);
+    });
+
+    it('should return empty array when no categories found', async () => {
+      mockPrismaService.category.findMany.mockResolvedValue([]);
+
+      const result = await repository.getCategoriesByIds(mockCategoryIds);
+
+      expect(result).toEqual([]);
     });
   });
 
   describe('getCategories', () => {
-    it('should return all non-deleted categories', async () => {
+    const mockPrismaCategories = [
+      {
+        categoryId: '1',
+        name: 'Electronics',
+        description: 'Electronic items',
+        isDeleted: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        categoryId: '2',
+        name: 'Books',
+        description: 'Book items',
+        isDeleted: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+
+    const mockCategories = mockPrismaCategories.map(
+      (cat) =>
+        new Category({
+          id: cat.categoryId,
+          name: cat.name,
+          description: cat.description,
+          isDeleted: cat.isDeleted,
+          createdAt: cat.createdAt,
+          updatedAt: cat.updatedAt,
+        }),
+    );
+
+    it('should successfully get all non-deleted categories', async () => {
       mockPrismaService.category.findMany.mockResolvedValue(
         mockPrismaCategories,
-      );
-      mockPrismaMapper.toDomain.mockImplementation((data) =>
-        mockCategories.find((c) => c.id === data.categoryId),
       );
 
       const result = await repository.getCategories();
 
       expect(prismaService.category.findMany).toHaveBeenCalledWith({
-        where: { isDeleted: false },
+        where: {
+          isDeleted: false,
+        },
       });
       expect(result).toEqual(mockCategories);
     });
 
-    it('should handle database errors gracefully', async () => {
+    it('should throw InternalServerErrorException on database error', async () => {
       const error = new Error('Database error');
       mockPrismaService.category.findMany.mockRejectedValue(error);
 
       await expect(repository.getCategories()).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
+
+    it('should return empty array when no categories exist', async () => {
+      mockPrismaService.category.findMany.mockResolvedValue([]);
+
+      const result = await repository.getCategories();
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('handleDBError', () => {
+    it('should throw NotFoundException for P2025 error code', () => {
+      const error = { code: 'P2025' };
+
+      expect(() => repository.handleDBError(error)).toThrow(NotFoundException);
+      expect(() => repository.handleDBError(error)).toThrow(
+        'Category not found',
+      );
+    });
+
+    it('should throw NotAcceptableException for P2002 error code', () => {
+      const error = {
+        code: 'P2002',
+        meta: { target: ['name'] },
+      };
+
+      expect(() => repository.handleDBError(error)).toThrow(
+        NotAcceptableException,
+      );
+      expect(() => repository.handleDBError(error)).toThrow(
+        'name had been already registered',
+      );
+    });
+
+    it('should throw InternalServerErrorException for unknown errors', () => {
+      const error = new Error('Unknown error');
+
+      expect(() => repository.handleDBError(error)).toThrow(
         InternalServerErrorException,
       );
     });

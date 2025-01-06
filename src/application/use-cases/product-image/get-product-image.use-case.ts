@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ProductImageRepository } from 'src/application/contracts/persistence/product-image.repository';
-import { FileStorageService } from 'src/domain/adapters/file-storage';
+import { FileStorageService } from 'src/domain/adapters/file-storage.interface';
 import { ProductImage } from 'src/domain/product-image';
 
 interface IGetProductImageUseCaseProps {

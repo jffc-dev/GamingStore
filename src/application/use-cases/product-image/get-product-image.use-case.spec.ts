@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetProductImageUseCase } from './get-product-image.use-case';
 import { ProductImageRepository } from 'src/application/contracts/persistence/product-image.repository';
-import { FileStorageService } from 'src/domain/adapters/file-storage';
 import { ProductImage } from 'src/domain/product-image';
+import { FileStorageService } from 'src/domain/adapters/file-storage.interface';
 
 describe('GetProductImageUseCase', () => {
   let useCase: GetProductImageUseCase;

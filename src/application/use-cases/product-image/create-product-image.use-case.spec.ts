@@ -1,10 +1,10 @@
 import { Test } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import { ProductImageRepository } from 'src/application/contracts/persistence/product-image.repository';
-import { FileStorageService } from 'src/domain/adapters/file-storage';
 import { UuidService } from 'src/infraestructure/services/uuid/uuid.service';
 import { ProductImage } from 'src/domain/product-image';
 import { CreateProductImageUseCase } from './create-product-image.use-case';
+import { FileStorageService } from 'src/domain/adapters/file-storage.interface';
 
 describe('CreateProductImageUseCase', () => {
   let useCase: CreateProductImageUseCase;

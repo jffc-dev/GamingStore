@@ -1,6 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { PrismaService } from '../prisma.service';
 import { CartDetail } from 'src/domain/cart-detail';
+import { PrismaCartDetailMapper } from '../mappers/prisma-cart-detail.mapper';
+import {
+  NotFoundException,
+  NotAcceptableException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaCartDetailRepository } from './prisma-cart.repository';
 
 describe('PrismaCartDetailRepository', () => {
@@ -14,26 +20,14 @@ describe('PrismaCartDetailRepository', () => {
     },
   };
 
-  const mockCartDetail: CartDetail = new CartDetail({
-    userId: 'user-123',
-    productId: 'product-123',
-    quantity: 2,
-    createdAt: new Date('2025-01-04T02:20:59.681Z'),
-    updatedAt: new Date('2025-01-04T02:20:59.681Z'),
-  });
-
-  const mockPrismaCartDetail = {
-    userId: 'user-123',
-    productId: 'product-123',
-    quantity: 2,
-    price: 100,
-  };
-
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       providers: [
         PrismaCartDetailRepository,
-        { provide: PrismaService, useValue: mockPrismaService },
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
       ],
     }).compile();
 
@@ -48,37 +42,144 @@ describe('PrismaCartDetailRepository', () => {
   });
 
   describe('addToCart', () => {
-    it('should add a product to the cart or update it', async () => {
+    const mockCartDetail = new CartDetail({
+      userId: 'user-1',
+      productId: 'product-1',
+      quantity: 2,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const mockPrismaCartDetail =
+      PrismaCartDetailMapper.toPrisma(mockCartDetail);
+
+    it('should successfully add item to cart', async () => {
       mockPrismaService.cartDetail.upsert.mockResolvedValue(
         mockPrismaCartDetail,
       );
 
       const result = await repository.addToCart(mockCartDetail);
 
-      expect(result.userId).toEqual(mockCartDetail.userId);
-      expect(result.quantity).toEqual(mockCartDetail.quantity);
-      expect(result.productId).toEqual(mockCartDetail.productId);
+      expect(prismaService.cartDetail.upsert).toHaveBeenCalledWith({
+        where: {
+          userId_productId: {
+            productId: mockCartDetail.productId,
+            userId: mockCartDetail.userId,
+          },
+        },
+        create: mockPrismaCartDetail,
+        update: mockPrismaCartDetail,
+      });
+      expect(result).toEqual(mockCartDetail);
+    });
+
+    it('should throw NotFoundException when product not found', async () => {
+      const error = { code: 'P2025' };
+      mockPrismaService.cartDetail.upsert.mockRejectedValue(error);
+
+      await expect(repository.addToCart(mockCartDetail)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw NotAcceptableException on duplicate entry', async () => {
+      const error = {
+        code: 'P2002',
+        meta: { target: ['userId'] },
+      };
+      mockPrismaService.cartDetail.upsert.mockRejectedValue(error);
+
+      await expect(repository.addToCart(mockCartDetail)).rejects.toThrow(
+        NotAcceptableException,
+      );
+    });
+
+    it('should throw InternalServerErrorException on unknown error', async () => {
+      const error = new Error('Unknown error');
+      mockPrismaService.cartDetail.upsert.mockRejectedValue(error);
+
+      await expect(repository.addToCart(mockCartDetail)).rejects.toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 
   describe('getCartDetailsByUser', () => {
-    it('should return a list of cart details for a user', async () => {
-      const prismaCartDetails = [mockPrismaCartDetail];
-      const domainCartDetails = [mockCartDetail];
+    const mockUserId = 'user-1';
+    const mockCartDetails = [
+      new CartDetail({
+        userId: mockUserId,
+        productId: 'product-1',
+        quantity: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+      new CartDetail({
+        userId: mockUserId,
+        productId: 'product-2',
+        quantity: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    ];
 
+    const mockPrismaCartDetails = mockCartDetails.map(
+      PrismaCartDetailMapper.toPrisma,
+    );
+
+    it('should successfully get cart details by user', async () => {
       mockPrismaService.cartDetail.findMany.mockResolvedValue(
-        prismaCartDetails,
+        mockPrismaCartDetails,
       );
 
-      const result = await repository.getCartDetailsByUser('user-123');
+      const result = await repository.getCartDetailsByUser(mockUserId);
 
       expect(prismaService.cartDetail.findMany).toHaveBeenCalledWith({
-        where: { userId: 'user-123' },
+        where: { userId: mockUserId },
       });
+      expect(result).toEqual(mockCartDetails);
+    });
 
-      expect(result[0].userId).toEqual(domainCartDetails[0].userId);
-      expect(result[0].quantity).toEqual(domainCartDetails[0].quantity);
-      expect(result[0].productId).toEqual(domainCartDetails[0].productId);
+    it('should throw InternalServerErrorException on database error', async () => {
+      const error = new Error('Database error');
+      mockPrismaService.cartDetail.findMany.mockRejectedValue(error);
+
+      await expect(repository.getCartDetailsByUser(mockUserId)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
+  });
+
+  describe('handleDBError', () => {
+    it('should throw NotFoundException for P2025 error code', () => {
+      const error = { code: 'P2025' };
+
+      expect(() => repository.handleDBError(error)).toThrow(NotFoundException);
+      expect(() => repository.handleDBError(error)).toThrow(
+        'Product not found',
+      );
+    });
+
+    it('should throw NotAcceptableException for P2002 error code', () => {
+      const error = {
+        code: 'P2002',
+        meta: { target: ['userId'] },
+      };
+
+      expect(() => repository.handleDBError(error)).toThrow(
+        NotAcceptableException,
+      );
+      expect(() => repository.handleDBError(error)).toThrow(
+        'userId had been already registered',
+      );
+    });
+
+    it('should throw InternalServerErrorException for unknown errors', () => {
+      const error = new Error('Unknown error');
+
+      expect(() => repository.handleDBError(error)).toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 });
