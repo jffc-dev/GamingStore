@@ -1,4 +1,12 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { CartDetail } from '../../entities/cart-detail.entity';
 import { GetCartDetailsUseCase } from 'src/application/use-cases/cart/get-cart-details.use-case';
 import { CartDetailProps } from 'src/domain/cart-detail';
@@ -9,6 +17,8 @@ import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decor
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 import { SkipThrottle } from '@nestjs/throttler';
 import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { ProductLoader } from './dataloaders/product.loader';
+import { Product } from '../../entities/product.entity';
 
 @SkipThrottle()
 @UsePipes(
@@ -21,6 +31,8 @@ export class CartDetailResolver {
   constructor(
     private readonly getCartDetailsUseCase: GetCartDetailsUseCase,
     private readonly addProductToCartUseCase: AddProductToCartUseCase,
+
+    private readonly productLoader: ProductLoader,
   ) {}
 
   @Auth(ValidRoles.client)
@@ -47,5 +59,11 @@ export class CartDetailResolver {
       quantity,
     });
     return CartDetail.fromDomainToEntity(cartDetail);
+  }
+
+  @ResolveField(() => Product)
+  async product(@Parent() cartDetail: CartDetail): Promise<Product> {
+    const product = await this.productLoader.load(cartDetail.productId);
+    return Product.fromDomainToEntity(product);
   }
 }

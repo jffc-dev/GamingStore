@@ -61,6 +61,7 @@ type CartDetail {
   quantity: Int!
   createdAt: DateTime
   updatedAt: DateTime
+  product: Product!
 }
 
 type LikeProduct {
