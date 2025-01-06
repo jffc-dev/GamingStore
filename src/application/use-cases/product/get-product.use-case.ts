@@ -9,7 +9,7 @@ export class GetProductUseCase {
 
   async execute({ productId }: GetProductDto): Promise<Product> {
     const productResponse =
-      await this.productRepository.getProductById(productId);
+      await this.productRepository.getProductByIdOrThrow(productId);
 
     return productResponse;
   }

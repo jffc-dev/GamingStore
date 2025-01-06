@@ -7,6 +7,7 @@ export abstract class ProductRepository {
   abstract softDeleteProductById(productId: string): Promise<boolean>;
   abstract updateProduct(productId: string, data: Product): Promise<Product>;
   abstract getProductById(productId: string): Promise<Product | null>;
+  abstract getProductByIdOrThrow(productId: string): Promise<Product>;
   abstract filterProducts(dto: IListProductsUseCaseProps): Promise<Product[]>;
   abstract getProductsByIds(productIds: string[]): Promise<Product[]>;
 

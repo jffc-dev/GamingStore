@@ -1,15 +1,15 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotAcceptableException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { ProductRepository } from 'src/application/contracts/persistence/product.repository';
 import { Product } from 'src/domain/product';
 import { PrismaProductMapper } from '../mappers/prisma-product.mapper';
 import { IListProductsUseCaseProps } from 'src/application/use-cases/product/list-products.use-case';
 import { Prisma } from '@prisma/client';
+import {
+  ACTION_CREATE,
+  ACTION_FIND,
+  ACTION_UPDATE,
+} from 'src/application/utils/constants';
 
 @Injectable()
 export class PrismaProductRepository implements ProductRepository {
@@ -48,7 +48,7 @@ export class PrismaProductRepository implements ProductRepository {
 
       return PrismaProductMapper.toDomain(createdProduct);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_CREATE);
     }
   }
 
@@ -95,7 +95,7 @@ export class PrismaProductRepository implements ProductRepository {
 
       return PrismaProductMapper.toDomain(updatedProduct);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_UPDATE);
     }
   }
 
@@ -116,6 +116,20 @@ export class PrismaProductRepository implements ProductRepository {
     }
   }
 
+  async getProductByIdOrThrow(productId: string): Promise<Product> {
+    try {
+      const product = await this.prisma.product.findUniqueOrThrow({
+        where: {
+          productId,
+        },
+      });
+
+      return PrismaProductMapper.toDomain(product);
+    } catch (error) {
+      this.handleDBError(error, ACTION_FIND);
+    }
+  }
+
   async getProductsByIds(productIds: string[]): Promise<Product[]> {
     try {
       const products = await this.prisma.product.findMany({
@@ -131,18 +145,32 @@ export class PrismaProductRepository implements ProductRepository {
     }
   }
 
-  handleDBError(error: Prisma.PrismaClientKnownRequestError): void {
-    const { code, meta } = error;
+  handleDBError(
+    error: Prisma.PrismaClientKnownRequestError,
+    action?: string,
+  ): void {
+    console.log(11111, error);
+    const { code, meta = {} } = error;
+    meta.action = action;
 
     if (code === 'P2025') {
-      throw new NotFoundException(`Product not found`);
-    } else if (code === 'P2002') {
-      throw new NotAcceptableException(
-        `${meta.target[0]} had been already registered`,
-      );
+      throw error;
     } else if (code === 'P2003') {
-      throw new NotAcceptableException(`Relation ${meta.field_name} failed`);
+      if (meta.field_name === 'product_category_id_fkey (index)')
+        meta.field_name = 'category';
+      else meta.field_name = 'unknown';
+
+      throw error;
     }
-    throw new InternalServerErrorException(error);
+
+    if (
+      error.message.includes('violates check constraint') &&
+      error.message.includes('check_stock')
+    ) {
+      error.code = 'CUSTOM-001';
+      error.meta.custom_message = 'Invalid stock';
+    }
+
+    throw error;
   }
 }
