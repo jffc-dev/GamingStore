@@ -48,7 +48,7 @@ export class ForgotPasswordUseCase {
     let emailBody = FORGOT_PASSWORD_BODY;
     emailBody = emailBody.replace('{{reset_link}}', resetLink);
 
-    await this.notificationsService.sendEmail({
+    this.notificationsService.sendEmail({
       body: emailBody,
       subject: FORGOT_PASSWORD_SUBJECT,
       to: updatedUser.email,

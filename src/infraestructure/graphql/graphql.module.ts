@@ -20,6 +20,20 @@ import { CategoryModule } from './resolvers/category/category.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      formatError: (error) => {
+        const originalError = error.extensions?.originalError as any;
+
+        if (!originalError) {
+          return {
+            message: error.message,
+            code: error.extensions?.code,
+          };
+        }
+        return {
+          message: originalError.message,
+          code: error.extensions?.code,
+        };
+      },
     }),
 
     OrderModule,

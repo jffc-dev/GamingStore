@@ -1,25 +1,37 @@
 import {
   ArgumentsHost,
   Catch,
-  ExceptionFilter,
-  HttpException,
+  NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
+import { BaseExceptionFilter } from '@nestjs/core';
+import { Prisma } from '@prisma/client';
 
-@Catch()
-export class UnifiedExceptionFilter implements ExceptionFilter {
-  catch(exception: any, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
+@Catch(Prisma.PrismaClientKnownRequestError)
+export class PrismaClientExceptionFilter extends BaseExceptionFilter {
+  catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
+    // console.error('host', host);
+    // console.error(exception);
+    // const ctx = host.switchToHttp();
+    // const contextType = host.getType();
+    // const response = ctx.getResponse();
+    const { code, meta } = exception;
 
-    const status =
-      exception instanceof HttpException ? exception.getStatus() : 500;
-    const message = exception.message || 'Internal Server Error';
-
-    response.status(status).json({
-      success: false,
-      statusCode: status,
-      message,
-      errorCode: exception.code || 'UNEXPECTED_ERROR',
-    });
+    switch (code) {
+      case 'P2002': {
+        break;
+      }
+      case 'P2025': {
+        const message = `Error ${meta.action} ${meta.modelName}, not found`;
+        throw new NotFoundException(message);
+      }
+      case 'P2003': {
+        const message = `Error ${meta.action} ${meta.modelName}, something bad with ${meta.field_name}`;
+        throw new UnprocessableEntityException(message);
+      }
+      default:
+        super.catch(exception, host);
+        break;
+    }
   }
 }

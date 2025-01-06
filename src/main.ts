@@ -1,7 +1,8 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
 import helmet from 'helmet';
+import { PrismaClientExceptionFilter } from './infraestructure/common/filter/exception.filter';
 
 async function bootstrap() {
   const port = process.env.PORT ?? 3000;
@@ -36,6 +37,8 @@ async function bootstrap() {
     credentials: true,
     allowedHeaders: 'Content-Type, Authorization',
   });
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   await app.listen(port);
 
