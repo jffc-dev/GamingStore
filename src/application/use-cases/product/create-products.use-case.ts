@@ -18,7 +18,7 @@ export class CreateProductUseCase {
     stock,
     isActive,
     price,
-  }: CreateProductInput): Promise<any> {
+  }: CreateProductInput): Promise<Product> {
     const product = new Product({
       productId: this.uuidService.generateUuid(),
       categoryId,

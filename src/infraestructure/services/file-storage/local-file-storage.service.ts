@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
-import { FileStorageService } from 'src/domain/adapters/file-storage';
+import { FileStorageService } from 'src/domain/adapters/file-storage.interface';
 
 @Injectable()
 export class LocalFileStorageService extends FileStorageService {

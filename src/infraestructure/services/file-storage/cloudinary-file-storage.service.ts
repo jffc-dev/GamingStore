@@ -3,8 +3,8 @@ import {
   InternalServerErrorException,
   NotImplementedException,
 } from '@nestjs/common';
-import { FileStorageService } from 'src/domain/adapters/file-storage';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { FileStorageService } from 'src/domain/adapters/file-storage.interface';
 
 @Injectable()
 export class CloudinaryStorageService extends FileStorageService {

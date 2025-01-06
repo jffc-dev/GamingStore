@@ -12,13 +12,13 @@ import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/infraestructure/common/guards/jwt-auth.guard';
 import { User } from 'src/domain/user';
 import { CreateOrderFromCartUseCase } from 'src/application/use-cases/order/order-from-cart.use-case';
-import { GetUserOrdersUseCase } from 'src/application/use-cases/order/get-user-orders.use-case';
 import { ListOrdersFilterDto } from '../../dto/order/list-orders.dto';
 import { OrderDetail } from '../../entities/order-detail.entity';
 import { OrderDetailsLoader } from './dataloaders/order-details.loader';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 import { SkipThrottle } from '@nestjs/throttler';
+import { GetUserOrdersUseCase } from 'src/application/use-cases/order/get-orders.use-case';
 
 @SkipThrottle()
 @UsePipes(
@@ -52,7 +52,7 @@ export class OrderResolver {
   async getUserOrders(@Context() context: any): Promise<Order[]> {
     const currentUser: User = context.req.user;
     const userOrders = await this.getUserOrdersUseCase.execute({
-      userId: currentUser.id,
+      filters: { userId: currentUser.id },
     });
     return userOrders.map(Order.fromDomainToEntity);
   }
@@ -61,7 +61,7 @@ export class OrderResolver {
   @Query(() => [Order], { name: 'orders' })
   async getOrders(@Args() filters: ListOrdersFilterDto): Promise<Order[]> {
     const userOrders = await this.getUserOrdersUseCase.execute({
-      userId: filters.userId,
+      filters: { userId: filters.userId },
     });
     return userOrders.map(Order.fromDomainToEntity);
   }

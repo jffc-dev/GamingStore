@@ -56,6 +56,8 @@ export class PrismaProductImageRepository implements ProductImageRepository {
         },
       });
 
+      if (!productImage) return null;
+
       return PrismaProductImageMapper.toDomain(productImage);
     } catch (error) {
       this.handleDBError(error);

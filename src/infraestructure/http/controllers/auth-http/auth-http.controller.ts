@@ -10,17 +10,17 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { RegisterUserUseCase } from 'src/application/use-cases/user/register-user';
-import { LoginUserUseCase } from 'src/application/use-cases/user/login-user';
+import { RegisterUserUseCase } from 'src/application/use-cases/user/register-user.use-case';
+import { LoginUserUseCase } from 'src/application/use-cases/user/login-user.use-case';
 import { Request } from 'express';
-import { ForgotPasswordUseCase } from 'src/application/use-cases/user/forgot-password';
-import { ResetPasswordUseCase } from 'src/application/use-cases/user/reset-password';
+import { ForgotPasswordUseCase } from 'src/application/use-cases/user/forgot-password.use-case';
+import { ResetPasswordUseCase } from 'src/application/use-cases/user/reset-password.use-case';
 import { RegisterUserDto } from '../../dto/user/register-user.dto';
 import { LoginUserDto } from '../../dto/user/login-user.dto';
 import { ForgotPasswordDto } from '../../dto/user/forgot-password.dto';
 import { ResetPasswordDto } from '../../dto/user/reset-password.dto';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
-import { LogoutUserUseCase } from 'src/application/use-cases/user/logout.user-case';
+import { LogoutUserUseCase } from 'src/application/use-cases/user/logout.use-case';
 import { SkipThrottle } from '@nestjs/throttler';
 import { NotificationsService } from 'src/infraestructure/notifications/notifications.service';
 

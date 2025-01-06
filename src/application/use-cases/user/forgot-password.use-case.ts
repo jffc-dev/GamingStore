@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '../../contracts/persistence/user.repository';
 import { User } from 'src/domain/user';
 import { EnvService } from 'src/infraestructure/env/env.service';
 import { UuidService } from 'src/infraestructure/services/uuid/uuid.service';
 import { ForgotPasswordDto } from 'src/infraestructure/http/dto/user/forgot-password.dto';
 import { NotificationsService } from 'src/infraestructure/notifications/notifications.service';
+import {
+  FORGOT_PASSWORD_BODY,
+  FORGOT_PASSWORD_SUBJECT,
+} from 'src/application/utils/constants';
 
 @Injectable()
 export class ForgotPasswordUseCase {
@@ -17,6 +21,10 @@ export class ForgotPasswordUseCase {
 
   async execute({ email }: ForgotPasswordDto): Promise<User> {
     const userResponse = await this.userRepository.findUserByEmail(email);
+
+    if (!userResponse) {
+      throw new NotFoundException('Not found user');
+    }
 
     const expirationMilliseconds = this.envService.get(
       'RESET_PASSWORD_EXPIRATION_MS',
@@ -37,16 +45,12 @@ export class ForgotPasswordUseCase {
 
     const hostApi = this.envService.get('HOST_API');
     const resetLink = `${hostApi}/reset-password/${updatedUser.resetPasswordToken}`; // emulate fronend route
+    let emailBody = FORGOT_PASSWORD_BODY;
+    emailBody = emailBody.replace('{{reset_link}}', resetLink);
+
     await this.notificationsService.sendEmail({
-      body: `
-        <p>Hello,</p>
-        <p>We received a request to reset your password. Please click the link below to set a new password:</p>
-        <p><a href="${resetLink}" style="color: #4CAF50; text-decoration: none;">Reset My Password</a></p>
-        <p>If you didn’t request a password reset, you can ignore this email. Your password will remain unchanged.</p>
-        <p>For security reasons, this link will expire in 24 hours.</p>
-        <p>Best regards,<br>Your Company Name</p>
-      `,
-      subject: 'Password Reset Request',
+      body: emailBody,
+      subject: FORGOT_PASSWORD_SUBJECT,
       to: updatedUser.email,
     });
 

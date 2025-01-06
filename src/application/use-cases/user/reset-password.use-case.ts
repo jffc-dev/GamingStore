@@ -4,6 +4,10 @@ import { User } from 'src/domain/user';
 import { NotificationsService } from 'src/infraestructure/notifications/notifications.service';
 import { BcryptService } from 'src/infraestructure/services/bcrypt/bcrypt.service';
 import { ResetPasswordDto } from 'src/infraestructure/http/dto/user/reset-password.dto';
+import {
+  RESET_PASSWORD_BODY,
+  RESET_PASSWORD_SUBJECT,
+} from 'src/application/utils/constants';
 
 @Injectable()
 export class ResetPasswordUseCase {
@@ -32,17 +36,12 @@ export class ResetPasswordUseCase {
       id,
       updateData,
     );
-    const notificationResponse = await this.notificationsService.sendEmail({
-      body: `
-        <p>Hello,</p>
-        <p>Your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
-        <p>If you need further assistance, feel free to reach out to us at support@example.com.</p>
-        <p>Best regards,<br>GamingStore</p>
-      `,
-      subject: 'Password Reset Confirmations',
+    await this.notificationsService.sendEmail({
+      body: RESET_PASSWORD_BODY,
+      subject: RESET_PASSWORD_SUBJECT,
       to: updatedUser.email,
     });
 
-    return notificationResponse;
+    return true;
   }
 }

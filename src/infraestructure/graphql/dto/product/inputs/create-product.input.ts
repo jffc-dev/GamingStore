@@ -7,7 +7,7 @@ export class CreateProductInput {
   name: string;
 
   @Field(() => String)
-  categoryId?: string;
+  categoryId: string;
 
   @Field(() => String, { nullable: true })
   description?: string;
