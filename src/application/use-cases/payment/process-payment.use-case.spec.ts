@@ -152,4 +152,38 @@ describe('ProcessPaymentUseCase', () => {
       }),
     ).rejects.toThrow(BadRequestException);
   });
+
+  it('should throw BadRequestException when webhook signature verification fails', async () => {
+    const mockPayment = new Payment({
+      paymentId: mockPaymentId,
+      orderId: mockOrderId,
+      status: 'PENDING',
+      amount: 10,
+      currency: 'USD',
+      stripePaymentId: null,
+    });
+
+    const mockOrder = new Order({
+      id: mockOrderId,
+      status: 'PENDING',
+      userId: mockUserId,
+      total: 10,
+    });
+
+    paymentRepository.getPayment.mockResolvedValue(mockPayment);
+    orderRepository.getOrder.mockResolvedValue(mockOrder);
+    envService.get.mockReturnValue(mockWebhookKey);
+    stripeService.webhookConstructEvent.mockImplementation(() => {
+      throw new Error('Invalid signature');
+    });
+
+    await expect(
+      useCase.execute({
+        paymentId: mockPaymentId,
+        rawBody: mockRawBody,
+        signature: mockSignature,
+        paymentAt: mockPaymentAt,
+      }),
+    ).rejects.toThrow(BadRequestException);
+  });
 });

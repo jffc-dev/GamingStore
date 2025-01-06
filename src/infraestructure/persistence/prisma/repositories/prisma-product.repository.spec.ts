@@ -185,4 +185,39 @@ describe('PrismaProductRepository', () => {
       );
     });
   });
+
+  describe('handleDBError', () => {
+    it('should throw NotFoundException for code P2025', () => {
+      const error = { code: 'P2025', meta: {} } as any;
+
+      expect(() => repository.handleDBError(error)).toThrow(NotFoundException);
+    });
+
+    it('should throw NotAcceptableException for code P2002', () => {
+      const error = { code: 'P2002', meta: { target: ['productId'] } } as any;
+
+      expect(() => repository.handleDBError(error)).toThrow(
+        NotAcceptableException,
+      );
+    });
+
+    it('should throw NotAcceptableException for code P2003', () => {
+      const error = {
+        code: 'P2003',
+        meta: { field_name: 'categoryId' },
+      } as any;
+
+      expect(() => repository.handleDBError(error)).toThrow(
+        NotAcceptableException,
+      );
+    });
+
+    it('should throw InternalServerErrorException for unknown errors', () => {
+      const error = { code: 'UNKNOWN', meta: {} } as any;
+
+      expect(() => repository.handleDBError(error)).toThrow(
+        InternalServerErrorException,
+      );
+    });
+  });
 });
