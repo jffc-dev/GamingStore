@@ -86,6 +86,7 @@ export class PrismaProductRepository implements ProductRepository {
   async updateProduct(productId: string, data: Product): Promise<Product> {
     try {
       const dataToUpdate = PrismaProductMapper.toPrisma(data);
+
       const updatedProduct = await this.prisma.product.update({
         where: {
           productId,
@@ -149,7 +150,6 @@ export class PrismaProductRepository implements ProductRepository {
     error: Prisma.PrismaClientKnownRequestError,
     action?: string,
   ): void {
-    console.log(11111, error);
     const { code, meta = {} } = error;
     meta.action = action;
 
@@ -168,6 +168,7 @@ export class PrismaProductRepository implements ProductRepository {
       error.message.includes('check_stock')
     ) {
       error.code = 'CUSTOM-001';
+      error.meta = error.meta || {};
       error.meta.custom_message = 'Invalid stock';
     }
 

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ProductRepository } from 'src/application/contracts/persistence/product.repository';
 import { UuidService } from 'src/infraestructure/services/uuid/uuid.service';
 import { Product } from 'src/domain/product';
@@ -15,11 +15,8 @@ export class UpdateProductUseCase {
     productId: string,
     updateProductDto: UpdateProductInput,
   ): Promise<any> {
-    const getResponse = await this.productRepository.getProductById(productId);
-
-    if (!getResponse) {
-      throw new NotFoundException('Product not found');
-    }
+    const getResponse =
+      await this.productRepository.getProductByIdOrThrow(productId);
 
     const product = new Product({
       categoryId: getResponse.categoryId,

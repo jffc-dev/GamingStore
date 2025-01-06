@@ -52,11 +52,11 @@ export class Product extends Entity<ProductProps> {
   }
 
   get createdAt(): Date {
-    return this.props.createdAt ?? new Date();
+    return this.props.createdAt;
   }
 
   get updatedAt(): Date {
-    return this.props.updatedAt ?? new Date();
+    return this.props.updatedAt;
   }
 
   get deletedAt(): Date {
