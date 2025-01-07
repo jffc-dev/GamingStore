@@ -17,7 +17,7 @@ import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decor
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 import { SkipThrottle } from '@nestjs/throttler';
 import { UsePipes, ValidationPipe } from '@nestjs/common';
-import { ProductLoader } from './dataloaders/product.loader';
+import { ProductLoader } from '../../../common/dataloaders/product.loader';
 import { Product } from '../../entities/product.entity';
 
 @SkipThrottle()

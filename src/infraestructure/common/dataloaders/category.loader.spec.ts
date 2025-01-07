@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
-import { CategoryLoader } from './category.loader';
 import { GetCategoryByProductUseCase } from 'src/application/use-cases/category/category-by-product.use-case';
 import { Category } from 'src/domain/category';
+import { CategoryLoader } from './category.loader';
 
 describe('CategoryLoader', () => {
   let categoryLoader: CategoryLoader;

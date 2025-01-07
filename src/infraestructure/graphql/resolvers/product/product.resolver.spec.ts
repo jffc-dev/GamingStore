@@ -6,8 +6,8 @@ import { CreateProductUseCase } from 'src/application/use-cases/product/create-p
 import { UpdateProductUseCase } from 'src/application/use-cases/product/update-product.use-case';
 import { DeleteProductUseCase } from 'src/application/use-cases/product/delete-product.use-case';
 import { AvailableProductUseCase } from 'src/application/use-cases/product/available-product.use-case';
-import { ImagesByProductLoader } from './dataloaders/images-by-product.loader';
-import { CategoryLoader } from './dataloaders/category.loader';
+import { ImagesByProductLoader } from '../../../common/dataloaders/images-by-product.loader';
+import { CategoryLoader } from '../../../common/dataloaders/category.loader';
 import { Product as ProductEntity } from '../../entities/product.entity';
 import { Category as CategoryEntity } from '../../entities/category.entity';
 import { ProductImage } from '../../entities/product-image.entity';

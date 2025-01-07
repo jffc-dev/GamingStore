@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrderResolver } from './order.resolver';
 import { CreateOrderFromCartUseCase } from 'src/application/use-cases/order/order-from-cart.use-case';
 import { GetUserOrdersUseCase } from 'src/application/use-cases/order/get-orders.use-case';
-import { OrderDetailsLoader } from './dataloaders/order-details.loader';
+import { OrderDetailsLoader } from '../../../common/dataloaders/order-details.loader';
 import { Order as OrderEntity } from '../../entities/order.entity';
 import { OrderDetail } from '../../entities/order-detail.entity';
 import { Order } from 'src/domain/order';

@@ -22,11 +22,11 @@ import {
   PaginatedProducts,
 } from '../../dto/product/list-products.dto';
 import { ProductImage } from '../../entities/product-image.entity';
-import { ImagesByProductLoader } from './dataloaders/images-by-product.loader';
+import { ImagesByProductLoader } from '../../../common/dataloaders/images-by-product.loader';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 import { Category } from '../../entities/category.entity';
-import { CategoryLoader } from './dataloaders/category.loader';
+import { CategoryLoader } from '../../../common/dataloaders/category.loader';
 import { SkipThrottle } from '@nestjs/throttler';
 
 @SkipThrottle()

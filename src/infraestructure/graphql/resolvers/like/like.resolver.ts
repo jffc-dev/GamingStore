@@ -1,4 +1,12 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { LikeProduct } from '../../entities/like-product.entity';
 import { LikeProductInput } from '../../dto/like/input/like-product.input';
 import { LikeProductUseCase } from 'src/application/use-cases/like/like-product.use-case';
@@ -7,6 +15,8 @@ import { GetLikedProductsUseCase } from '../../../../application/use-cases/like/
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 import { SkipThrottle } from '@nestjs/throttler';
+import { Product } from '../../entities/product.entity';
+import { ProductLoader } from '../../../common/dataloaders/product.loader';
 
 @SkipThrottle()
 @Resolver(() => LikeProduct)
@@ -14,6 +24,8 @@ export class LikeResolver {
   constructor(
     private readonly likeProductUseCase: LikeProductUseCase,
     private readonly getLikedProductsUseCase: GetLikedProductsUseCase,
+
+    private readonly productLoader: ProductLoader,
   ) {}
 
   @Auth(ValidRoles.client)
@@ -40,5 +52,11 @@ export class LikeResolver {
       userId: currentUser.id,
     });
     return likedProducts.map(LikeProduct.fromDomainToEntity);
+  }
+
+  @ResolveField(() => Product)
+  async product(@Parent() like: LikeProduct): Promise<Product> {
+    const product = await this.productLoader.load(like.productId);
+    return Product.fromDomainToEntity(product);
   }
 }

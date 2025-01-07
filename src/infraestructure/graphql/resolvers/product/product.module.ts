@@ -8,8 +8,8 @@ import { UpdateProductUseCase } from 'src/application/use-cases/product/update-p
 import { DeleteProductUseCase } from 'src/application/use-cases/product/delete-product.use-case';
 import { AvailableProductUseCase } from 'src/application/use-cases/product/available-product.use-case';
 import { GetImagesByProductUseCase } from 'src/application/use-cases/product-image/images-by-product.use-case';
-import { ImagesByProductLoader } from './dataloaders/images-by-product.loader';
-import { CategoryLoader } from './dataloaders/category.loader';
+import { ImagesByProductLoader } from '../../../common/dataloaders/images-by-product.loader';
+import { CategoryLoader } from '../../../common/dataloaders/category.loader';
 import { GetCategoryByProductUseCase } from 'src/application/use-cases/category/category-by-product.use-case';
 
 @Module({

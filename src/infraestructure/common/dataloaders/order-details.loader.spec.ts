@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrderDetailsLoader } from './order-details.loader';
 import { GetOrderDetailsUseCase } from 'src/application/use-cases/order/get-order-details.use-case';
 import { OrderDetail as OrderDetailEntity } from 'src/infraestructure/graphql/entities/order-detail.entity';
+import { OrderDetailsLoader } from './order-details.loader';
 
 describe('OrderDetailsLoader', () => {
   let loader: OrderDetailsLoader;

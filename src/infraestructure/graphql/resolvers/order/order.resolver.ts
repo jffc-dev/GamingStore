@@ -14,7 +14,7 @@ import { User } from 'src/domain/user';
 import { CreateOrderFromCartUseCase } from 'src/application/use-cases/order/order-from-cart.use-case';
 import { ListOrdersFilterDto } from '../../dto/order/list-orders.dto';
 import { OrderDetail } from '../../entities/order-detail.entity';
-import { OrderDetailsLoader } from './dataloaders/order-details.loader';
+import { OrderDetailsLoader } from '../../../common/dataloaders/order-details.loader';
 import { Auth } from 'src/infraestructure/common/decorators/auth.decorator.decorator';
 import { ValidRoles } from 'src/infraestructure/common/interfaces/valid-roles';
 import { SkipThrottle } from '@nestjs/throttler';

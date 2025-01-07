@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CartDetailRepository } from 'src/application/contracts/persistence/cart.repository';
 import { ProductRepository } from 'src/application/contracts/persistence/product.repository';
 import { CartDetail } from 'src/domain/cart-detail';
@@ -25,11 +21,7 @@ export class AddProductToCartUseCase {
     userId,
   }: IAddProductToCartUseCaseProps): Promise<any> {
     const productResponse =
-      await this.productRepository.getProductById(productId);
-
-    if (!productResponse) {
-      throw new NotFoundException('Product not found');
-    }
+      await this.productRepository.getProductByIdOrThrow(productId);
 
     if (productResponse.stock < quantity) {
       throw new BadRequestException('Insufficient stock');
