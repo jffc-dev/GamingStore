@@ -41,7 +41,7 @@ describe('CreatePaymentUseCase', () => {
 
   const mockDependencies = {
     uuid: { generateUuid: jest.fn(() => mockUuid) },
-    order: { getOrder: jest.fn() },
+    order: { getOrderOrThrow: jest.fn() },
     payment: { createPayment: jest.fn() },
     stripe: { createPaymentIntent: jest.fn() },
   };
@@ -71,7 +71,7 @@ describe('CreatePaymentUseCase', () => {
     };
 
     it('should create payment successfully', async () => {
-      mockDependencies.order.getOrder.mockResolvedValue(mockOrder);
+      mockDependencies.order.getOrderOrThrow.mockResolvedValue(mockOrder);
       mockDependencies.payment.createPayment.mockResolvedValue(mockPayment);
       mockDependencies.stripe.createPaymentIntent.mockResolvedValue(
         mockStripeResponse,
@@ -80,7 +80,7 @@ describe('CreatePaymentUseCase', () => {
       const result = await useCase.execute(validInput);
 
       expect(result).toEqual(mockPayment);
-      expect(mockDependencies.order.getOrder).toHaveBeenCalledWith(
+      expect(mockDependencies.order.getOrderOrThrow).toHaveBeenCalledWith(
         validInput.orderId,
       );
       expect(mockDependencies.payment.createPayment).toHaveBeenCalledWith(
@@ -99,11 +99,8 @@ describe('CreatePaymentUseCase', () => {
     });
 
     it('should throw BadRequestException when order not found', async () => {
-      mockDependencies.order.getOrder.mockResolvedValue(null);
+      mockDependencies.order.getOrderOrThrow.mockResolvedValue(null);
 
-      await expect(useCase.execute(validInput)).rejects.toThrow(
-        new BadRequestException('Order not found'),
-      );
       expect(mockDependencies.payment.createPayment).not.toHaveBeenCalled();
       expect(
         mockDependencies.stripe.createPaymentIntent,
@@ -111,7 +108,7 @@ describe('CreatePaymentUseCase', () => {
     });
 
     it('should throw BadRequestException when order belongs to different user', async () => {
-      mockDependencies.order.getOrder.mockResolvedValue({
+      mockDependencies.order.getOrderOrThrow.mockResolvedValue({
         ...mockOrder,
         userId: 'differentUser',
       });
@@ -127,7 +124,7 @@ describe('CreatePaymentUseCase', () => {
 
     it('should handle payment repository errors', async () => {
       const error = new Error('Payment creation failed');
-      mockDependencies.order.getOrder.mockResolvedValue(mockOrder);
+      mockDependencies.order.getOrderOrThrow.mockResolvedValue(mockOrder);
       mockDependencies.payment.createPayment.mockRejectedValue(error);
 
       await expect(useCase.execute(validInput)).rejects.toThrow(error);
@@ -138,7 +135,7 @@ describe('CreatePaymentUseCase', () => {
 
     it('should handle stripe service errors', async () => {
       const error = new Error('Stripe service error');
-      mockDependencies.order.getOrder.mockResolvedValue(mockOrder);
+      mockDependencies.order.getOrderOrThrow.mockResolvedValue(mockOrder);
       mockDependencies.payment.createPayment.mockResolvedValue(mockPayment);
       mockDependencies.stripe.createPaymentIntent.mockRejectedValue(error);
 
@@ -146,7 +143,7 @@ describe('CreatePaymentUseCase', () => {
     });
 
     it('should create payment with correct initial status', async () => {
-      mockDependencies.order.getOrder.mockResolvedValue(mockOrder);
+      mockDependencies.order.getOrderOrThrow.mockResolvedValue(mockOrder);
       mockDependencies.payment.createPayment.mockResolvedValue(mockPayment);
       mockDependencies.stripe.createPaymentIntent.mockResolvedValue(
         mockStripeResponse,

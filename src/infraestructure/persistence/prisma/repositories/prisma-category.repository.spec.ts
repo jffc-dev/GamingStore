@@ -2,11 +2,6 @@ import { Test } from '@nestjs/testing';
 import { PrismaService } from '../prisma.service';
 import { PrismaCategoryRepository } from './prisma-category.repository';
 import { Category } from 'src/domain/category';
-import {
-  NotFoundException,
-  NotAcceptableException,
-  InternalServerErrorException,
-} from '@nestjs/common';
 
 describe('PrismaCategoryRepository', () => {
   let repository: PrismaCategoryRepository;
@@ -85,13 +80,13 @@ describe('PrismaCategoryRepository', () => {
       expect(result).toEqual(mockCategories);
     });
 
-    it('should throw InternalServerErrorException on database error', async () => {
+    it('should throw Error on database error', async () => {
       const error = new Error('Database error');
       mockPrismaService.category.findMany.mockRejectedValue(error);
 
       await expect(
         repository.getCategoriesByIds(mockCategoryIds),
-      ).rejects.toThrow(InternalServerErrorException);
+      ).rejects.toThrow(Error);
     });
 
     it('should return empty array when no categories found', async () => {
@@ -150,13 +145,11 @@ describe('PrismaCategoryRepository', () => {
       expect(result).toEqual(mockCategories);
     });
 
-    it('should throw InternalServerErrorException on database error', async () => {
+    it('should throw Error on database error', async () => {
       const error = new Error('Database error');
       mockPrismaService.category.findMany.mockRejectedValue(error);
 
-      await expect(repository.getCategories()).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      await expect(repository.getCategories()).rejects.toThrow(Error);
     });
 
     it('should return empty array when no categories exist', async () => {
@@ -165,39 +158,6 @@ describe('PrismaCategoryRepository', () => {
       const result = await repository.getCategories();
 
       expect(result).toEqual([]);
-    });
-  });
-
-  describe('handleDBError', () => {
-    it('should throw NotFoundException for P2025 error code', () => {
-      const error = { code: 'P2025' };
-
-      expect(() => repository.handleDBError(error)).toThrow(NotFoundException);
-      expect(() => repository.handleDBError(error)).toThrow(
-        'Category not found',
-      );
-    });
-
-    it('should throw NotAcceptableException for P2002 error code', () => {
-      const error = {
-        code: 'P2002',
-        meta: { target: ['name'] },
-      };
-
-      expect(() => repository.handleDBError(error)).toThrow(
-        NotAcceptableException,
-      );
-      expect(() => repository.handleDBError(error)).toThrow(
-        'name had been already registered',
-      );
-    });
-
-    it('should throw InternalServerErrorException for unknown errors', () => {
-      const error = new Error('Unknown error');
-
-      expect(() => repository.handleDBError(error)).toThrow(
-        InternalServerErrorException,
-      );
     });
   });
 });

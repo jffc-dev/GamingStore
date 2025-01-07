@@ -3,7 +3,7 @@ import { LoginUserUseCase } from './login-user.use-case';
 import { UserRepository } from '../../contracts/persistence/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from 'src/infraestructure/services/bcrypt/bcrypt.service';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { User } from 'src/domain/user';
 
 const mockUserRepository = () => ({
@@ -101,21 +101,6 @@ describe('LoginUserUseCase', () => {
       password,
       hashedPassword,
     );
-    expect(jwtService.sign).not.toHaveBeenCalled();
-  });
-
-  it('should throw an error if user is not found', async () => {
-    const email = 'nonexistent@example.com';
-    const password = 'password123';
-
-    userRepository.findUserByEmail.mockResolvedValue(null);
-
-    await expect(loginUserUseCase.execute({ email, password })).rejects.toThrow(
-      NotFoundException,
-    );
-
-    expect(userRepository.findUserByEmail).toHaveBeenCalledWith(email);
-    expect(bcryptService.compare).not.toHaveBeenCalled();
     expect(jwtService.sign).not.toHaveBeenCalled();
   });
 

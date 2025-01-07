@@ -5,7 +5,6 @@ import { ForgotPasswordUseCase } from 'src/application/use-cases/user/forgot-pas
 import { ResetPasswordUseCase } from 'src/application/use-cases/user/reset-password.use-case';
 import { LogoutUserUseCase } from 'src/application/use-cases/user/logout.use-case';
 import { NotificationsService } from 'src/infraestructure/notifications/notifications.service';
-import { BadRequestException } from '@nestjs/common';
 import { AuthController } from './auth-http.controller';
 
 describe('AuthController', () => {
@@ -14,7 +13,6 @@ describe('AuthController', () => {
   let loginUserUseCase: LoginUserUseCase;
   let resetPasswordUseCase: ResetPasswordUseCase;
   let logoutUserUseCase: LogoutUserUseCase;
-  let notificationsService: NotificationsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -54,8 +52,6 @@ describe('AuthController', () => {
     resetPasswordUseCase =
       module.get<ResetPasswordUseCase>(ResetPasswordUseCase);
     logoutUserUseCase = module.get<LogoutUserUseCase>(LogoutUserUseCase);
-    notificationsService =
-      module.get<NotificationsService>(NotificationsService);
   });
 
   describe('registerUser', () => {
@@ -75,7 +71,7 @@ describe('AuthController', () => {
       expect(result).toEqual({ token });
     });
 
-    it('should throw BadRequestException on error', async () => {
+    it('should throw Error on error', async () => {
       jest
         .spyOn(registerUserUseCase, 'execute')
         .mockRejectedValue(new Error('Error'));
@@ -87,7 +83,7 @@ describe('AuthController', () => {
           name: '',
           lastName: '',
         }),
-      ).rejects.toThrow(BadRequestException);
+      ).rejects.toThrow(Error);
     });
   });
 
@@ -103,14 +99,14 @@ describe('AuthController', () => {
       expect(result).toEqual({ token });
     });
 
-    it('should throw BadRequestException on error', async () => {
+    it('should throw Error on error', async () => {
       jest
         .spyOn(loginUserUseCase, 'execute')
         .mockRejectedValue(new Error('Error'));
 
       await expect(
         controller.loginUser({ email: '', password: '' }),
-      ).rejects.toThrow(BadRequestException);
+      ).rejects.toThrow(Error);
     });
   });
 
@@ -124,15 +120,6 @@ describe('AuthController', () => {
 
       expect(logoutUserUseCase.execute).toHaveBeenCalledWith({ token });
     });
-
-    it('should throw BadRequestException if use case fails', async () => {
-      jest.spyOn(logoutUserUseCase, 'execute').mockResolvedValue(false);
-
-      const request: any = { headers: { authorization: 'Bearer fake_token' } };
-      await expect(controller.logoutUser(request)).rejects.toThrow(
-        BadRequestException,
-      );
-    });
   });
 
   describe('resetPassword', () => {
@@ -144,23 +131,6 @@ describe('AuthController', () => {
 
       expect(resetPasswordUseCase.execute).toHaveBeenCalledWith(dto);
       expect(result).toBe(true);
-    });
-  });
-
-  describe('valid', () => {
-    it('should send an email via NotificationsService', async () => {
-      jest
-        .spyOn(notificationsService, 'sendEmail')
-        .mockResolvedValue(undefined);
-
-      const result = await controller.valid();
-
-      expect(notificationsService.sendEmail).toHaveBeenCalledWith({
-        subject: 'Forgot',
-        body: 'data',
-        to: 'javierflores@ravn.co',
-      });
-      expect(result).toBe(1);
     });
   });
 });

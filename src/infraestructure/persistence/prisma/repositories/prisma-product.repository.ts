@@ -163,8 +163,8 @@ export class PrismaProductRepository implements ProductRepository {
     }
 
     if (
-      error.message.includes('violates check constraint') &&
-      error.message.includes('check_stock')
+      error.message?.includes('violates check constraint') &&
+      error.message?.includes('check_stock')
     ) {
       error.code = 'CUSTOM-001';
       error.meta = error.meta || {};

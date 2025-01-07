@@ -2,15 +2,38 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LikeResolver } from './like.resolver';
 import { LikeProductUseCase } from 'src/application/use-cases/like/like-product.use-case';
 import { GetLikedProductsUseCase } from 'src/application/use-cases/like/get-likes.use-case';
-import { LikeProduct as LikeProductEntity } from '../../entities/like-product.entity';
+import { ProductLoader } from '../../../common/dataloaders/product.loader';
 import { LikeProductInput } from '../../dto/like/input/like-product.input';
 import { User } from 'src/domain/user';
 import { LikeProduct } from 'src/domain/like-product';
+import { LikeProduct as LikeProductEntity } from '../../entities/like-product.entity';
+import { Product as ProductEntity } from '../../entities/product.entity';
+import { Product } from 'src/domain/product';
 
 describe('LikeResolver', () => {
   let resolver: LikeResolver;
-  let likeProductUseCase: LikeProductUseCase;
-  let getLikedProductsUseCase: GetLikedProductsUseCase;
+  let likeProductUseCase: jest.Mocked<LikeProductUseCase>;
+  let getLikedProductsUseCase: jest.Mocked<GetLikedProductsUseCase>;
+  let productLoader: jest.Mocked<ProductLoader>;
+
+  const mockUser: User = { id: 'user1' } as User;
+  const mockLikeProduct: LikeProduct = new LikeProduct({
+    productId: 'product1',
+    userId: 'user1',
+    createdAt: new Date(),
+  });
+
+  const mockProduct = new Product({
+    productId: 'product1',
+    categoryId: 'category1',
+    name: 'Sample Product',
+    description: 'Sample description',
+    price: 100,
+    stock: 10,
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,114 +41,83 @@ describe('LikeResolver', () => {
         LikeResolver,
         {
           provide: LikeProductUseCase,
-          useValue: { execute: jest.fn() },
+          useValue: {
+            execute: jest.fn(),
+          },
         },
         {
           provide: GetLikedProductsUseCase,
-          useValue: { execute: jest.fn() },
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
+        {
+          provide: ProductLoader,
+          useValue: {
+            load: jest.fn(),
+          },
         },
       ],
     }).compile();
 
     resolver = module.get<LikeResolver>(LikeResolver);
-    likeProductUseCase = module.get<LikeProductUseCase>(LikeProductUseCase);
-    getLikedProductsUseCase = module.get<GetLikedProductsUseCase>(
-      GetLikedProductsUseCase,
-    );
+    likeProductUseCase = module.get(LikeProductUseCase);
+    getLikedProductsUseCase = module.get(GetLikedProductsUseCase);
+    productLoader = module.get(ProductLoader);
+  });
+
+  it('should be defined', () => {
+    expect(resolver).toBeDefined();
   });
 
   describe('likeProduct', () => {
     it('should like a product and return the result', async () => {
       const mockInput: LikeProductInput = { productId: 'product1' };
-      const mockUser: User = { id: 'user1' } as User;
-      const mockResult: LikeProductEntity = {
-        productId: 'product1',
-        userId: 'user1',
-      } as LikeProductEntity;
-
-      jest.spyOn(likeProductUseCase, 'execute').mockResolvedValue(mockResult);
+      jest
+        .spyOn(likeProductUseCase, 'execute')
+        .mockResolvedValue(mockLikeProduct);
 
       const context = { req: { user: mockUser } };
       const result = await resolver.likeProduct(mockInput, context);
 
       expect(likeProductUseCase.execute).toHaveBeenCalledWith({
-        productId: 'product1',
-        userId: 'user1',
+        productId: mockInput.productId,
+        userId: mockUser.id,
       });
-      expect(result).toEqual(mockResult);
-    });
-
-    it('should handle errors in liking a product', async () => {
-      const mockInput: LikeProductInput = { productId: 'product1' };
-      const mockUser: User = { id: 'user1' } as User;
-
-      jest
-        .spyOn(likeProductUseCase, 'execute')
-        .mockRejectedValue(new Error('Error liking product'));
-
-      const context = { req: { user: mockUser } };
-
-      await expect(resolver.likeProduct(mockInput, context)).rejects.toThrow(
-        'Error liking product',
+      expect(result).toEqual(
+        LikeProductEntity.fromDomainToEntity(mockLikeProduct),
       );
     });
   });
 
   describe('getLikedProducts', () => {
-    it('should return liked products for the current user', async () => {
-      const mockUser: User = { id: 'user1' } as User;
-      const mockLikedProducts: LikeProduct[] = [
-        new LikeProduct({
-          productId: 'product1',
-          userId: 'user1',
-        }),
-        new LikeProduct({
-          productId: 'product2',
-          userId: 'user1',
-        }),
-      ];
-
+    it('should return a list of liked products', async () => {
       jest
         .spyOn(getLikedProductsUseCase, 'execute')
-        .mockResolvedValue(mockLikedProducts);
+        .mockResolvedValue([mockLikeProduct]);
 
       const context = { req: { user: mockUser } };
       const result = await resolver.getLikedProducts(context);
 
       expect(getLikedProductsUseCase.execute).toHaveBeenCalledWith({
-        userId: 'user1',
+        userId: mockUser.id,
       });
-      expect(result).toEqual(
-        mockLikedProducts.map(LikeProductEntity.fromDomainToEntity),
-      );
+      expect(result).toEqual([
+        LikeProductEntity.fromDomainToEntity(mockLikeProduct),
+      ]);
     });
+  });
 
-    it('should return an empty array if the user has no liked products', async () => {
-      const mockUser: User = { id: 'user1' } as User;
+  describe('product', () => {
+    it('should return the product associated with a like', async () => {
+      jest.spyOn(productLoader, 'load').mockResolvedValue(mockProduct);
 
-      jest.spyOn(getLikedProductsUseCase, 'execute').mockResolvedValue([]);
+      const result = await resolver.product(mockLikeProduct);
 
-      const context = { req: { user: mockUser } };
-      const result = await resolver.getLikedProducts(context);
-
-      expect(getLikedProductsUseCase.execute).toHaveBeenCalledWith({
-        userId: 'user1',
-      });
-      expect(result).toEqual([]);
-    });
-
-    it('should handle errors when fetching liked products', async () => {
-      const mockUser: User = { id: 'user1' } as User;
-
-      jest
-        .spyOn(getLikedProductsUseCase, 'execute')
-        .mockRejectedValue(new Error('Error fetching liked products'));
-
-      const context = { req: { user: mockUser } };
-
-      await expect(resolver.getLikedProducts(context)).rejects.toThrow(
-        'Error fetching liked products',
+      expect(productLoader.load).toHaveBeenCalledWith(
+        mockLikeProduct.productId,
       );
+      expect(result).toEqual(ProductEntity.fromDomainToEntity(mockProduct));
     });
   });
 });

@@ -7,7 +7,6 @@ import { GetUserByIdUseCase } from './get-user.use-case';
 describe('GetUserByIdUseCase', () => {
   let getUserByIdUseCase: GetUserByIdUseCase;
 
-  // Mock del repositorio
   const mockUserRepository = {
     findOneById: jest.fn(),
   };
@@ -38,7 +37,6 @@ describe('GetUserByIdUseCase', () => {
         password: 'hashedPassword',
       });
 
-      // Simula que el repositorio encuentra el usuario
       mockUserRepository.findOneById.mockResolvedValue(mockUser);
 
       const result = await getUserByIdUseCase.execute({ id: userId });
@@ -50,7 +48,6 @@ describe('GetUserByIdUseCase', () => {
     it('should throw NotFoundException when user is not found', async () => {
       const userId = '123';
 
-      // Simula que el repositorio no encuentra el usuario
       mockUserRepository.findOneById.mockResolvedValue(null);
 
       await expect(getUserByIdUseCase.execute({ id: userId })).rejects.toThrow(

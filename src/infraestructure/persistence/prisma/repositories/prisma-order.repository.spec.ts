@@ -3,12 +3,10 @@ import { PrismaOrderRepository } from './prisma-order.repository';
 import { PrismaService } from '../prisma.service';
 import { Order } from 'src/domain/order';
 import { OrderDetail } from 'src/domain/order-detail';
-import {
-  NotFoundException,
-  NotAcceptableException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+
 import { PrismaClient } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { ACTION_CREATE } from 'src/application/utils/constants';
 
 describe('PrismaOrderRepository', () => {
   let repository: PrismaOrderRepository;
@@ -192,26 +190,18 @@ describe('PrismaOrderRepository', () => {
   });
 
   describe('handleDBError', () => {
-    it('should throw NotFoundException for P2025 error code', () => {
-      const error = { code: 'P2025' };
+    it('should throw the error with added action metadata', () => {
+      const mockError = new PrismaClientKnownRequestError('Error', {
+        code: 'P2002',
+        clientVersion: '1.0',
+        meta: {},
+      });
 
-      expect(() => repository.handleDBError(error)).toThrow(NotFoundException);
-    });
+      expect(() => {
+        repository.handleDBError(mockError, ACTION_CREATE);
+      }).toThrow();
 
-    it('should throw NotAcceptableException for P2002 error code', () => {
-      const error = { code: 'P2002', meta: { target: ['field'] } };
-
-      expect(() => repository.handleDBError(error)).toThrow(
-        NotAcceptableException,
-      );
-    });
-
-    it('should throw InternalServerErrorException for unknown error codes', () => {
-      const error = { code: 'UNKNOWN' };
-
-      expect(() => repository.handleDBError(error)).toThrow(
-        InternalServerErrorException,
-      );
+      expect(mockError.meta).toHaveProperty('action', ACTION_CREATE);
     });
   });
 });

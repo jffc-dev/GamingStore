@@ -10,10 +10,8 @@ describe('CloudinaryService', () => {
   let mockEndStream: jest.Mock;
 
   beforeEach(async () => {
-    // Reset all mocks before each test
     jest.clearAllMocks();
 
-    // Create mock for upload_stream
     mockEndStream = jest.fn();
     mockUploadStream = jest.fn().mockReturnValue({ end: mockEndStream });
     (cloudinary.uploader as any).upload_stream = mockUploadStream;
@@ -49,7 +47,6 @@ describe('CloudinaryService', () => {
         secure_url: 'https://test-url.com/image.jpg',
       };
 
-      // Simulate successful upload by calling the callback with the result
       mockUploadStream.mockImplementation((options, callback) => {
         callback(null, expectedResponse);
         return { end: mockEndStream };
@@ -68,7 +65,6 @@ describe('CloudinaryService', () => {
     it('should reject with error when upload fails', async () => {
       const expectedError = new Error('Upload failed');
 
-      // Simulate failed upload by calling the callback with an error
       mockUploadStream.mockImplementation((options, callback) => {
         callback(expectedError, null);
         return { end: mockEndStream };

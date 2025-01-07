@@ -32,6 +32,7 @@ describe('GetProductUseCase', () => {
           provide: ProductRepository,
           useValue: {
             getProductById: jest.fn(),
+            getProductByIdOrThrow: jest.fn(),
           },
         },
       ],
@@ -46,32 +47,36 @@ describe('GetProductUseCase', () => {
   });
 
   it('should return a product successfully', async () => {
-    productRepositoryMock.getProductById.mockResolvedValue(mockProduct);
+    productRepositoryMock.getProductByIdOrThrow.mockResolvedValue(mockProduct);
 
     const result = await getProductUseCase.execute(mockGetProductDto);
 
     expect(result).toEqual(mockProduct);
-    expect(productRepositoryMock.getProductById).toHaveBeenCalledWith(
+    expect(productRepositoryMock.getProductByIdOrThrow).toHaveBeenCalledWith(
       mockGetProductDto.productId,
     );
-    expect(productRepositoryMock.getProductById).toHaveBeenCalledTimes(1);
+    expect(productRepositoryMock.getProductByIdOrThrow).toHaveBeenCalledTimes(
+      1,
+    );
   });
 
   it('should throw an error if the repository returns null', async () => {
-    productRepositoryMock.getProductById.mockResolvedValue(null);
+    productRepositoryMock.getProductByIdOrThrow.mockResolvedValue(null);
 
     await expect(
       getProductUseCase.execute(mockGetProductDto),
     ).resolves.toBeNull();
 
-    expect(productRepositoryMock.getProductById).toHaveBeenCalledWith(
+    expect(productRepositoryMock.getProductByIdOrThrow).toHaveBeenCalledWith(
       mockGetProductDto.productId,
     );
-    expect(productRepositoryMock.getProductById).toHaveBeenCalledTimes(1);
+    expect(productRepositoryMock.getProductByIdOrThrow).toHaveBeenCalledTimes(
+      1,
+    );
   });
 
   it('should propagate any repository error', async () => {
-    productRepositoryMock.getProductById.mockRejectedValue(
+    productRepositoryMock.getProductByIdOrThrow.mockRejectedValue(
       new Error('Repository error'),
     );
 
@@ -79,9 +84,11 @@ describe('GetProductUseCase', () => {
       'Repository error',
     );
 
-    expect(productRepositoryMock.getProductById).toHaveBeenCalledWith(
+    expect(productRepositoryMock.getProductByIdOrThrow).toHaveBeenCalledWith(
       mockGetProductDto.productId,
     );
-    expect(productRepositoryMock.getProductById).toHaveBeenCalledTimes(1);
+    expect(productRepositoryMock.getProductByIdOrThrow).toHaveBeenCalledTimes(
+      1,
+    );
   });
 });

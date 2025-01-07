@@ -6,6 +6,7 @@ import { CartDetail } from 'src/domain/cart-detail';
 import { CreateCartDetailInput } from '../../dto/cart/input/create-cart-detail.input';
 import { CartDetail as CartDetailEntity } from '../../entities/cart-detail.entity';
 import { User } from 'src/domain/user';
+import { ProductLoader } from 'src/infraestructure/common/dataloaders/product.loader';
 
 describe('CartDetailResolver', () => {
   let resolver: CartDetailResolver;
@@ -24,6 +25,12 @@ describe('CartDetailResolver', () => {
         },
         {
           provide: AddProductToCartUseCase,
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
+        {
+          provide: ProductLoader,
           useValue: {
             execute: jest.fn(),
           },

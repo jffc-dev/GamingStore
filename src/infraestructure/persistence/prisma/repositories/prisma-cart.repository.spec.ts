@@ -1,12 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '../prisma.service';
 import { CartDetail } from 'src/domain/cart-detail';
-import { PrismaCartDetailMapper } from '../mappers/prisma-cart-detail.mapper';
-import {
-  NotFoundException,
-  NotAcceptableException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaCartDetailRepository } from './prisma-cart.repository';
 
 describe('PrismaCartDetailRepository', () => {
@@ -18,6 +13,18 @@ describe('PrismaCartDetailRepository', () => {
       upsert: jest.fn(),
       findMany: jest.fn(),
     },
+  };
+
+  const mockCartDetail = new CartDetail({
+    userId: 'user-1',
+    productId: 'product-1',
+    quantity: 2,
+  });
+
+  const mockPrismaCartDetail = {
+    userId: 'user-1',
+    productId: 'product-1',
+    quantity: 2,
   };
 
   beforeEach(async () => {
@@ -42,18 +49,7 @@ describe('PrismaCartDetailRepository', () => {
   });
 
   describe('addToCart', () => {
-    const mockCartDetail = new CartDetail({
-      userId: 'user-1',
-      productId: 'product-1',
-      quantity: 2,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    const mockPrismaCartDetail =
-      PrismaCartDetailMapper.toPrisma(mockCartDetail);
-
-    it('should successfully add item to cart', async () => {
+    it('should upsert and return a CartDetail entity', async () => {
       mockPrismaService.cartDetail.upsert.mockResolvedValue(
         mockPrismaCartDetail,
       );
@@ -67,119 +63,102 @@ describe('PrismaCartDetailRepository', () => {
             userId: mockCartDetail.userId,
           },
         },
-        create: mockPrismaCartDetail,
-        update: mockPrismaCartDetail,
+        create: {
+          userId: mockCartDetail.userId,
+          productId: mockCartDetail.productId,
+          quantity: mockCartDetail.quantity,
+        },
+        update: {
+          userId: mockCartDetail.userId,
+          productId: mockCartDetail.productId,
+          quantity: mockCartDetail.quantity,
+        },
       });
-      expect(result).toEqual(mockCartDetail);
+
+      expect(result).toBeInstanceOf(CartDetail);
+      expect(result.userId).toBe(mockCartDetail.userId);
+      expect(result.productId).toBe(mockCartDetail.productId);
+      expect(result.quantity).toBe(mockCartDetail.quantity);
     });
 
-    it('should throw NotFoundException when product not found', async () => {
-      const error = { code: 'P2025' };
-      mockPrismaService.cartDetail.upsert.mockRejectedValue(error);
-
-      await expect(repository.addToCart(mockCartDetail)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should throw NotAcceptableException on duplicate entry', async () => {
-      const error = {
+    it('should handle database errors during upsert', async () => {
+      const mockError = new PrismaClientKnownRequestError('Error', {
         code: 'P2002',
-        meta: { target: ['userId'] },
-      };
-      mockPrismaService.cartDetail.upsert.mockRejectedValue(error);
+        clientVersion: '1.0',
+      });
 
-      await expect(repository.addToCart(mockCartDetail)).rejects.toThrow(
-        NotAcceptableException,
-      );
-    });
+      mockPrismaService.cartDetail.upsert.mockRejectedValue(mockError);
 
-    it('should throw InternalServerErrorException on unknown error', async () => {
-      const error = new Error('Unknown error');
-      mockPrismaService.cartDetail.upsert.mockRejectedValue(error);
-
-      await expect(repository.addToCart(mockCartDetail)).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      await expect(repository.addToCart(mockCartDetail)).rejects.toThrow();
     });
   });
 
   describe('getCartDetailsByUser', () => {
-    const mockUserId = 'user-1';
-    const mockCartDetails = [
-      new CartDetail({
-        userId: mockUserId,
-        productId: 'product-1',
-        quantity: 2,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-      new CartDetail({
-        userId: mockUserId,
-        productId: 'product-2',
-        quantity: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-    ];
+    it('should return an array of CartDetail entities for a user', async () => {
+      const mockPrismaCartDetails = [
+        mockPrismaCartDetail,
+        {
+          ...mockPrismaCartDetail,
+          cartDetailId: 'cart-detail-2',
+          productId: 'product-2',
+          quantity: 1,
+          price: 150,
+        },
+      ];
 
-    const mockPrismaCartDetails = mockCartDetails.map(
-      PrismaCartDetailMapper.toPrisma,
-    );
-
-    it('should successfully get cart details by user', async () => {
       mockPrismaService.cartDetail.findMany.mockResolvedValue(
         mockPrismaCartDetails,
       );
 
-      const result = await repository.getCartDetailsByUser(mockUserId);
+      const result = await repository.getCartDetailsByUser('user-1');
 
       expect(prismaService.cartDetail.findMany).toHaveBeenCalledWith({
-        where: { userId: mockUserId },
+        where: {
+          userId: 'user-1',
+        },
       });
-      expect(result).toEqual(mockCartDetails);
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toBeInstanceOf(CartDetail);
+      expect(result[0].userId).toBe('user-1');
+      expect(result[1].productId).toBe('product-2');
+      expect(result[1].quantity).toBe(1);
     });
 
-    it('should throw InternalServerErrorException on database error', async () => {
-      const error = new Error('Database error');
-      mockPrismaService.cartDetail.findMany.mockRejectedValue(error);
+    it('should return empty array when no cart details found', async () => {
+      mockPrismaService.cartDetail.findMany.mockResolvedValue([]);
 
-      await expect(repository.getCartDetailsByUser(mockUserId)).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      const result = await repository.getCartDetailsByUser('user-1');
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('should handle database errors during find', async () => {
+      const mockError = new PrismaClientKnownRequestError('Error', {
+        code: 'P2025',
+        clientVersion: '1.0',
+      });
+
+      mockPrismaService.cartDetail.findMany.mockRejectedValue(mockError);
+
+      await expect(repository.getCartDetailsByUser('user-1')).rejects.toThrow();
     });
   });
 
   describe('handleDBError', () => {
-    it('should throw NotFoundException for P2025 error code', () => {
-      const error = { code: 'P2025' };
-
-      expect(() => repository.handleDBError(error)).toThrow(NotFoundException);
-      expect(() => repository.handleDBError(error)).toThrow(
-        'Product not found',
-      );
-    });
-
-    it('should throw NotAcceptableException for P2002 error code', () => {
-      const error = {
+    it('should throw the error with added action metadata', () => {
+      const mockError = new PrismaClientKnownRequestError('Error', {
         code: 'P2002',
-        meta: { target: ['userId'] },
-      };
+        clientVersion: '1.0',
+        meta: {},
+      });
+      const action = 'TEST_ACTION';
 
-      expect(() => repository.handleDBError(error)).toThrow(
-        NotAcceptableException,
-      );
-      expect(() => repository.handleDBError(error)).toThrow(
-        'userId had been already registered',
-      );
-    });
+      expect(() => {
+        repository.handleDBError(mockError, action);
+      }).toThrow();
 
-    it('should throw InternalServerErrorException for unknown errors', () => {
-      const error = new Error('Unknown error');
-
-      expect(() => repository.handleDBError(error)).toThrow(
-        InternalServerErrorException,
-      );
+      expect(mockError.meta).toHaveProperty('action', action);
     });
   });
 });

@@ -1,12 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '../prisma.service';
 import { LikeProduct } from 'src/domain/like-product';
-import { PrismaLikeProductMapper } from '../mappers/prisma-like.mapper';
-import {
-  NotFoundException,
-  NotAcceptableException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaLikeProductRepository } from './prisma-like.repository';
 
 describe('PrismaLikeProductRepository', () => {
@@ -18,6 +13,18 @@ describe('PrismaLikeProductRepository', () => {
       upsert: jest.fn(),
       findMany: jest.fn(),
     },
+  };
+
+  const mockLikeProduct = new LikeProduct({
+    userId: 'user-1',
+    productId: 'product-1',
+    createdAt: new Date(),
+  });
+
+  const mockPrismaLike = {
+    userId: 'user-1',
+    productId: 'product-1',
+    createdAt: new Date(),
   };
 
   beforeEach(async () => {
@@ -42,19 +49,8 @@ describe('PrismaLikeProductRepository', () => {
   });
 
   describe('likeProduct', () => {
-    const mockLikeProduct = new LikeProduct({
-      userId: 'user-1',
-      productId: 'product-1',
-      createdAt: new Date(),
-    });
-
-    const mockPrismaLikeProduct =
-      PrismaLikeProductMapper.toPrisma(mockLikeProduct);
-
-    it('should successfully like a product', async () => {
-      mockPrismaService.productLike.upsert.mockResolvedValue(
-        mockPrismaLikeProduct,
-      );
+    it('should upsert and return a LikeProduct entity', async () => {
+      mockPrismaService.productLike.upsert.mockResolvedValue(mockPrismaLike);
 
       const result = await repository.likeProduct(mockLikeProduct);
 
@@ -71,110 +67,84 @@ describe('PrismaLikeProductRepository', () => {
         },
         update: {},
       });
-      expect(result).toEqual(mockLikeProduct);
+
+      expect(result).toBeInstanceOf(LikeProduct);
+      expect(result.userId).toBe(mockLikeProduct.userId);
+      expect(result.productId).toBe(mockLikeProduct.productId);
     });
 
-    it('should throw NotFoundException when like not found', async () => {
-      const error = { code: 'P2025' };
-      mockPrismaService.productLike.upsert.mockRejectedValue(error);
-
-      await expect(repository.likeProduct(mockLikeProduct)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should throw NotAcceptableException on duplicate entry', async () => {
-      const error = {
+    it('should handle database errors during upsert', async () => {
+      const mockError = new PrismaClientKnownRequestError('Error', {
         code: 'P2002',
-        meta: { target: ['userId'] },
-      };
-      mockPrismaService.productLike.upsert.mockRejectedValue(error);
+        clientVersion: '1.0',
+      });
 
-      await expect(repository.likeProduct(mockLikeProduct)).rejects.toThrow(
-        NotAcceptableException,
-      );
-    });
+      mockPrismaService.productLike.upsert.mockRejectedValue(mockError);
 
-    it('should throw InternalServerErrorException on unknown error', async () => {
-      const error = new Error('Unknown error');
-      mockPrismaService.productLike.upsert.mockRejectedValue(error);
-
-      await expect(repository.likeProduct(mockLikeProduct)).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      await expect(repository.likeProduct(mockLikeProduct)).rejects.toThrow();
     });
   });
 
   describe('getLikedProducts', () => {
-    const mockUserId = 'user-1';
-    const mockLikedProducts = [
-      new LikeProduct({
-        userId: mockUserId,
-        productId: 'product-1',
-        createdAt: new Date(),
-      }),
-      new LikeProduct({
-        userId: mockUserId,
-        productId: 'product-2',
-        createdAt: new Date(),
-      }),
-    ];
+    it('should return an array of LikeProduct entities', async () => {
+      const mockPrismaLikes = [
+        mockPrismaLike,
+        {
+          ...mockPrismaLike,
+          likeId: 'like-2',
+          productId: 'product-2',
+        },
+      ];
 
-    const mockPrismaLikedProducts = mockLikedProducts.map(
-      PrismaLikeProductMapper.toPrisma,
-    );
+      mockPrismaService.productLike.findMany.mockResolvedValue(mockPrismaLikes);
 
-    it('should successfully get liked products by user', async () => {
-      mockPrismaService.productLike.findMany.mockResolvedValue(
-        mockPrismaLikedProducts,
-      );
-
-      const result = await repository.getLikedProducts(mockUserId);
+      const result = await repository.getLikedProducts('user-1');
 
       expect(prismaService.productLike.findMany).toHaveBeenCalledWith({
-        where: { userId: mockUserId },
+        where: {
+          userId: 'user-1',
+        },
       });
-      expect(result).toEqual(mockLikedProducts);
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toBeInstanceOf(LikeProduct);
+      expect(result[0].userId).toBe('user-1');
+      expect(result[1].productId).toBe('product-2');
     });
 
-    it('should throw InternalServerErrorException on database error', async () => {
-      const error = new Error('Database error');
-      mockPrismaService.productLike.findMany.mockRejectedValue(error);
+    it('should return empty array when no likes found', async () => {
+      mockPrismaService.productLike.findMany.mockResolvedValue([]);
 
-      await expect(repository.getLikedProducts(mockUserId)).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      const result = await repository.getLikedProducts('user-1');
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('should handle database errors during find', async () => {
+      const mockError = new PrismaClientKnownRequestError('Error', {
+        code: 'P2025',
+        clientVersion: '1.0',
+      });
+
+      mockPrismaService.productLike.findMany.mockRejectedValue(mockError);
+
+      await expect(repository.getLikedProducts('user-1')).rejects.toThrow();
     });
   });
 
   describe('handleDBError', () => {
-    it('should throw NotFoundException for P2025 error code', () => {
-      const error = { code: 'P2025' };
-
-      expect(() => repository.handleDBError(error)).toThrow(NotFoundException);
-      expect(() => repository.handleDBError(error)).toThrow('Like not found');
-    });
-
-    it('should throw NotAcceptableException for P2002 error code', () => {
-      const error = {
+    it('should throw the error with added action metadata', () => {
+      const mockError = new PrismaClientKnownRequestError('Error', {
         code: 'P2002',
-        meta: { target: ['userId'] },
-      };
+        clientVersion: '1.0',
+        meta: {},
+      });
 
-      expect(() => repository.handleDBError(error)).toThrow(
-        NotAcceptableException,
-      );
-      expect(() => repository.handleDBError(error)).toThrow(
-        'userId had been already registered',
-      );
-    });
+      expect(() => {
+        repository.handleDBError(mockError, 'TEST_ACTION');
+      }).toThrow();
 
-    it('should throw InternalServerErrorException for unknown errors', () => {
-      const error = new Error('Unknown error');
-
-      expect(() => repository.handleDBError(error)).toThrow(
-        InternalServerErrorException,
-      );
+      expect(mockError.meta).toHaveProperty('action', 'TEST_ACTION');
     });
   });
 });

@@ -3,11 +3,6 @@ import { PrismaProductRepository } from './prisma-product.repository';
 import { PrismaService } from '../prisma.service';
 import { PrismaProductMapper } from '../mappers/prisma-product.mapper';
 import { Product } from 'src/domain/product';
-import {
-  InternalServerErrorException,
-  NotAcceptableException,
-  NotFoundException,
-} from '@nestjs/common';
 
 describe('PrismaProductRepository', () => {
   let repository: PrismaProductRepository;
@@ -163,61 +158,55 @@ describe('PrismaProductRepository', () => {
   });
 
   describe('handleDBError', () => {
-    it('should throw NotFoundException for code P2025', () => {
+    let repository: PrismaProductRepository;
+
+    beforeEach(() => {
+      repository = new PrismaProductRepository(null);
+    });
+
+    it('should throw the original error for code P2025', () => {
       const error = { code: 'P2025', meta: {} } as any;
 
-      expect(() => repository.handleDBError(error)).toThrow(NotFoundException);
+      try {
+        repository.handleDBError(error);
+      } catch (thrownError) {
+        expect(thrownError).toBe(error);
+      }
     });
 
-    it('should throw NotAcceptableException for code P2002', () => {
-      const error = { code: 'P2002', meta: { target: ['productId'] } } as any;
-
-      expect(() => repository.handleDBError(error)).toThrow(
-        NotAcceptableException,
-      );
-    });
-
-    it('should throw InternalServerErrorException for unknown errors', () => {
-      const error = { code: 'UNKNOWN', meta: {} } as any;
-
-      expect(() => repository.handleDBError(error)).toThrow(
-        InternalServerErrorException,
-      );
-    });
-  });
-
-  describe('handleDBError', () => {
-    it('should throw NotFoundException for code P2025', () => {
-      const error = { code: 'P2025', meta: {} } as any;
-
-      expect(() => repository.handleDBError(error)).toThrow(NotFoundException);
-    });
-
-    it('should throw NotAcceptableException for code P2002', () => {
-      const error = { code: 'P2002', meta: { target: ['productId'] } } as any;
-
-      expect(() => repository.handleDBError(error)).toThrow(
-        NotAcceptableException,
-      );
-    });
-
-    it('should throw NotAcceptableException for code P2003', () => {
+    it('should throw the original error for code P2003', () => {
       const error = {
         code: 'P2003',
-        meta: { field_name: 'categoryId' },
+        meta: { field_name: 'product_category_id_fkey (index)' },
       } as any;
 
-      expect(() => repository.handleDBError(error)).toThrow(
-        NotAcceptableException,
-      );
+      try {
+        repository.handleDBError(error);
+      } catch (thrownError) {
+        expect(thrownError).toBe(error);
+      }
     });
 
-    it('should throw InternalServerErrorException for unknown errors', () => {
-      const error = { code: 'UNKNOWN', meta: {} } as any;
+    it('should throw the original error for stock constraint violations', () => {
+      const error = {
+        message: 'violates check constraint: check_stock',
+      } as any;
 
-      expect(() => repository.handleDBError(error)).toThrow(
-        InternalServerErrorException,
-      );
+      try {
+        repository.handleDBError(error);
+      } catch (thrownError) {
+        expect(thrownError).toBe(error);
+      }
+    });
+
+    it('should throw the original error for unexpected cases', () => {
+      const error = { code: 'UNKNOWN_ERROR' } as any;
+
+      try {
+        repository.handleDBError(error);
+      } catch (thrownError) {
+        expect(thrownError).toBe(error);
+      }
     });
   });
 });

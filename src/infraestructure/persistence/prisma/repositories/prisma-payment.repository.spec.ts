@@ -2,11 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaPaymentRepository } from './prisma-payment.repository';
 import { PrismaService } from '../prisma.service';
 import { Payment } from 'src/domain/payment';
-import {
-  NotFoundException,
-  NotAcceptableException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+
 import { PrismaClient } from '@prisma/client';
 
 describe('PrismaPaymentRepository', () => {
@@ -107,30 +103,6 @@ describe('PrismaPaymentRepository', () => {
       const result = await repository.getPayment('non-existent');
 
       expect(result).toBeNull();
-    });
-  });
-
-  describe('handleDBError', () => {
-    it('should throw NotFoundException for P2025 error code', () => {
-      const error = { code: 'P2025' };
-
-      expect(() => repository.handleDBError(error)).toThrow(NotFoundException);
-    });
-
-    it('should throw NotAcceptableException for P2002 error code', () => {
-      const error = { code: 'P2002', meta: { target: ['paymentId'] } };
-
-      expect(() => repository.handleDBError(error)).toThrow(
-        NotAcceptableException,
-      );
-    });
-
-    it('should throw InternalServerErrorException for unknown error codes', () => {
-      const error = { code: 'UNKNOWN' };
-
-      expect(() => repository.handleDBError(error)).toThrow(
-        InternalServerErrorException,
-      );
     });
   });
 });

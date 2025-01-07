@@ -1,13 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaProductImageRepository } from './prisma-product-image.repository';
+import { Test } from '@nestjs/testing';
 import { PrismaService } from '../prisma.service';
-import { PrismaProductImageMapper } from '../mappers/prisma-product-image.mapper';
+import { PrismaProductImageRepository } from './prisma-product-image.repository';
 import { ProductImage } from 'src/domain/product-image';
-import {
-  InternalServerErrorException,
-  NotAcceptableException,
-  NotFoundException,
-} from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 describe('PrismaProductImageRepository', () => {
   let repository: PrismaProductImageRepository;
@@ -21,28 +16,14 @@ describe('PrismaProductImageRepository', () => {
     },
   };
 
-  const mockPrismaMapper = {
-    toDomain: jest.fn(),
-  };
-
-  const mockProductImage = new ProductImage({
-    id: 'image-123',
-    productId: 'product-123',
-    url: 'http://example.com/image.jpg',
-  });
-
-  const mockPrismaProductImage = {
-    productImageId: 'image-123',
-    productId: 'product-123',
-    url: 'http://example.com/image.jpg',
-  };
-
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       providers: [
         PrismaProductImageRepository,
-        { provide: PrismaService, useValue: mockPrismaService },
-        { provide: PrismaProductImageMapper, useValue: mockPrismaMapper },
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
       ],
     }).compile();
 
@@ -57,38 +38,57 @@ describe('PrismaProductImageRepository', () => {
   });
 
   describe('getImagesByProductIds', () => {
-    it('should return a list of product images', async () => {
-      mockPrismaService.productImage.findMany.mockResolvedValue([
-        mockPrismaProductImage,
-      ]);
-      mockPrismaMapper.toDomain.mockReturnValue(mockProductImage);
+    it('should return an array of ProductImage entities', async () => {
+      const mockProductIds = ['1', '2'];
+      const mockPrismaImages = [
+        { productImageId: 'img1', productId: '1', url: 'url1' },
+        { productImageId: 'img2', productId: '2', url: 'url2' },
+      ];
 
-      const result = await repository.getImagesByProductIds(['product-123']);
+      mockPrismaService.productImage.findMany.mockResolvedValue(
+        mockPrismaImages,
+      );
+
+      const result = await repository.getImagesByProductIds(mockProductIds);
 
       expect(prismaService.productImage.findMany).toHaveBeenCalledWith({
         where: {
-          productId: { in: ['product-123'] },
+          productId: { in: mockProductIds },
         },
       });
-      expect(result).toEqual([mockProductImage]);
+      expect(result).toHaveLength(2);
+      expect(result[0]).toBeInstanceOf(ProductImage);
+      expect(result[0].id).toBe('img1');
+      expect(result[1].id).toBe('img2');
     });
 
-    it('should handle database errors gracefully', async () => {
-      const error = new Error('Database error');
-      mockPrismaService.productImage.findMany.mockRejectedValue(error);
+    it('should handle database errors', async () => {
+      const mockError = new PrismaClientKnownRequestError('Error', {
+        code: 'P2002',
+        clientVersion: '1.0',
+      });
 
-      await expect(
-        repository.getImagesByProductIds(['product-123']),
-      ).rejects.toThrow(InternalServerErrorException);
+      mockPrismaService.productImage.findMany.mockRejectedValue(mockError);
+
+      await expect(repository.getImagesByProductIds(['1'])).rejects.toThrow();
     });
   });
 
   describe('createProductImage', () => {
-    it('should create and return a product image', async () => {
-      mockPrismaService.productImage.create.mockResolvedValue(
-        mockPrismaProductImage,
-      );
-      mockPrismaMapper.toDomain.mockReturnValue(mockProductImage);
+    it('should create and return a new ProductImage entity', async () => {
+      const mockProductImage = new ProductImage({
+        id: 'img1',
+        productId: 'prod1',
+        url: 'http://example.com/image.jpg',
+      });
+
+      const mockPrismaImage = {
+        productImageId: 'img1',
+        productId: 'prod1',
+        url: 'http://example.com/image.jpg',
+      };
+
+      mockPrismaService.productImage.create.mockResolvedValue(mockPrismaImage);
 
       const result = await repository.createProductImage(mockProductImage);
 
@@ -99,58 +99,76 @@ describe('PrismaProductImageRepository', () => {
           url: mockProductImage.url,
         },
       });
-      expect(result).toEqual(mockProductImage);
+      expect(result).toBeInstanceOf(ProductImage);
+      expect(result.id).toBe(mockProductImage.id);
     });
 
-    it('should handle unique constraint violations gracefully', async () => {
-      const error = { code: 'P2002', meta: { target: ['productImageId'] } };
-      mockPrismaService.productImage.create.mockRejectedValue(error);
+    it('should handle database errors during creation', async () => {
+      const mockError = new PrismaClientKnownRequestError('Error', {
+        code: 'P2002',
+        clientVersion: '1.0',
+      });
+
+      const mockProductImage = new ProductImage({
+        id: 'img1',
+        productId: 'prod1',
+        url: 'http://example.com/image.jpg',
+      });
+
+      mockPrismaService.productImage.create.mockRejectedValue(mockError);
 
       await expect(
         repository.createProductImage(mockProductImage),
-      ).rejects.toThrow(NotAcceptableException);
+      ).rejects.toThrow();
     });
   });
 
   describe('getProductImageById', () => {
-    it('should return a product image if found', async () => {
-      mockPrismaService.productImage.findUnique.mockResolvedValue(
-        mockPrismaProductImage,
-      );
-      mockPrismaMapper.toDomain.mockReturnValue(mockProductImage);
+    it('should return a ProductImage entity when found', async () => {
+      const mockPrismaImage = {
+        productImageId: 'img1',
+        productId: 'prod1',
+        url: 'http://example.com/image.jpg',
+      };
 
-      const result = await repository.getProductImageById(
-        'image-123',
-        'product-123',
+      mockPrismaService.productImage.findUnique.mockResolvedValue(
+        mockPrismaImage,
       );
+
+      const result = await repository.getProductImageById('img1', 'prod1');
 
       expect(prismaService.productImage.findUnique).toHaveBeenCalledWith({
         where: {
-          productImageId: 'image-123',
-          productId: 'product-123',
+          productImageId: 'img1',
+          productId: 'prod1',
         },
       });
-      expect(result).toEqual(mockProductImage);
+      expect(result).toBeInstanceOf(ProductImage);
+      expect(result.id).toBe('img1');
     });
 
-    it('should return null if no product image is found', async () => {
+    it('should return null when image is not found', async () => {
       mockPrismaService.productImage.findUnique.mockResolvedValue(null);
 
       const result = await repository.getProductImageById(
-        'image-123',
-        'product-123',
+        'nonexistent',
+        'prod1',
       );
 
       expect(result).toBeNull();
     });
 
-    it('should handle not found errors gracefully', async () => {
-      const error = { code: 'P2025' };
-      mockPrismaService.productImage.findUnique.mockRejectedValue(error);
+    it('should handle database errors during find', async () => {
+      const mockError = new PrismaClientKnownRequestError('Error', {
+        code: 'P2002',
+        clientVersion: '1.0',
+      });
+
+      mockPrismaService.productImage.findUnique.mockRejectedValue(mockError);
 
       await expect(
-        repository.getProductImageById('image-123', 'product-123'),
-      ).rejects.toThrow(NotFoundException);
+        repository.getProductImageById('img1', 'prod1'),
+      ).rejects.toThrow();
     });
   });
 });

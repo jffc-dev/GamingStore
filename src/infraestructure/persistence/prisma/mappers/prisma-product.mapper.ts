@@ -2,7 +2,6 @@ import { Prisma, Product as PrismaProduct } from '@prisma/client';
 import { Product } from 'src/domain/product';
 
 export class PrismaProductMapper {
-  // Mapea de Prisma a dominio
   static toDomain(entity: PrismaProduct): Product {
     const model = new Product({
       productId: entity.productId,
@@ -20,7 +19,6 @@ export class PrismaProductMapper {
     return model;
   }
 
-  // Mapea de dominio a Prisma
   static toPrisma(product: Product): Prisma.ProductUncheckedCreateInput {
     return {
       productId: product.productId,
