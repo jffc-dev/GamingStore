@@ -4,6 +4,7 @@ import { LikeProductRepository } from 'src/application/contracts/persistence/lik
 import { LikeProduct } from 'src/domain/like-product';
 import { PrismaLikeProductMapper } from '../mappers/prisma-like.mapper';
 import { Prisma } from '@prisma/client';
+import { User } from 'src/domain/user';
 
 @Injectable()
 export class PrismaLikeProductRepository implements LikeProductRepository {
@@ -40,6 +41,32 @@ export class PrismaLikeProductRepository implements LikeProductRepository {
       });
 
       return likedProducts.map(PrismaLikeProductMapper.toDomain);
+    } catch (error) {
+      this.handleDBError(error);
+    }
+  }
+
+  async findLastUserWhoLikedProductAndDidNotPurchase(
+    productId: string,
+  ): Promise<User | null> {
+    try {
+      const [user] = await this.prisma.$queryRaw<User[]>(
+        Prisma.sql`
+        
+        SELECT USE.*
+        FROM product PRO
+        INNER JOIN product_like PLI ON PLI.product_id = PRO.product_id
+        INNER JOIN customer_user USE ON USE.user_id = PLI.user_id
+        INNER JOIN order_detail ODE ON PRO.product_id = ODE.product_id
+        LEFT JOIN "order" ORD ON ORD.order_id = ODE.order_id AND ORD.user_id = USE.user_id
+        WHERE PRO.product_id = ${productId}::UUID AND ORD.order_id IS NULL
+        ORDER BY PLI.created_at DESC
+        LIMIT 1;
+        
+      `,
+      );
+
+      return user || null;
     } catch (error) {
       this.handleDBError(error);
     }

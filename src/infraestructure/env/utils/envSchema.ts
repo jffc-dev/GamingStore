@@ -18,6 +18,7 @@ export const envSchema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string().nonempty(),
   CLOUDINARY_API_KEY: z.string().nonempty(),
   CLOUDINARY_API_SECRET: z.string().nonempty(),
+  PRODUCT_STOCK_ALERT_THRESHOLD: z.coerce.number().min(1),
 });
 
 export type Env = z.infer<typeof envSchema>;

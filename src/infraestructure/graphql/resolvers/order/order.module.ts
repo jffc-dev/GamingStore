@@ -8,6 +8,10 @@ import { GetUserOrdersUseCase } from 'src/application/use-cases/order/get-orders
 import { OrderDetailResolver } from './order-detail.resolver';
 import { ProductLoader } from 'src/infraestructure/common/dataloaders/product.loader';
 import { GetProductsByIdsUseCase } from 'src/application/use-cases/product/get-products-by-ids.use-case';
+import { StockUpdatedListener } from 'src/infraestructure/events/listener/stock-updated.listener';
+import { EnvModule } from 'src/infraestructure/env/env.module';
+import { NotificationsModule } from 'src/infraestructure/notifications/notifications.module';
+import { NotifyLastLikerOnLowStockUseCase } from 'src/application/use-cases/user/notify-last-liker-on-low-stock.use-case';
 
 @Module({
   providers: [
@@ -15,13 +19,16 @@ import { GetProductsByIdsUseCase } from 'src/application/use-cases/product/get-p
     GetOrderDetailsUseCase,
     GetUserOrdersUseCase,
     GetProductsByIdsUseCase,
+    NotifyLastLikerOnLowStockUseCase,
 
     OrderResolver,
     OrderDetailResolver,
 
     OrderDetailsLoader,
     ProductLoader,
+
+    StockUpdatedListener,
   ],
-  imports: [UuidModule],
+  imports: [UuidModule, EnvModule, NotificationsModule],
 })
 export class OrderModule {}

@@ -252,6 +252,126 @@ async function main() {
     },
   });
 
+  await prisma.user.create({
+    data: {
+      userId: uuid(),
+      email: 'ana@example.com',
+      name: 'Ana',
+      lastName: 'Martínez',
+      phoneNumber: '987654310',
+      password: bcrypt.hashSync('Ana123', 10),
+      role: 'CLIENT',
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      userId: uuid(),
+      email: 'carlos@example.com',
+      name: 'Carlos',
+      lastName: 'Gómez',
+      phoneNumber: '987654320',
+      password: bcrypt.hashSync('Carlos123', 10),
+      role: 'CLIENT',
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      userId: uuid(),
+      email: 'luisa@example.com',
+      name: 'Luisa',
+      lastName: 'Pérez',
+      phoneNumber: '987654330',
+      password: bcrypt.hashSync('Luisa123', 10),
+      role: 'CLIENT',
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      userId: uuid(),
+      email: 'fernando@example.com',
+      name: 'Fernando',
+      lastName: 'Ruiz',
+      phoneNumber: '987654340',
+      password: bcrypt.hashSync('Fernando123', 10),
+      role: 'CLIENT',
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      userId: uuid(),
+      email: 'valeria@example.com',
+      name: 'Valeria',
+      lastName: 'Hernández',
+      phoneNumber: '987654350',
+      password: bcrypt.hashSync('Valeria123', 10),
+      role: 'CLIENT',
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      userId: uuid(),
+      email: 'andres@example.com',
+      name: 'Andrés',
+      lastName: 'López',
+      phoneNumber: '987654360',
+      password: bcrypt.hashSync('Andres123', 10),
+      role: 'CLIENT',
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      userId: uuid(),
+      email: 'paula@example.com',
+      name: 'Paula',
+      lastName: 'Morales',
+      phoneNumber: '987654370',
+      password: bcrypt.hashSync('Paula123', 10),
+      role: 'CLIENT',
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      userId: uuid(),
+      email: 'jorge@example.com',
+      name: 'Jorge',
+      lastName: 'Ramírez',
+      phoneNumber: '987654380',
+      password: bcrypt.hashSync('Jorge123', 10),
+      role: 'CLIENT',
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      userId: uuid(),
+      email: 'diana@example.com',
+      name: 'Diana',
+      lastName: 'Salazar',
+      phoneNumber: '987654390',
+      password: bcrypt.hashSync('Diana123', 10),
+      role: 'CLIENT',
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      userId: uuid(),
+      email: 'mario@example.com',
+      name: 'Mario',
+      lastName: 'Vargas',
+      phoneNumber: '987654400',
+      password: bcrypt.hashSync('Mario123', 10),
+      role: 'CLIENT',
+    },
+  });
+
   console.log('Seed data inserted');
 }
 

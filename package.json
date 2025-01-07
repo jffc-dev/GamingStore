@@ -25,6 +25,7 @@
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.3.0",
     "@nestjs/core": "^10.0.0",
+    "@nestjs/event-emitter": "^2.1.1",
     "@nestjs/graphql": "^12.2.2",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mapped-types": "*",
@@ -94,8 +95,20 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "modulePaths": ["<rootDir>"],
+    "modulePaths": [
+      "<rootDir>"
+    ],
     "testEnvironment": "node",
-    "coveragePathIgnorePatterns": ["node_modules", "\\.module\\.ts$","\\.mapper\\.ts$","\\.dto\\.ts$","\\.input\\.ts$","\\.entity\\.ts$", "main.ts","domain","entity.ts"]
+    "coveragePathIgnorePatterns": [
+      "node_modules",
+      "\\.module\\.ts$",
+      "\\.mapper\\.ts$",
+      "\\.dto\\.ts$",
+      "\\.input\\.ts$",
+      "\\.entity\\.ts$",
+      "main.ts",
+      "domain",
+      "entity.ts"
+    ]
   }
 }

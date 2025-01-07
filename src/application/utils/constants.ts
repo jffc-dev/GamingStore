@@ -19,6 +19,21 @@ export const FORGOT_PASSWORD_BODY = `
     <p>Best regards,<br>Your Company Name</p>
 `;
 
+export const PRODUCT_LOW_STOCK_SUBJECT = 'LOW STOCK ALERT';
+
+export const PRODUCT_LOW_STOCK = `
+    <p>Hello,</p>
+    <p>We wanted to let you know that one of your favorite products is running low on stock:</p>
+    <ul>
+        <li><strong>Product Name:</strong> {{product_name}}</li>
+        <li><strong>Remaining Stock:</strong> {{current_stock}}</li>
+    </ul>
+    <p>Hurry and grab it before it’s gone!</p>
+    <p>Visit our store now to place your order and secure your item.</p>
+    <p>If you have any questions, feel free to reach out to us at support@example.com.</p>
+    <p>Best regards,<br>GamingStore</p>
+`;
+
 export const FORGOT_PASSWORD_SUBJECT = 'Password Reset Request';
 
 export const ACTION_CREATE = 'creating';

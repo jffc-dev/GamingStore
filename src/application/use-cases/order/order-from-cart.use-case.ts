@@ -5,6 +5,8 @@ import { Order } from 'src/domain/order';
 import { UuidService } from 'src/infraestructure/services/uuid/uuid.service';
 import { OrderRepository } from '../../contracts/persistence/order.repository';
 import { OrderDetail } from 'src/domain/order-detail';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { StockUpdatedEvent } from 'src/infraestructure/events/input/stock-updated.event';
 
 interface ICreateOrderFromCartUseCaseProps {
   userId: string;
@@ -16,6 +18,8 @@ export class CreateOrderFromCartUseCase {
     private readonly productRepository: ProductRepository,
     private readonly uuidService: UuidService,
     private readonly orderRepository: OrderRepository,
+
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async execute({ userId }: ICreateOrderFromCartUseCaseProps): Promise<Order> {
@@ -86,6 +90,10 @@ export class CreateOrderFromCartUseCase {
       order,
       userId,
     );
+
+    const orderCreatedEvent = new StockUpdatedEvent();
+    orderCreatedEvent.productIds = productIds;
+    this.eventEmitter.emit('stock.updated', orderCreatedEvent);
 
     return orderResponse;
   }

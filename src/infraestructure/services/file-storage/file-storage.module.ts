@@ -18,7 +18,6 @@ import { EnvService } from 'src/infraestructure/env/env.service';
       imports: [EnvModule],
       inject: [EnvService],
       useFactory: (envService: EnvService) => {
-        console.log(envService.get('CLOUDINARY_CLOUD_NAME'));
         return {
           cloud_name: envService.get('CLOUDINARY_CLOUD_NAME'),
           api_key: envService.get('CLOUDINARY_API_KEY'),
