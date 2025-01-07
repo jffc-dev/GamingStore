@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as DataLoader from 'dataloader';
 import { GetProductsByIdsUseCase } from 'src/application/use-cases/product/get-products-by-ids.use-case';
-import { Product } from 'src/domain/Product';
+import { Product } from 'src/domain/product';
 
 @Injectable()
 export class ProductLoader {
