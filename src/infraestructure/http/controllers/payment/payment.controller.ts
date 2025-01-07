@@ -22,12 +22,14 @@ export class PaymentController {
   async createPayment(
     @Body() paymentIntentDto: CreatePaymentIntentDto,
     @GetUser() user: User,
-  ): Promise<Payment> {
-    const payment = await this.createPaymentUseCase.execute({
-      ...paymentIntentDto,
-      userId: user.id,
-    });
-    return payment;
+  ): Promise<Partial<Payment>> {
+    const { paymentId, orderId, stripePaymentId, amount, currency, status } =
+      await this.createPaymentUseCase.execute({
+        ...paymentIntentDto,
+        userId: user.id,
+      });
+
+    return { paymentId, orderId, stripePaymentId, amount, currency, status };
   }
 
   @Post('webhook')
