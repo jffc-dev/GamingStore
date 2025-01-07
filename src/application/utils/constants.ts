@@ -22,5 +22,6 @@ export const FORGOT_PASSWORD_BODY = `
 export const FORGOT_PASSWORD_SUBJECT = 'Password Reset Request';
 
 export const ACTION_CREATE = 'creating';
+export const ACTION_DELETE = 'deleting';
 export const ACTION_FIND = 'finding';
 export const ACTION_UPDATE = 'updating';

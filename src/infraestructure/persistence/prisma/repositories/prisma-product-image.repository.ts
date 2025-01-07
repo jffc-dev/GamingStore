@@ -1,13 +1,10 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotAcceptableException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { ProductImageRepository } from 'src/application/contracts/persistence/product-image.repository';
 import { ProductImage } from 'src/domain/product-image';
 import { PrismaProductImageMapper } from '../mappers/prisma-product-image.mapper';
+import { Prisma } from '@prisma/client';
+import { ACTION_CREATE, ACTION_FIND } from 'src/application/utils/constants';
 
 @Injectable()
 export class PrismaProductImageRepository implements ProductImageRepository {
@@ -23,7 +20,7 @@ export class PrismaProductImageRepository implements ProductImageRepository {
 
       return productImages.map(PrismaProductImageMapper.toDomain);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_FIND);
     }
   }
 
@@ -41,7 +38,7 @@ export class PrismaProductImageRepository implements ProductImageRepository {
 
       return PrismaProductImageMapper.toDomain(createdProductImage);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_CREATE);
     }
   }
   async getProductImageById(
@@ -60,20 +57,17 @@ export class PrismaProductImageRepository implements ProductImageRepository {
 
       return PrismaProductImageMapper.toDomain(productImage);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_FIND);
     }
   }
 
-  handleDBError(error: any): void {
-    const { code, meta } = error;
+  handleDBError(
+    error: Prisma.PrismaClientKnownRequestError,
+    action?: string,
+  ): void {
+    const { meta = {} } = error;
+    meta.action = action;
 
-    if (code === 'P2025') {
-      throw new NotFoundException(`Product image not found`);
-    } else if (code === 'P2002') {
-      throw new NotAcceptableException(
-        `${meta.target[0]} had been already registered`,
-      );
-    }
-    throw new InternalServerErrorException(error);
+    throw error;
   }
 }

@@ -1,13 +1,9 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotAcceptableException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CategoryRepository } from 'src/application/contracts/persistence/category.repository';
 import { Category } from 'src/domain/category';
 import { PrismaCategoryMapper } from '../mappers/prisma-category.mapper';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaCategoryRepository implements CategoryRepository {
@@ -41,17 +37,13 @@ export class PrismaCategoryRepository implements CategoryRepository {
     }
   }
 
-  handleDBError(error: any): void {
-    const { code, meta } = error;
+  handleDBError(
+    error: Prisma.PrismaClientKnownRequestError,
+    action?: string,
+  ): void {
+    const { meta = {} } = error;
+    meta.action = action;
 
-    if (code === 'P2025') {
-      throw new NotFoundException(`Category not found`);
-    } else if (code === 'P2002') {
-      throw new NotAcceptableException(
-        `${meta.target[0]} had been already registered`,
-      );
-    }
-
-    throw new InternalServerErrorException(error);
+    throw error;
   }
 }

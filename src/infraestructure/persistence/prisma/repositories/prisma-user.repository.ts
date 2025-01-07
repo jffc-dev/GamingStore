@@ -4,7 +4,11 @@ import { UserRepository } from 'src/application/contracts/persistence/user.repos
 import { User } from 'src/domain/user';
 import { PrismaUserMapper } from '../mappers/prisma-user.mapper';
 import { Prisma } from '@prisma/client';
-import { ACTION_CREATE, ACTION_FIND } from 'src/application/utils/constants';
+import {
+  ACTION_CREATE,
+  ACTION_FIND,
+  ACTION_UPDATE,
+} from 'src/application/utils/constants';
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
@@ -69,7 +73,7 @@ export class PrismaUserRepository implements UserRepository {
 
       return PrismaUserMapper.toDomain(updatedUser);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_UPDATE);
     }
   }
 
@@ -85,7 +89,7 @@ export class PrismaUserRepository implements UserRepository {
 
       return PrismaUserMapper.toDomain(foundUser);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_FIND);
     }
   }
 
@@ -93,15 +97,8 @@ export class PrismaUserRepository implements UserRepository {
     error: Prisma.PrismaClientKnownRequestError,
     action?: string,
   ): void {
-    const { code, meta = {} } = error;
+    const { meta = {} } = error;
     meta.action = action;
-
-    // TODO: IMPROVE THIS
-    if (code === 'P2002') {
-      throw error;
-    } else if (code === 'P2025') {
-      throw error;
-    }
 
     throw error;
   }

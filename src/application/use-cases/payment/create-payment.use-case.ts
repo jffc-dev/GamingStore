@@ -26,11 +26,7 @@ export class CreatePaymentUseCase {
     orderId,
     userId,
   }: ICreatePaymentUseCaseProps): Promise<Payment> {
-    const order = await this.orderRepository.getOrder(orderId);
-
-    if (!order) {
-      throw new BadRequestException('Order not found');
-    }
+    const order = await this.orderRepository.getOrderOrThrow(orderId);
 
     if (order.userId !== userId) {
       throw new BadRequestException('This order is not yours');

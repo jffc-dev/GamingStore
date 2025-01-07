@@ -7,6 +7,7 @@ import { IListProductsUseCaseProps } from 'src/application/use-cases/product/lis
 import { Prisma } from '@prisma/client';
 import {
   ACTION_CREATE,
+  ACTION_DELETE,
   ACTION_FIND,
   ACTION_UPDATE,
 } from 'src/application/utils/constants';
@@ -34,7 +35,7 @@ export class PrismaProductRepository implements ProductRepository {
 
       return products.map(PrismaProductMapper.toDomain);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_FIND);
     }
   }
 
@@ -62,7 +63,7 @@ export class PrismaProductRepository implements ProductRepository {
 
       return products.map(PrismaProductMapper.toDomain);
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_FIND);
     }
   }
 
@@ -79,7 +80,7 @@ export class PrismaProductRepository implements ProductRepository {
 
       return true;
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBError(error, ACTION_DELETE);
     }
   }
 
@@ -112,8 +113,7 @@ export class PrismaProductRepository implements ProductRepository {
 
       return PrismaProductMapper.toDomain(product);
     } catch (error) {
-      this.handleDBError(error);
-      return null;
+      this.handleDBError(error, ACTION_FIND);
     }
   }
 
@@ -141,8 +141,7 @@ export class PrismaProductRepository implements ProductRepository {
 
       return products.map(PrismaProductMapper.toDomain);
     } catch (error) {
-      this.handleDBError(error);
-      return null;
+      this.handleDBError(error, ACTION_FIND);
     }
   }
 

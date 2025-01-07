@@ -1,13 +1,9 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotAcceptableException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CartDetailRepository } from 'src/application/contracts/persistence/cart.repository';
 import { CartDetail } from 'src/domain/cart-detail';
 import { PrismaCartDetailMapper } from '../mappers/prisma-cart-detail.mapper';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaCartDetailRepository implements CartDetailRepository {
@@ -48,17 +44,13 @@ export class PrismaCartDetailRepository implements CartDetailRepository {
     }
   }
 
-  handleDBError(error: any): void {
-    const { code, meta } = error;
+  handleDBError(
+    error: Prisma.PrismaClientKnownRequestError,
+    action?: string,
+  ): void {
+    const { meta = {} } = error;
+    meta.action = action;
 
-    if (code === 'P2025') {
-      throw new NotFoundException(`Product not found`);
-    } else if (code === 'P2002') {
-      throw new NotAcceptableException(
-        `${meta.target[0]} had been already registered`,
-      );
-    }
-
-    throw new InternalServerErrorException(error);
+    throw error;
   }
 }
