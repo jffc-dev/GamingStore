@@ -19,6 +19,7 @@ import { CategoryModule } from './resolvers/category/category.module';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       playground: false,
+      introspection: true,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       formatError: (error) => {
         const originalError = error.extensions?.originalError as any;
