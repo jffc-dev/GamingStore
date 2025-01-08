@@ -4,6 +4,7 @@ import { PersistenceModule } from './infraestructure/persistence/persistence.mod
 import { NotificationsModule } from './infraestructure/notifications/notifications.module';
 import { GraphqlModule } from './infraestructure/graphql/graphql.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ClsModule } from 'nestjs-cls';
 
 @Module({
   imports: [
@@ -14,6 +15,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     HttpModule,
     GraphqlModule,
     NotificationsModule,
+    ClsModule.forRoot({
+      global: true,
+      middleware: { mount: true },
+    }),
   ],
 })
 export class AppModule {
