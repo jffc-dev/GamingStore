@@ -9,10 +9,14 @@ import {
 } from '../mappers/prisma-order.mapper';
 import { ACTION_CREATE, ACTION_FIND } from 'src/application/utils/constants';
 import { Prisma } from '@prisma/client';
+import { PrismaClientManager } from '../prisma-client-manager';
 
 @Injectable()
 export class PrismaOrderRepository implements OrderRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private clientManager: PrismaClientManager,
+  ) {}
 
   async getOrderOrThrow(orderId: string): Promise<Order> {
     try {
@@ -47,8 +51,9 @@ export class PrismaOrderRepository implements OrderRepository {
   }
 
   async createOrder(order: Order): Promise<Order> {
+    const prisma1 = this.clientManager.getClient();
     try {
-      const createdOrder = await this.prisma.order.create({
+      const createdOrder = await prisma1.order.create({
         data: {
           userId: order.userId,
           orderId: order.id,
@@ -146,8 +151,9 @@ export class PrismaOrderRepository implements OrderRepository {
   }
 
   async createOrderDetail(orderDetail: OrderDetail): Promise<OrderDetail> {
+    const prisma1 = this.clientManager.getClient();
     try {
-      const createdDetailOrder = await this.prisma.orderDetail.create({
+      const createdDetailOrder = await prisma1.orderDetail.create({
         data: {
           orderDetailId: orderDetail.id,
           orderId: orderDetail.orderId,

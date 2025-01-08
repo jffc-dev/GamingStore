@@ -11,10 +11,14 @@ import {
   ACTION_FIND,
   ACTION_UPDATE,
 } from 'src/application/utils/constants';
+import { PrismaClientManager } from '../prisma-client-manager';
 
 @Injectable()
 export class PrismaProductRepository implements ProductRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private clientManager: PrismaClientManager,
+  ) {}
 
   async filterProducts(dto: IListProductsUseCaseProps): Promise<Product[]> {
     try {
@@ -85,10 +89,11 @@ export class PrismaProductRepository implements ProductRepository {
   }
 
   async updateProduct(productId: string, data: Product): Promise<Product> {
+    const prisma1 = this.clientManager.getClient();
     try {
       const dataToUpdate = PrismaProductMapper.toPrisma(data);
 
-      const updatedProduct = await this.prisma.product.update({
+      const updatedProduct = await prisma1.product.update({
         where: {
           productId,
         },
