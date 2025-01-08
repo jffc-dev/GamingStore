@@ -19,6 +19,9 @@ import { PaymentRepository } from 'src/application/contracts/persistence/payment
 import { PrismaPaymentRepository } from './repositories/prisma-payment.repository';
 import { TokenRepository } from 'src/application/contracts/persistence/token.repository';
 import { PrismaTokenRepository } from './repositories/prisma-token.repository';
+import { TransactionManager } from 'src/application/contracts/persistence/transaction-manager';
+import { PrismaTransactionManager } from './prisma-transaction-manager';
+import { PrismaClientManager } from './prisma-client-manager';
 
 @Module({
   imports: [EnvModule],
@@ -60,6 +63,8 @@ import { PrismaTokenRepository } from './repositories/prisma-token.repository';
       provide: TokenRepository,
       useClass: PrismaTokenRepository,
     },
+    PrismaClientManager,
+    { provide: TransactionManager, useClass: PrismaTransactionManager },
   ],
   exports: [
     PrismaService,
@@ -72,6 +77,8 @@ import { PrismaTokenRepository } from './repositories/prisma-token.repository';
     CategoryRepository,
     PaymentRepository,
     TokenRepository,
+
+    TransactionManager,
   ],
 })
 export class PrismaModule {}
