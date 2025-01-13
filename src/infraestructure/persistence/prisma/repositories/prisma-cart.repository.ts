@@ -4,10 +4,24 @@ import { CartDetailRepository } from 'src/application/contracts/persistence/cart
 import { CartDetail } from 'src/domain/cart-detail';
 import { PrismaCartDetailMapper } from '../mappers/prisma-cart-detail.mapper';
 import { Prisma } from '@prisma/client';
+import { PrismaClientManager } from '../prisma-client-manager';
 
 @Injectable()
 export class PrismaCartDetailRepository implements CartDetailRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private clientManager: PrismaClientManager,
+  ) {}
+
+  async cleanCartDetailsByUser(userId: string): Promise<boolean> {
+    const prismaTx = this.clientManager.getClient();
+    const deleteCart = await prismaTx.cartDetail.deleteMany({
+      where: {
+        userId,
+      },
+    });
+    return !!deleteCart;
+  }
 
   async addToCart(data: CartDetail): Promise<CartDetail> {
     const prismaData = PrismaCartDetailMapper.toPrisma(data);
@@ -32,7 +46,8 @@ export class PrismaCartDetailRepository implements CartDetailRepository {
 
   async getCartDetailsByUser(userId: string): Promise<CartDetail[]> {
     try {
-      const cartDetails = await this.prisma.cartDetail.findMany({
+      const prismaTx = this.clientManager.getClient();
+      const cartDetails = await prismaTx.cartDetail.findMany({
         where: {
           userId,
         },

@@ -51,9 +51,9 @@ export class PrismaOrderRepository implements OrderRepository {
   }
 
   async createOrder(order: Order): Promise<Order> {
-    const prisma1 = this.clientManager.getClient();
+    const prismaTx = this.clientManager.getClient();
     try {
-      const createdOrder = await prisma1.order.create({
+      const createdOrder = await prismaTx.order.create({
         data: {
           userId: order.userId,
           orderId: order.id,
@@ -151,9 +151,9 @@ export class PrismaOrderRepository implements OrderRepository {
   }
 
   async createOrderDetail(orderDetail: OrderDetail): Promise<OrderDetail> {
-    const prisma1 = this.clientManager.getClient();
+    const prismaTx = this.clientManager.getClient();
     try {
-      const createdDetailOrder = await prisma1.orderDetail.create({
+      const createdDetailOrder = await prismaTx.orderDetail.create({
         data: {
           orderDetailId: orderDetail.id,
           orderId: orderDetail.orderId,

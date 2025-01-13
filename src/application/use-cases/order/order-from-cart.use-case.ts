@@ -56,9 +56,9 @@ export class CreateOrderFromCartUseCase {
         total += cartDetail.quantity * product.price;
       }
 
-      // if (!validStock) {
-      //   throw new BadRequestException('Insuficient stock');
-      // }
+      if (!validStock) {
+        throw new BadRequestException('Insuficient stock');
+      }
 
       // create order
       const orderId = this.uuidService.generateUuid();
@@ -87,21 +87,17 @@ export class CreateOrderFromCartUseCase {
         });
 
         product.stock = product.stock - cartDetail.quantity;
-        const orderDetailResponse =
-          await this.orderRepository.createOrderDetail(orderDetail);
 
-        console.log(orderDetailResponse);
+        await this.orderRepository.createOrderDetail(orderDetail);
 
-        const updatedProductResponse =
-          await this.productRepository.updateProduct(
-            product.productId,
-            product,
-          );
-
-        console.log(updatedProductResponse);
+        await this.productRepository.updateProduct(product.productId, product);
 
         id++;
       }
+
+      // cleaning cart
+
+      await this.cartDetailRepository.cleanCartDetailsByUser(userId);
 
       const orderCreatedEvent = new StockUpdatedEvent();
       orderCreatedEvent.productIds = productIds;

@@ -89,11 +89,11 @@ export class PrismaProductRepository implements ProductRepository {
   }
 
   async updateProduct(productId: string, data: Product): Promise<Product> {
-    const prisma1 = this.clientManager.getClient();
+    const prismaTx = this.clientManager.getClient();
     try {
       const dataToUpdate = PrismaProductMapper.toPrisma(data);
 
-      const updatedProduct = await prisma1.product.update({
+      const updatedProduct = await prismaTx.product.update({
         where: {
           productId,
         },
@@ -137,8 +137,9 @@ export class PrismaProductRepository implements ProductRepository {
   }
 
   async getProductsByIds(productIds: string[]): Promise<Product[]> {
+    const prismaTx = this.clientManager.getClient();
     try {
-      const products = await this.prisma.product.findMany({
+      const products = await prismaTx.product.findMany({
         where: {
           productId: { in: productIds },
         },
